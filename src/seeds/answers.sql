@@ -61,10 +61,10 @@ INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (11, 'Kattun
 INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (11, 'Unge', false);
 INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (11, 'Kalv', false);
 
-INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (6, 'Pup', true);
-INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (6, 'Kitten', false);
-INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (6, 'Cub', false);
-INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (6, 'Calf', false);
+INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (12, 'Pup', true);
+INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (12, 'Kitten', false);
+INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (12, 'Cub', false);
+INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (12, 'Calf', false);
 
 --Fråga 7 (Kids)
 INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (13, 'Sommar', false);
@@ -78,15 +78,15 @@ INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (7, 'Fall', 
 INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (7, 'Monsoon', false);
 
 --Fråga 8 (Kids)
-INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (8, 'Lejon', false);
-INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (8, 'Elefant', false);
-INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (8, 'Pingvin', false);
-INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (8, 'Fladdermus', true);
+INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (15, 'Lejon', false);
+INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (15, 'Elefant', false);
+INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (15, 'Pingvin', false);
+INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (15, 'Fladdermus', true);
 
-INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (8, 'Lion', false);
-INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (8, 'Elephant', false);
-INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (8, 'Penguin', false);
-INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (8, 'Bat', true);
+INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (16, 'Lion', false);
+INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (16, 'Elephant', false);
+INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (16, 'Penguin', false);
+INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (16, 'Bat', true);
 
 --Fråga 9 (Kids)
 INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (9, 'Sex', false);
@@ -94,10 +94,10 @@ INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (9, 'Åtta',
 INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (9, 'Tio', false);
 INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (9, 'Tolv', false);
 
-INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (9, 'Six', false);
-INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (9, 'Eight', true);
-INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (9, 'Ten', false);
-INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (9, 'Twelve', false);
+INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (18, 'Six', false);
+INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (18, 'Eight', true);
+INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (18, 'Ten', false);
+INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (18, 'Twelve', false);
 
 --Fråga 10 (Kids)
 INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (10, 'Teleskop', true);
@@ -105,10 +105,10 @@ INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (10, 'Mikros
 INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (10, 'Kalejdoskop', false);
 INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (10, 'Periskop', false);
 
-INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (10, 'Telescope', true);
-INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (10, 'Microscope', false);
-INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (10, 'Kaleidoscope', false);
-INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (10, 'Periscope', false);
+INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (20, 'Telescope', true);
+INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (20, 'Microscope', false);
+INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (20, 'Kaleidoscope', false);
+INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (20, 'Periscope', false);
 
 --Fråga 11 (Kids)
 INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (11, 'Morot', false);
@@ -116,10 +116,10 @@ INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (11, 'Seller
 INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (11, 'Chili', true);
 INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (11, 'Potatis', false);
 
-INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (11, 'Carrot', false);
-INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (11, 'Celery', false);
-INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (11, 'Chilli', true);
-INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (11, 'Potato', false);
+INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (22, 'Carrot', false);
+INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (22, 'Celery', false);
+INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (22, 'Chilli', true);
+INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (22, 'Potato', false);
 
 --Fråga 1 (Regular)
 INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (23, 'William Shakespeare', true);
