@@ -1,14 +1,8 @@
-// eslint-disable-next-line no-undef
 const express = require('express');
 const app = express();
 const port = 3000;
-// eslint-disable-next-line no-undef
 const db = require('./database/sqlite.js');
-// eslint-disable-next-line no-undef
 const runSeed = require('./seeder');
-
-
-
 
 app.get('/', (req, res) => {
   try {
@@ -29,17 +23,25 @@ app.listen(port, () => {
       console.log('Failed to connect to SQLite:', err);
     } else {
       console.log(`App listening on port ${port}`);
-      runSeed('questions.sql', () => {
-        console.log('questions.sql seeded');
-      })
+      populateDatabase();
     }
   });
 });
 
-
-
-
-
+function populateDatabase() {
+  runSeed('modes.sql', () => {
+    console.log('modes.sql seeded');
+  });
+  runSeed('languages.sql', () => {
+    console.log('languages.sql seeded');
+  });
+  runSeed('questions.sql', () => {
+    console.log('questions.sql seeded');
+  });
+  runSeed('answers.sql', () => {
+    console.log('answers.sql seeded');
+  });
+}
 
 //npm install axios
 // axios: library for making HTTP requests from Vue to
