@@ -1,7 +1,10 @@
+// eslint-disable-next-line no-undef
 const express = require('express');
 const app = express();
 const port = 3000;
+// eslint-disable-next-line no-undef
 const db = require('./database/sqlite.js');
+// eslint-disable-next-line no-undef
 const runSeed = require('./seeder');
 
 

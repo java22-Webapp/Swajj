@@ -1,8 +1,8 @@
 DELETE FROM questions;
 
 --Fråga 1 Kids
-INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 1, 'Capital of Sweden?');
-INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 2, 'Huvudstaden i Sverige?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 1, 'Huvudstaden i Sverige?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 2, 'Capital of Sweden?');
 --Fråga 2 Kids
 INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 1, 'Vilket djur är känt för svart vita ränder?');
 INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 2, 'What animal is known for its black and white stripes?');
