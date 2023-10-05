@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-undef
 const sqlite = require('sqlite3').verbose();
 let db;
 
@@ -14,6 +15,7 @@ function getConnection() {
   return db;
 }
 
+// eslint-disable-next-line no-undef
 module.exports = {
   initializeDB,
   getConnection
