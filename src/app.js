@@ -1,26 +1,47 @@
 const express = require('express');
 const app = express();
-const port= 3000;
-const db = require('./database/mySql.js')
+const port = 3000;
+const db = require('./database/sqlite.js');
+const runSeed = require('./seeder');
 
-app.get('/', async (req, res) => {
-    try {
-        db.getConnection();
-        res.send('Hello World!');
-    } catch (error){
-        res.send('Error connecting..')
+
+
+
+app.get('/', (req, res) => {
+  try {
+    let database = db.getConnection();
+    if (database) {
+      res.send('Connected to SQLite!');
+    } else {
+      res.send('No connection...');
     }
+  } catch (error) {
+    res.send('Error connecting..');
+  }
 });
 
-app.listen(port, async () => {
-    console.log('App listening on port ${port}');
-    try {
-        await db.initializeDB();
-    } catch (error){
-        console.log('Failed to connect...')
+app.listen(port, () => {
+  db.initializeDB((err) => {
+    if (err) {
+      console.log('Failed to connect to SQLite:', err);
+    } else {
+      console.log(`App listening on port ${port}`);
+      runSeed('questions.sql', () => {
+        console.log('questions.sql seeded');
+      })
     }
+  });
 });
 
-//const cors to allow requests from other URL's
-//const socketIO
-//const server = http.createServer(app))
+
+
+
+
+
+//npm install axios
+// axios: library for making HTTP requests from Vue to
+// an express backend
+
+//npm install cors
+// (cross-origin resource sharing)
+// used as a middleware in an express server
