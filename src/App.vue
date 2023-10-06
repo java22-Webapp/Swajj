@@ -1,7 +1,10 @@
-<script setup></script>
+<script setup>
+import HomePage from "@/views/HomePage.vue";
+</script>
 
 <template>
-  <div>Hej</div>
+  <header>S</header>
+  <HomePage />
 </template>
 
 <style scoped></style>

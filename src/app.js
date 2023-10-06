@@ -3,6 +3,11 @@ const app = express();
 const port = 3000;
 const db = require('./database/sqlite.js');
 const runSeed = require('./seeder');
+const path = require('path');
+
+//const cors = require('cors');
+
+//app.use(cors());
 
 app.get('/', (req, res) => {
   try {
@@ -12,7 +17,8 @@ app.get('/', (req, res) => {
     } else {
       res.send('No connection...');
     }
-  } catch (error) {
+} catch (error) {
+    console.error(error);
     res.send('Error connecting..');
   }
 });
@@ -30,16 +36,16 @@ app.listen(port, () => {
 
 function populateDatabase() {
   runSeed('modes.sql', () => {
-    console.log('modes.sql seeded');
+    //console.log('modes.sql seeded');
   });
   runSeed('languages.sql', () => {
-    console.log('languages.sql seeded');
+    //console.log('languages.sql seeded');
   });
   runSeed('questions.sql', () => {
-    console.log('questions.sql seeded');
+    //console.log('questions.sql seeded');
   });
   runSeed('answers.sql', () => {
-    console.log('answers.sql seeded');
+    //console.log('answers.sql seeded');
   });
 }
 
