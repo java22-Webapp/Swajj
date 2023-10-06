@@ -1,10 +1,10 @@
 <script setup>
-import HomePage from "@/views/HomePage.vue";
+
 </script>
 
 <template>
   <header>S</header>
-  <HomePage />
+  <router-view></router-view>
 </template>
 
 <style scoped></style>
