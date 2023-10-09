@@ -1,6 +1,7 @@
 <template>
-  <div>LobbySolo sida</div>
+  <div>solo play</div>
 </template>
 
-<script setup></script>
+<script setup>
+</script>
 <style scoped></style>

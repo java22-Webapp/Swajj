@@ -1,5 +1,5 @@
 <template>
-  <div>MultiplayerLobby sida</div>
+  <div>Multiplayer lobby</div>
 </template>
 
 <script setup>
