@@ -1,7 +1,14 @@
+<script setup>
+import { useNicknameStore} from "@/stores/nickname";
+
+const nickNameStore = useNicknameStore();
+
+
+</script>
+
 <template>
-  <div>solo play</div>
+  <div>Nickname: {{ nickNameStore.nickname }} </div>
 </template>
 
-<script setup>
-</script>
+
 <style scoped></style>
