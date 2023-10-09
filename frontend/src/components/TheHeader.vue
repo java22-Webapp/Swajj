@@ -9,6 +9,7 @@
 <style scoped>
 
 #logo_s {
+  background-color: var(--background-color);
   font-family: 'Faster One', sans-serif;
   font-size: 6em;
   margin-left: 0.25em;

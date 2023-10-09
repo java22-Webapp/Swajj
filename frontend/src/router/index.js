@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/HomePage.vue'
-// import Solo from '../views/LobbySolo.vue'
+import Solo from '../views/LobbySolo.vue'
 
 
 const router = createRouter({
@@ -9,12 +9,12 @@ const router = createRouter({
         {
             path: '/',
             name: 'HomePage',
-            component: Home
+            component: Home,
         },
         {
             path: '/solo',
-            name: 'LobbySolo',
-            component: () => import('../views/LobbySolo.vue')
+            name: 'Solo',
+            component: Solo,
         },
         {
             path: '/multiplayer',
