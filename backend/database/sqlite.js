@@ -4,7 +4,7 @@ let db;
 
 
 function initializeDB(callback) {
-  db = new sqlite.Database('./database.sqlite', (error) => {
+  db = new sqlite.Database('./backend/database.sqlite', (error) => {
     if (error) return callback(error);
     console.log('Connected to the SQLite database.');
     createTables(callback);
