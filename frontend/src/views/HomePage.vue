@@ -29,6 +29,14 @@
   color: var(--card-color);
 }
 
+section {
+  background-color: var(--background-color);
+}
+
+html {
+  background-color: var(--background-color);
+}
+
 button {
   font-family: 'Inter', sans-serif;
   font-weight: bold;
