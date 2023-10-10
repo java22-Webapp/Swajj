@@ -11,11 +11,11 @@ import NicknameInput from "@/components/NicknameInput.vue";
     <section class="buttons">
       <img id="cardBrain" src="../assets/cardBrainYellow.png" alt="Brain holding a card" />
       <NicknameInput />
-      <button  id="soloPlay" >
-        <router-link  to="/solo" id="solo-play-text" >Play Solo</router-link>
+      <button  class="menuButton" id="soloPlay" >
+        <router-link  to="/solo" class="routerLinkBtnText" >Play Solo</router-link>
       </button>
-      <button id="multiPlay">
-        <router-link to="/Multiplayer" id="multi-play-text">Multiplayer</router-link>
+      <button class="menuButton" id="multiPlay">
+        <router-link to="/Multiplayer" class="routerLinkBtnText">Multiplayer</router-link>
       </button>
     </section>
   </main>
@@ -28,30 +28,6 @@ main {
   height: 100%;
   width: 100%;
   background-color: var(--background-color);
-}
-
-
-#solo-play-text, #multi-play-text {
-  text-decoration: none;
-  color: var(--card-color);
-}
-
-button {
-  font-family: 'Inter', sans-serif;
-  font-weight: bold;
-  font-size: 36px;
-  text-decoration: none;
-  text-shadow:
-    -1px -1px 0 #000,
-    1px -1px 0 #000,
-    -1px 1px 0 #000,
-    1px 1px 0 #000;
-  background-color: var(--button-color);
-  color: var(--card-color);
-  border-radius: 4px;
-  padding: 0.5em 1em;
-  width: 8em;
-  z-index: 999;
 }
 
 .buttons {
