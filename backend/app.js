@@ -3,11 +3,9 @@ const app = express();
 const port = 3000;
 const db = require('./database/sqlite.js');
 const runSeed = require('./seeder');
-const path = require('path');
+const cors = require('cors');
 
-//const cors = require('cors');
-
-//app.use(cors());
+app.use(cors());
 
 app.get('/', (req, res) => {
   try {
@@ -23,6 +21,43 @@ app.get('/', (req, res) => {
   }
 });
 
+function populateDatabase() {
+  runSeed('modes.sql', () => {
+  });
+  runSeed('languages.sql', () => {
+  });
+  runSeed('questions.sql', () => {
+  });
+  runSeed('answers.sql', () => {
+  });
+}
+
+
+app.get('/get-question', (req, res) => {
+  const query = "SELECT id, question_text FROM questions ORDER BY random() LIMIT 1";
+  const answersQuery = "SELECT answers_text FROM answers WHERE questions_id = ?";
+
+  db.get(query, [], (error, question) => {
+    if (error) {
+      console.error("database error: ", error.message);
+      return res.status(500).json({ error: error.message });
+
+    }
+
+    db.all(answersQuery, [question.id], (error, answers) => {
+      if (error) {
+        console.error("database error: ", error.message);
+        return res.status(500).json({ error: error.message });
+      }
+
+      res.json({
+        db_question: question["question_text"],
+        db_answers: answers.map(a => a.answers_text)
+      });
+    })
+  });
+})
+
 app.listen(port, () => {
   db.initializeDB((err) => {
     if (err) {
@@ -32,27 +67,6 @@ app.listen(port, () => {
       populateDatabase();
     }
   });
-});
+})
 
-function populateDatabase() {
-  runSeed('modes.sql', () => {
-    //console.log('modes.sql seeded');
-  });
-  runSeed('languages.sql', () => {
-    //console.log('languages.sql seeded');
-  });
-  runSeed('questions.sql', () => {
-    //console.log('questions.sql seeded');
-  });
-  runSeed('answers.sql', () => {
-    //console.log('answers.sql seeded');
-  });
-}
 
-//npm install axios
-// axios: library for making HTTP requests from Vue to
-// an express backend
-
-//npm install cors
-// (cross-origin resource sharing)
-// used as a middleware in an express server
