@@ -1,4 +1,16 @@
-// eslint-disable-next-line no-undef
+function get(query, params, callback) {
+    db.get(query, params, (error, row) => {
+      callback(error, row);
+  });
+}
+
+function all(query, params, callback) {
+  db.all(query, params, (error, row) => {
+    callback(error, row);
+  });
+}
+
+
 const sqlite = require('sqlite3').verbose();
 let db;
 
@@ -15,10 +27,12 @@ function getConnection() {
   return db;
 }
 
-// eslint-disable-next-line no-undef
+
 module.exports = {
   initializeDB,
-  getConnection
+  getConnection,
+  get,
+  all
 };
 
 function createTables(callback) {

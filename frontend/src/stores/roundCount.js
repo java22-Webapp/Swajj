@@ -14,7 +14,6 @@ export const useGameStore = defineStore('game', {
       if (this.currentRound < this.totalRounds) {
         this.currentRound++;
         this.remainingTime = 10;
-        console.log("round ++")
       }
     },
 
@@ -26,7 +25,6 @@ export const useGameStore = defineStore('game', {
       this.timerInterval = setInterval(() => {
         if (this.remainingTime > 0) {
           this.remainingTime--;
-          console.log("remaining time --");
         } else {
           this.nextRound();
         }
