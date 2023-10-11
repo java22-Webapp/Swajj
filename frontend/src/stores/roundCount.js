@@ -10,12 +10,21 @@ export const useGameStore = defineStore('game', {
   }),
 
   actions: {
-    nextRound(){
-      if (this.currentRound < this.totalRounds) {
-        this.currentRound++;
-        this.remainingTime = 10;
-      }
-    },
+    nextRound() {
+        if (this.currentRound < this.totalRounds) {
+          this.currentRound++;
+          this.remainingTime = 10;
+        } else {
+          this.stopTimer();
+        }
+      },
+    
+
+    stopTimer() {
+      if (this.timerInterval) {
+        clearInterval(this.timerInterval)
+        this.timerInterval = null;
+    }},
 
     startNextRoundTimer() {
       if (this.timerInterval) {

@@ -36,6 +36,7 @@ function populateDatabase() {
 app.get('/get-question', (req, res) => {
   const query = "SELECT id, question_text FROM questions ORDER BY random() LIMIT 1";
   const answersQuery = "SELECT answers_text FROM answers WHERE questions_id = ?";
+  const isCorrectQuery = "SELECT is_correct FROM answers WHERE questions_id = ?";
 
   db.get(query, [], (error, question) => {
     if (error) {
@@ -50,13 +51,21 @@ app.get('/get-question', (req, res) => {
         return res.status(500).json({ error: error.message });
       }
 
-      res.json({
-        db_question: question["question_text"],
-        db_answers: answers.map(a => a.answers_text)
-      });
-    })
-  });
-})
+      db.all(isCorrectQuery, [question.id], (error, isCorrect) => {
+        if (error) {
+          console.error("database error: ", error.message);
+          return res.status(500).json({ error: error.message });
+        }
+
+        res.json({
+          db_question: question["question_text"],
+          db_answers: answers.map(a => a.answers_text),
+          db_isCorrect: isCorrect.map(a => a.is_correct)
+        });
+      })
+    });
+  })
+});
 
 app.listen(port, () => {
   db.initializeDB((err) => {

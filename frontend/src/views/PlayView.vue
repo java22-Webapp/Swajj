@@ -3,16 +3,21 @@ import RoundCounter from '@/components/RoundCounter.vue';
 import { ref, onMounted, computed } from 'vue';
 import questionCardStack from "../assets/questionCardStack.png"
 import questionCardStackFlipped from "../assets/questionCardStackFlipped.png"
-
+import { useGameStore } from "@/stores/roundCount";
 
 const questions = ref('');
 const answers = ref([]);
+const isCorrect = ref([]);
+const nextRound = useGameStore();
+const userScore = ref(0);
+
+let selectedAnswerIndex = ref(null);
+let correctAnswerIndex = ref(-1);
+
 const imgSrc = ref(questionCardStack);
 const isFlipped = computed(() => imgSrc.value === questionCardStackFlipped);
 
 const fetchQuestionAndAnswers = async () => {
-  await new Promise(resolve => setTimeout(resolve, 3000))
-
 
   try {
     const response = await fetch('http://localhost:3000/get-question');
@@ -23,16 +28,41 @@ const fetchQuestionAndAnswers = async () => {
     const data = await response.json();
     questions.value = data.db_question;
     answers.value = data.db_answers;
+    isCorrect.value = data.db_isCorrect;
 
     imgSrc.value = questionCardStackFlipped;
 
-    console.log("FETCHED DATA: ", data)
+    //console.log("FETCHED DATA: ", data)
   } catch (error) {
     console.log('ERROR fetching questions in PlayView', error);
   }
 };
 
 onMounted(fetchQuestionAndAnswers)
+
+
+function userAnswer(index) {
+  selectedAnswerIndex.value = index;
+  correctAnswerIndex.value = isCorrect.value.findIndex(correctValue => correctValue === 1)
+
+  if (isCorrect.value[index] === 1) {
+    userScore.value++;
+    console.log("SCORE: ", userScore.value);
+
+    //GREEN BAR AROUND ANSWER BTN
+  } else {
+    console.log("Wrong. Correct was index: ", isCorrect.value[index])
+    console.log("SCORE: ", userScore.value);
+    // WRONG: RED BAR AROUND ANSWER BTN
+    //"WRONG: GREEN BAR AROUND CORRECT ANSWER");
+  }
+
+  selectedAnswerIndex.value = null;
+  correctAnswerIndex.value = -1;
+  nextRound.nextRound();
+  fetchQuestionAndAnswers();
+}
+
 
 </script>
 
@@ -50,10 +80,10 @@ onMounted(fetchQuestionAndAnswers)
     </div>
 
     <div id="answerBtns">
-      <button class="menuButton" id="btnAnswerA"> {{ answers[0] }}</button>
-      <button class="menuButton" id="btnAnswerB"> {{ answers[1] }}</button>
-      <button class="menuButton" id="btnAnswerC"> {{ answers[2] }}</button>
-      <button class="menuButton" id="btnAnswerD"> {{ answers[3] }}</button>
+      <button class="menuButton" v-for="(answers, index) in answers" id="btnAnswerA" :key="index" @click="userAnswer(index)"
+              :class="{'correct-answer': correctAnswerIndex.value === index}">
+        {{ answers }}
+      </button>
     </div>
   </section>
 
@@ -131,6 +161,21 @@ onMounted(fetchQuestionAndAnswers)
   width: 6em;
   height: 4em;
   padding: 2px;
+
+  .correct-answer {
+    border: 2px solid green;
+  }
+}
+
+
+
+
+.selected-answer {
+  border: 2px solid blue; /* or any other color to indicate a selected answer */
+}
+
+.wrong-answer {
+  border: 2px solid red;
 }
 
 </style>
