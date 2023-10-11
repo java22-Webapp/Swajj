@@ -51,13 +51,3 @@ export const useGameStore = defineStore('game', {
 
   },
 });
-
-
-//this.timerInterval = setInterval(() => {
-//  if (this.remainingTime > 0) {
-//    this.remainingTime--;
-//  } else {
-//    this.stopTimer();
-//    this.nextRound();
-//  }
-//}, 1000);
