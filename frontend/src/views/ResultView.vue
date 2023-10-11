@@ -1,6 +1,33 @@
 <script setup>
-import { useNicknameStore} from "@/stores/nickname";
+import { useNicknameStore } from "@/stores/nickname";
+import { useGameStore } from "@/stores/roundCount"
+import { router } from "@/router/index"
+
+const useRouter = router;
+
+
 const nickNameStore = useNicknameStore();
+const userScoreStore = useGameStore();
+const newRounds = useGameStore();
+const roundTimer = useGameStore();
+
+
+const redirectToPlay = () => {
+  userScoreStore.userScore = 0;
+  newRounds.currentRound = 1;
+  roundTimer.remainingTime = 10;
+  useRouter.push("/Play");
+}
+
+const redirectToMenu = () => {
+  userScoreStore.userScore = 0;
+  newRounds.currentRound = 1;
+  roundTimer.remainingTime = 10;
+  useRouter.push("/");
+}
+
+console.log(nickNameStore.nickname);
+
 
 </script>
 
@@ -8,7 +35,7 @@ const nickNameStore = useNicknameStore();
 <template>
   <div class="result-card">
     <p class="result">Result</p>
-    <p class="nickname">{{ nickNameStore.nickname }}: "Points"</p>
+    <p class="nickname">{{ nickNameStore.nickname }} | Score:  {{ userScoreStore.userScore }}/10</p>
     <svg width="442" height="559" viewBox="0 0 442 559" fill="none" xmlns="http://www.w3.org/2000/svg">
       <g filter="url(#filter0_d_69_37)">
         <rect x="4" width="434" height="551" rx="10" fill="#FFF6C2"/>
@@ -28,12 +55,8 @@ const nickNameStore = useNicknameStore();
     </svg>
   </div>
   <section>
-    <button class="menuButton" id="playBtn">
-      <router-link to="/Play" class="routerLinkBtnText">Play again</router-link>
-    </button>
-    <button class="menuButton" id="playBtn">
-      <router-link to="/" class="routerLinkBtnText">Menu</router-link>
-    </button>
+    <button class="menuButton" id="playBtn" @click="redirectToPlay">Play again</button>
+    <button class="menuButton" id="playBtn" @click="redirectToMenu">Menu</button>
     <img class="rotatedCardBrain" src="../assets/cardBrainYellow.png" alt="Brain holding a card">
   </section>
 

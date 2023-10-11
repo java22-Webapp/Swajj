@@ -1,16 +1,16 @@
 <script setup>
 import RoundCounter from '@/components/RoundCounter.vue';
-import { ref, onMounted, computed } from 'vue';
-import questionCardStack from "../assets/questionCardStack.png"
-import questionCardStackFlipped from "../assets/questionCardStackFlipped.png"
-import { useGameStore } from "@/stores/roundCount";
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
+import questionCardStack from '../assets/questionCardStack.png';
+import questionCardStackFlipped from '../assets/questionCardStackFlipped.png';
+import { useGameStore } from '@/stores/roundCount';
 
 const questions = ref('');
 const answers = ref([]);
 const isCorrect = ref([]);
 const nextRound = useGameStore();
-const userScore = ref(0);
-
+const userScoreHolder = useGameStore();
+const timerInterval = ref(null);
 let selectedAnswerIndex = ref(null);
 let correctAnswerIndex = ref(-1);
 
@@ -18,12 +18,11 @@ const imgSrc = ref(questionCardStack);
 const isFlipped = computed(() => imgSrc.value === questionCardStackFlipped);
 
 const fetchQuestionAndAnswers = async () => {
-
   try {
     const response = await fetch('http://localhost:3000/get-question');
 
     if (!response.ok) {
-      throw new Error(`HTTP ERROR; ${response.status}`)
+      throw new Error(`HTTP ERROR; ${response.status}`);
     }
     const data = await response.json();
     questions.value = data.db_question;
@@ -38,23 +37,39 @@ const fetchQuestionAndAnswers = async () => {
   }
 };
 
-onMounted(fetchQuestionAndAnswers)
+const startTimer = () => {
+  timerInterval.value = setInterval(() => {
+    if (useGameStore().remainingTime > 0) {
+      useGameStore().remainingTime--;
+    } else {
+      useGameStore().nextRound();
+      fetchQuestionAndAnswers();
+    }
+  }, 1000);
+};
 
+onMounted(() => {
+  fetchQuestionAndAnswers();
+  startTimer();
+});
+
+onBeforeUnmount(() => {
+  clearInterval(timerInterval.value);
+});
 
 function userAnswer(index) {
   selectedAnswerIndex.value = index;
-  correctAnswerIndex.value = isCorrect.value.findIndex(correctValue => correctValue === 1)
+  correctAnswerIndex.value = isCorrect.value.findIndex((correctValue) => correctValue === 1);
 
   if (isCorrect.value[index] === 1) {
-    userScore.value++;
-    console.log("SCORE: ", userScore.value);
-
-    //GREEN BAR AROUND ANSWER BTN
+    userScoreHolder.userScore++;
+    console.log('SCORE: ', userScoreHolder.userScore);
+    // TODO Add Green border on the user answer choice btn
   } else {
-    console.log("Wrong. Correct was index: ", isCorrect.value[index])
-    console.log("SCORE: ", userScore.value);
-    // WRONG: RED BAR AROUND ANSWER BTN
-    //"WRONG: GREEN BAR AROUND CORRECT ANSWER");
+    console.log('Wrong. Correct was index: ', isCorrect.value[index]);
+    console.log('SCORE: ', userScoreHolder.userScore);
+    // TODO Add Red border on the user answer choice btn
+    // TODO Add green border on the correct answer btn
   }
 
   selectedAnswerIndex.value = null;
@@ -62,8 +77,6 @@ function userAnswer(index) {
   nextRound.nextRound();
   fetchQuestionAndAnswers();
 }
-
-
 </script>
 
 <template>
@@ -75,13 +88,18 @@ function userAnswer(index) {
   <section class="QNA">
     <div id="deckDiv">
       <div class="deckQuestions">{{ questions }}</div>
-      <img id="idleDeck" :src="imgSrc" :class="{ 'flipped': isFlipped}" alt="Card deck">
-
+      <img id="idleDeck" :src="imgSrc" :class="{ flipped: isFlipped }" alt="Card deck" />
     </div>
 
     <div id="answerBtns">
-      <button class="menuButton" v-for="(answers, index) in answers" id="btnAnswerA" :key="index" @click="userAnswer(index)"
-              :class="{'correct-answer': correctAnswerIndex.value === index}">
+      <button
+        class="menuButton"
+        v-for="(answers, index) in answers"
+        id="btnAnswerA"
+        :key="index"
+        @click="userAnswer(index)"
+        :class="{ 'correct-answer': correctAnswerIndex.value === index }"
+      >
         {{ answers }}
       </button>
     </div>
@@ -91,7 +109,6 @@ function userAnswer(index) {
 </template>
 
 <style scoped>
-
 .rotatedCardBrain {
   position: absolute;
   top: 28em;
@@ -107,7 +124,6 @@ function userAnswer(index) {
   z-index: 1;
   width: fit-content;
   font-size: 24px;
-
 }
 
 #deckDiv {
@@ -127,7 +143,6 @@ function userAnswer(index) {
   width: 70%;
   left: -4%;
   position: relative;
-
 }
 
 .showRound {
@@ -152,7 +167,6 @@ function userAnswer(index) {
   justify-content: space-between;
   align-items: center;
   margin-top: 1em;
-
 }
 
 #answerBtns button {
@@ -165,17 +179,6 @@ function userAnswer(index) {
   .correct-answer {
     border: 2px solid green;
   }
-}
-
-
-
-
-.selected-answer {
-  border: 2px solid blue; /* or any other color to indicate a selected answer */
-}
-
-.wrong-answer {
-  border: 2px solid red;
 }
 
 </style>
