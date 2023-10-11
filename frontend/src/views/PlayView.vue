@@ -31,7 +31,6 @@ const fetchQuestionAndAnswers = async () => {
 
     imgSrc.value = questionCardStackFlipped;
 
-    //console.log("FETCHED DATA: ", data)
   } catch (error) {
     console.log('ERROR fetching questions in PlayView', error);
   }
