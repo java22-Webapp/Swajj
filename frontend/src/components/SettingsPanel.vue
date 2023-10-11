@@ -1,4 +1,18 @@
 <script setup>
+  import { ref, watch } from "vue"
+  import { useSettingsStore } from "../stores/settings";
+
+  const settings = ref({
+    kidsMode: false,
+    english: false,
+    rounds: 15,
+    time: 15
+  });
+
+  watch(settings, async (newSettings) => {
+    const settingsStore = useSettingsStore();
+    settingsStore.setSettings(newSettings);
+  }, { deep: true })
 
 </script>
 
@@ -8,7 +22,7 @@
     <div id="modeSettings">
       <span class="text">Regular</span>
       <label class="toggleButton" >
-        <input type="checkbox" id="modeToggle" class="toggleInput">
+        <input type="checkbox" id="modeToggle" class="toggleInput" v-model="settings.kidsMode">
         <span class="slider"></span>
       </label>
       <span class="text">Kids</span>
@@ -16,7 +30,7 @@
     <div id="languageSettings">
       <span class="text">Swedish</span>
       <label class="toggleButton" >
-        <input type="checkbox" id="languageToggle" class="toggleInput">
+        <input type="checkbox" id="languageToggle" class="toggleInput" v-model="settings.english">
         <span class="slider"></span>
       </label>
       <span class="text">English</span>
@@ -25,15 +39,15 @@
       <span class="text">Amount of rounds:</span>
       <div id="roundChoices">
         <div>
-          <input type="radio" name="rounds" id="rounds10" value="10">
+          <input type="radio" name="rounds" id="rounds10" value="10" v-model="settings.rounds">
           <label for="rounds10">10</label>
         </div>
         <div>
-          <input type="radio" name="rounds" id="rounds15" value="15">
+          <input type="radio" name="rounds" id="rounds15" value="15" v-model="settings.rounds">
           <label for="rounds15">15</label>
         </div>
         <div>
-          <input type="radio" name="rounds" id="rounds20" value="20">
+          <input type="radio" name="rounds" id="rounds20" value="20" v-model="settings.rounds">
           <label for="rounds20">20</label>
         </div>
       </div>
@@ -42,15 +56,15 @@
       <span class="text">Seconds per question:</span>
       <div id="timeChoices">
         <div>
-          <input type="radio" name="time" id="time10" value="10">
+          <input type="radio" name="time" id="time10" value="10" v-model="settings.time">
           <label for="time10">10</label>
         </div>
         <div>
-          <input type="radio" name="time" id="time15" value="15">
+          <input type="radio" name="time" id="time15" value="15" v-model="settings.time">
           <label for="time15">15</label>
         </div>
         <div>
-          <input type="radio" name="time" id="time20" value="20">
+          <input type="radio" name="time" id="time20" value="20" v-model="settings.time">
           <label for="time20">20</label>
         </div>
       </div>
