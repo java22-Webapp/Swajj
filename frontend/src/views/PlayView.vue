@@ -3,7 +3,7 @@ import RoundCounter from '@/components/RoundCounter.vue';
 import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
 import questionCardStack from '../assets/questionCardStack.png';
 import questionCardStackFlipped from '../assets/questionCardStackFlipped.png';
-import { useGameStore } from '@/stores/roundCount';
+import { useGameStore } from '@/stores/game';
 
 const questions = ref('');
 const answers = ref([]);
@@ -62,11 +62,8 @@ function userAnswer(index) {
 
   if (isCorrect.value[index] === 1) {
     userScoreHolder.userScore++;
-    console.log('SCORE: ', userScoreHolder.userScore);
     // TODO Add Green border on the user answer choice btn
   } else {
-    console.log('Wrong. Correct was index: ', isCorrect.value[index]);
-    console.log('SCORE: ', userScoreHolder.userScore);
     // TODO Add Red border on the user answer choice btn
     // TODO Add green border on the correct answer btn
   }

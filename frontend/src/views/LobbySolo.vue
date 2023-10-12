@@ -1,5 +1,6 @@
 <script setup>
 import { useNicknameStore} from "@/stores/nickname";
+import SettingsPanel from "@/components/SettingsPanel.vue";
 
 const nickNameStore = useNicknameStore();
 
@@ -8,7 +9,7 @@ const nickNameStore = useNicknameStore();
 
 <template>
   <section>
-    <div>SETTING COMPONENT GOES HERE</div>
+    <SettingsPanel />
     <div>Nickname: {{ nickNameStore.nickname }} </div>
     <button class="menuButton" id="playBtn">
       <router-link to="/Play" class="routerLinkBtnText">Play</router-link>
