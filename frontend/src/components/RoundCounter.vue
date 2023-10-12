@@ -3,6 +3,10 @@ import { onBeforeUnmount, onMounted } from "vue";
 import {useGameStore} from "@/stores/roundCount";
 
 const gameStore = useGameStore();
+const settingStore = useSettingsStore();
+
+
+
 
 onMounted(() => {
 gameStore.startNextRoundTimer();
@@ -18,7 +22,7 @@ onBeforeUnmount( () => {
 
 <template>
   <div class="showRound">
-    <h2>ROUND {{gameStore.currentRound}}/{{gameStore.totalRounds}}</h2>
+    <h2>ROUND {{gameStore.currentRound}}/{{settingStore.settings.rounds}}</h2>
     <p>Time Remaining: {{gameStore.remainingTime}}s</p>
   </div>
 </template>

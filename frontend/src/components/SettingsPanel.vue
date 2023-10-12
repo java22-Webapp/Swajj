@@ -1,6 +1,9 @@
 <script setup>
   import { onMounted, ref, watch } from "vue";
   import { useSettingsStore } from "../stores/settings";
+  import {useGameStore} from "@/stores/game";
+
+  const gameStore = useGameStore();
 
   const settings = ref({
     kidsMode: false,
@@ -19,6 +22,7 @@
   watch(settings, async (newSettings) => {
     const settingsStore = useSettingsStore();
     settingsStore.setSettings(newSettings);
+    gameStore.remainingTime = newSettings.time
   }, { deep: true })
 
 </script>
