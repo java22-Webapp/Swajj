@@ -1,5 +1,5 @@
 <script setup>
-  import { ref, watch } from "vue"
+  import { onMounted, ref, watch } from "vue";
   import { useSettingsStore } from "../stores/settings";
 
   const settings = ref({
@@ -8,6 +8,13 @@
     rounds: 15,
     time: 15
   });
+
+  onMounted(() => {
+    const settingsStore = useSettingsStore();
+    settingsStore.setSettings(settings.value);
+    gameStore.remainingTime = settings.value.time;
+
+  })
 
   watch(settings, async (newSettings) => {
     const settingsStore = useSettingsStore();
