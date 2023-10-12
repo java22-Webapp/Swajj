@@ -5,6 +5,8 @@ import questionCardStack from '../assets/questionCardStack.png';
 import questionCardStackFlipped from '../assets/questionCardStackFlipped.png';
 import { useGameStore } from '@/stores/game';
 
+
+
 const questions = ref('');
 const answers = ref([]);
 const isCorrect = ref([]);
