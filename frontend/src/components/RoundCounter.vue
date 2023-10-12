@@ -1,6 +1,7 @@
 <script setup>
 import { onBeforeUnmount, onMounted } from "vue";
-import {useGameStore} from "@/stores/roundCount";
+import {useGameStore} from "@/stores/game";
+import {useSettingsStore} from "@/stores/settings";
 
 const gameStore = useGameStore();
 const settingStore = useSettingsStore();
