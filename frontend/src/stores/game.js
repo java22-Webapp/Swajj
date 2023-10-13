@@ -9,7 +9,7 @@ export const useGameStore = defineStore('game', {
       currentRound: 1,
       totalRounds: settings.settings.rounds,
       remainingTime: settings.settings.time,
-      timerInterval: null,
+      timerInterval: 1000,
       userScore: 0
     };
   },
