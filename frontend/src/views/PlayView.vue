@@ -20,8 +20,6 @@ const buttonDisabled = ref(false);
 
 const answersCombo = computed(() => {
   const result = [];
-  console.log("ANSWERS::: ", answers.value)
-  console.log("A IDS:::",answerID.value)
   for (let i = 0; i < answers.value.length; i++) {
     result.push({answer_text: answers.value[i], id: answerID.value[i]});
   }
