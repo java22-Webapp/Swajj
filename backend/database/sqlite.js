@@ -1,6 +1,6 @@
 function get(query, params, callback) {
-    db.get(query, params, (error, row) => {
-      callback(error, row);
+  db.get(query, params, (error, row) => {
+    callback(error, row);
   });
 }
 
@@ -37,35 +37,35 @@ module.exports = {
 
 function createTables(callback) {
   const createModeTable = `CREATE TABLE IF NOT EXISTS modes
-    (
-        id INTEGER PRIMARY KEY,
-        name TEXT NOT NULL
-    );`;
+                           (
+                               id   INTEGER PRIMARY KEY,
+                               name TEXT NOT NULL
+                           );`;
 
   const createLanguageTable = `CREATE TABLE IF NOT EXISTS languages
-    (
-        id INTEGER PRIMARY KEY,
-        name TEXT NOT NULL
-    );`;
+                               (
+                                   id   INTEGER PRIMARY KEY,
+                                   name TEXT NOT NULL
+                               );`;
 
   const createQuestionsTable = `CREATE TABLE IF NOT EXISTS questions
-    (
-      id INTEGER PRIMARY KEY,
-      mode_id INTEGER,
-      language_id INTEGER,
-      question_text TEXT NOT NULL,
-      FOREIGN KEY (mode_id) REFERENCES modes(id),
-      FOREIGN KEY (language_id) REFERENCES languages(id)
-    );`;
+                                (
+                                    id            INTEGER PRIMARY KEY,
+                                    mode_id       INTEGER,
+                                    language_id   INTEGER,
+                                    question_text TEXT NOT NULL,
+                                    FOREIGN KEY (mode_id) REFERENCES modes (id),
+                                    FOREIGN KEY (language_id) REFERENCES languages (id)
+                                );`;
 
   const createAnswersTable = `CREATE TABLE IF NOT EXISTS answers
-    (
-        id INTEGER PRIMARY KEY,
-        questions_id INTEGER,
-        answers_text TEXT NOT NULL,
-        is_correct BOOLEAN NOT NULL DEFAULT 0,
-        FOREIGN KEY (questions_id) REFERENCES questions(id)
-    );`;
+                              (
+                                  id           INTEGER PRIMARY KEY,
+                                  questions_id INTEGER,
+                                  answers_text TEXT    NOT NULL,
+                                  is_correct   BOOLEAN NOT NULL DEFAULT 0,
+                                  FOREIGN KEY (questions_id) REFERENCES questions (id)
+                              );`;
 
   db.serialize(() => {
     db.run(createModeTable);

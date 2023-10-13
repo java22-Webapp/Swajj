@@ -3,8 +3,10 @@ import RoundCounter from '@/components/RoundCounter.vue';
 import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
 import questionCardStack from '../assets/questionCardStack.png';
 import questionCardStackFlipped from '../assets/questionCardStackFlipped.png';
-import { useGameStore } from '@/stores/roundCount';
+import { useGameStore } from '@/stores/game';
+import { useSettingsStore } from '@/stores/settings';
 
+const settingsStore = useSettingsStore();
 const questions = ref('');
 const answers = ref([]);
 const isCorrect = ref([]);
@@ -19,7 +21,9 @@ const isFlipped = computed(() => imgSrc.value === questionCardStackFlipped);
 
 const fetchQuestionAndAnswers = async () => {
   try {
-    const response = await fetch('http://localhost:3000/get-question');
+    const response = await fetch(
+      `http://localhost:3000/get-question?kidsMode=${settingsStore.settings.kidsMode}&english=${settingsStore.settings.english}`
+    );
 
     if (!response.ok) {
       throw new Error(`HTTP ERROR; ${response.status}`);
@@ -30,7 +34,6 @@ const fetchQuestionAndAnswers = async () => {
     isCorrect.value = data.db_isCorrect;
 
     imgSrc.value = questionCardStackFlipped;
-
   } catch (error) {
     console.log('ERROR fetching questions in PlayView', error);
   }
@@ -62,11 +65,8 @@ function userAnswer(index) {
 
   if (isCorrect.value[index] === 1) {
     userScoreHolder.userScore++;
-    console.log('SCORE: ', userScoreHolder.userScore);
     // TODO Add Green border on the user answer choice btn
   } else {
-    console.log('Wrong. Correct was index: ', isCorrect.value[index]);
-    console.log('SCORE: ', userScoreHolder.userScore);
     // TODO Add Red border on the user answer choice btn
     // TODO Add green border on the correct answer btn
   }
@@ -79,38 +79,52 @@ function userAnswer(index) {
 </script>
 
 <template>
-  <section>
-    <div class="showRound">
-      <RoundCounter />
-    </div>
-  </section>
-  <section class="QNA">
-    <div id="deckDiv">
-      <div class="deckQuestions">{{ questions }}</div>
-      <img id="idleDeck" :src="imgSrc" :class="{ flipped: isFlipped }" alt="Card deck" />
-    </div>
+  <section class="clouds">
+    <section class="cloud cloud2">
+      <img id="cloud1" src="../assets/gultNyttNy1.png" alt="Medium yellow cloud" />
+    </section>
+    <section class="cloud cloud3">
+      <img id="cloud2" src="../assets/gultNyttNy2.png" alt="Big yellow cloud" />
+    </section>
+    <section class="cloud cloud4">
+      <img id="cloud3" src="../assets/gultNyttNy3.png" alt="Bigger yellow cloud" />
+    </section>
+    <section class="cloud cloud1">
+      <img id="cloud" src="../assets/gultNyttNy.png" alt="Small yellow cloud" />
+    </section>
+    <section>
+      <div class="showRound">
+        <RoundCounter />
+      </div>
+    </section>
+    <section class="QNA">
+      <div id="deckDiv">
+        <div class="deckQuestions">{{ questions }}</div>
+        <img id="idleDeck" :src="imgSrc" :class="{ flipped: isFlipped }" alt="Card deck" />
+      </div>
 
-    <div id="answerBtns">
-      <button
-        class="menuButton"
-        v-for="(answers, index) in answers"
-        id="btnAnswerA"
-        :key="index"
-        @click="userAnswer(index)"
-        :class="{ 'correct-answer': correctAnswerIndex.value === index }"
-      >
-        {{ answers }}
-      </button>
-    </div>
-  </section>
+      <div id="answerBtns">
+        <button
+          class="menuButton"
+          v-for="(answers, index) in answers"
+          id="btnAnswerA"
+          :key="index"
+          @click="userAnswer(index)"
+          :class="{ 'correct-answer': correctAnswerIndex.value === index }"
+        >
+          {{ answers }}
+        </button>
+      </div>
+    </section>
 
-  <img class="rotatedCardBrain" src="../assets/cardBrainYellow.png" alt="Brain holding a card" />
+    <img class="rotatedCardBrain" src="../assets/cardBrainYellow.png" alt="Brain holding a card" />
+  </section>
 </template>
 
 <style scoped>
 .rotatedCardBrain {
   position: absolute;
-  top: 28em;
+  top: 20em;
   left: -8em;
   transform: rotate(30deg);
 }
@@ -179,5 +193,32 @@ function userAnswer(index) {
     border: 2px solid green;
   }
 }
+.clouds {
+  position: relative;
 
+}
+.cloud {
+  position: absolute;
+}
+.cloud1 {
+  top: 1%;
+  left: 12%;
+}
+.cloud2 {
+  left: 5%;
+  top: 82%;
+  transform: rotate(-5deg);
+
+}
+.cloud3 {
+  top: -15%;
+  left: 60%;
+  transform: scaleX(-1);
+}
+.cloud4 {
+  top: -10%;
+  left: 5%;
+  transform: scaleX(-1);
+}
 </style>
+

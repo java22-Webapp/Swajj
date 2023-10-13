@@ -15,7 +15,7 @@ app.get('/', (req, res) => {
     } else {
       res.send('No connection...');
     }
-} catch (error) {
+  } catch (error) {
     console.error(error);
     res.send('Error connecting..');
   }
@@ -34,15 +34,24 @@ function populateDatabase() {
 
 
 app.get('/get-question', (req, res) => {
-  const query = "SELECT id, question_text FROM questions ORDER BY random() LIMIT 1";
-  const answersQuery = "SELECT answers_text FROM answers WHERE questions_id = ?";
-  const isCorrectQuery = "SELECT is_correct FROM answers WHERE questions_id = ?";
+  const query = "SELECT id, question_text FROM questions WHERE mode_id = ? AND language_id = ? ORDER BY random() LIMIT 1";
+  const answersQuery = "SELECT answers_text, is_correct FROM answers WHERE questions_id = ?";
 
-  db.get(query, [], (error, question) => {
+  let kidsMode = req.query.kidsMode;
+  let english = req.query.english;
+
+  console.log(`kidsMode: ${kidsMode}, english: ${english}`);
+
+
+  db.get(query, [kidsMode, english], (error, question) => {
     if (error) {
       console.error("database error: ", error.message);
       return res.status(500).json({ error: error.message });
 
+    }
+
+    if (!question) {
+      return res.status(404).send("No questions found");
     }
 
     db.all(answersQuery, [question.id], (error, answers) => {
@@ -51,20 +60,14 @@ app.get('/get-question', (req, res) => {
         return res.status(500).json({ error: error.message });
       }
 
-      db.all(isCorrectQuery, [question.id], (error, isCorrect) => {
-        if (error) {
-          console.error("database error: ", error.message);
-          return res.status(500).json({ error: error.message });
-        }
+      res.json({
+        db_question: question["question_text"],
+        db_answers: answers.map(a => a.answers_text),
+        db_isCorrect: answers.map(a => a.is_correct)
+      });
 
-        res.json({
-          db_question: question["question_text"],
-          db_answers: answers.map(a => a.answers_text),
-          db_isCorrect: isCorrect.map(a => a.is_correct)
-        });
-      })
     });
-  })
+  });
 });
 
 app.listen(port, () => {
@@ -76,6 +79,6 @@ app.listen(port, () => {
       populateDatabase();
     }
   });
-})
+});
 
 
