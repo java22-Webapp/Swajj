@@ -4,9 +4,9 @@ import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
 import questionCardStack from '../assets/questionCardStack.png';
 import questionCardStackFlipped from '../assets/questionCardStackFlipped.png';
 import { useGameStore } from '@/stores/game';
+import { useSettingsStore } from '@/stores/settings';
 
-
-
+const settingsStore = useSettingsStore();
 const questions = ref('');
 const answers = ref([]);
 const isCorrect = ref([]);
@@ -21,7 +21,9 @@ const isFlipped = computed(() => imgSrc.value === questionCardStackFlipped);
 
 const fetchQuestionAndAnswers = async () => {
   try {
-    const response = await fetch('http://localhost:3000/get-question');
+    const response = await fetch(
+      `http://localhost:3000/get-question?kidsMode=${settingsStore.settings.kidsMode}&english=${settingsStore.settings.english}`
+    );
 
     if (!response.ok) {
       throw new Error(`HTTP ERROR; ${response.status}`);
@@ -32,7 +34,6 @@ const fetchQuestionAndAnswers = async () => {
     isCorrect.value = data.db_isCorrect;
 
     imgSrc.value = questionCardStackFlipped;
-
   } catch (error) {
     console.log('ERROR fetching questions in PlayView', error);
   }
@@ -178,5 +179,4 @@ function userAnswer(index) {
     border: 2px solid green;
   }
 }
-
 </style>

@@ -6,8 +6,6 @@ export const useGameStore = defineStore('game', {
   state: () => {
     const settings = useSettingsStore();
     return {
-      // TODO Add kids or regular variable
-      // TODO Add eng / swe variable
       currentRound: 1,
       totalRounds: settings.settings.rounds,
       remainingTime: settings.settings.time,
