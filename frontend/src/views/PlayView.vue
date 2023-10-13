@@ -78,38 +78,52 @@ function userAnswer(index) {
 </script>
 
 <template>
-  <section>
-    <div class="showRound">
-      <RoundCounter />
-    </div>
-  </section>
-  <section class="QNA">
-    <div id="deckDiv">
-      <div class="deckQuestions">{{ questions }}</div>
-      <img id="idleDeck" :src="imgSrc" :class="{ flipped: isFlipped }" alt="Card deck" />
-    </div>
+  <section class="clouds">
+    <section class="cloud cloud2">
+      <img id="cloud1" src="../assets/gultNyttNy1.png" alt="Medium yellow cloud" />
+    </section>
+    <section class="cloud cloud3">
+      <img id="cloud2" src="../assets/gultNyttNy2.png" alt="Big yellow cloud" />
+    </section>
+    <section class="cloud cloud4">
+      <img id="cloud3" src="../assets/gultNyttNy3.png" alt="Bigger yellow cloud" />
+    </section>
+    <section class="cloud cloud1">
+      <img id="cloud" src="../assets/gultNyttNy.png" alt="Small yellow cloud" />
+    </section>
+    <section>
+      <div class="showRound">
+        <RoundCounter />
+      </div>
+    </section>
+    <section class="QNA">
+      <div id="deckDiv">
+        <div class="deckQuestions">{{ questions }}</div>
+        <img id="idleDeck" :src="imgSrc" :class="{ flipped: isFlipped }" alt="Card deck" />
+      </div>
 
-    <div id="answerBtns">
-      <button
-        class="menuButton"
-        v-for="(answers, index) in answers"
-        id="btnAnswerA"
-        :key="index"
-        @click="userAnswer(index)"
-        :class="{ 'correct-answer': correctAnswerIndex.value === index }"
-      >
-        {{ answers }}
-      </button>
-    </div>
-  </section>
+      <div id="answerBtns">
+        <button
+          class="menuButton"
+          v-for="(answers, index) in answers"
+          id="btnAnswerA"
+          :key="index"
+          @click="userAnswer(index)"
+          :class="{ 'correct-answer': correctAnswerIndex.value === index }"
+        >
+          {{ answers }}
+        </button>
+      </div>
+    </section>
 
-  <img class="rotatedCardBrain" src="../assets/cardBrainYellow.png" alt="Brain holding a card" />
+    <img class="rotatedCardBrain" src="../assets/cardBrainYellow.png" alt="Brain holding a card" />
+  </section>
 </template>
 
 <style scoped>
 .rotatedCardBrain {
   position: absolute;
-  top: 28em;
+  top: 20em;
   left: -8em;
   transform: rotate(30deg);
 }
@@ -177,6 +191,33 @@ function userAnswer(index) {
   .correct-answer {
     border: 2px solid green;
   }
+}
+.clouds {
+  position: relative;
+
+}
+.cloud {
+  position: absolute;
+}
+.cloud1 {
+  top: 1%;
+  left: 12%;
+}
+.cloud2 {
+  left: 5%;
+  top: 82%;
+  transform: rotate(-5deg);
+
+}
+.cloud3 {
+  top: -15%;
+  left: 60%;
+  transform: scaleX(-1);
+}
+.cloud4 {
+  top: -10%;
+  left: 5%;
+  transform: scaleX(-1);
 }
 
 </style>
