@@ -60,21 +60,22 @@ main {
   position: absolute;
 }
 .cloud1 {
-  top: 8%;
+  top: 1%;
   left: 12%;
 }
 .cloud2 {
-  left: 7%;
-  top: 70%;
-  transform: rotate(-15deg);
+  left: 5%;
+  top: 68%;
+  transform: rotate(-5deg);
 
 }
 .cloud3 {
-  top: -15%;
+  top: -8%;
   left: 60%;
   transform: scaleX(-1);
 }
 .cloud4 {
+  top: -7%;
   left: 5%;
   transform: scaleX(-1);
 }
@@ -82,6 +83,7 @@ main {
 #cardBrain {
   top: 35%;
   left: 45%;
+
 }
 
 
