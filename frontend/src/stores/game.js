@@ -9,7 +9,7 @@ export const useGameStore = defineStore('game', {
       currentRound: 1,
       totalRounds: settings.settings.rounds,
       remainingTime: settings.settings.time,
-      timerInterval: 1000,
+      timerInterval: null,
       userScore: 0
     };
   },
@@ -17,14 +17,11 @@ export const useGameStore = defineStore('game', {
   actions: {
     async nextRound() {
       const settings = useSettingsStore();
-      console.log(settings.settings.time, settings.settings.rounds);
-      console.log('REMAINING TIME:', this.remainingTime);
+
       if (this.currentRound < settings.settings.rounds) {
         this.currentRound++;
         this.remainingTime = settings.settings.time;
-        console.log('CURRENT ROUND: ', this.currentRound);
       } else {
-        console.log('MAXROUNDS REACHED');
         try {
           this.stopTimer();
           await router.push('/result');

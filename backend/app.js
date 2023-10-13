@@ -35,7 +35,7 @@ function populateDatabase() {
 
 app.get('/get-question', (req, res) => {
   const query = "SELECT id, question_text FROM questions WHERE mode_id = ? AND language_id = ? ORDER BY random() LIMIT 1";
-  const answersQuery = "SELECT answers_text, is_correct FROM answers WHERE questions_id = ?";
+  const answersQuery = "SELECT id, answers_text, is_correct FROM answers WHERE questions_id = ?";
 
   let kidsMode = req.query.kidsMode;
   let english = req.query.english;
@@ -63,7 +63,8 @@ app.get('/get-question', (req, res) => {
       res.json({
         db_question: question["question_text"],
         db_answers: answers.map(a => a.answers_text),
-        db_isCorrect: answers.map(a => a.is_correct)
+        db_isCorrect: answers.map(a => a.is_correct),
+        db_answerId: answers.map(a => a.id)
       });
 
     });
