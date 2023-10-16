@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Faster+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Mohave:wght@300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@300&display=swap');
 
 :root {
     --background-color: #FFDCF4;
@@ -6,39 +8,40 @@
     --card-color: #FFF6C2;
     --card-logo-color: #91B2B3;
     --card-text-color: #000000;
+    --logo-font: 'Faster One', sans-serif;
+    --timer-round-font: 'Mohave', sans-serif;
+    --question-font: 'Lexend', sans-serif;
+}
 
-    .menuButton {
-        font-family: 'Inter', sans-serif;
-        font-weight: bold;
-        font-size: 36px;
-        text-decoration: none;
-        text-shadow:
-                -1px -1px 0 #000,
-                1px -1px 0 #000,
-                -1px 1px 0 #000,
-                1px 1px 0 #000;
-        background-color: var(--button-color);
-        color: var(--card-color);
-        border-radius: 4px;
-        padding: 0.5em 1em;
-        width: 8em;
-        height: 2em;
-        display: block;
-        position: relative;
-    }
+.menuButton {
+    font-family: 'Inter', sans-serif;
+    font-weight: bold;
+    font-size: 36px;
+    text-decoration: none;
+    text-shadow:
+            -1px -1px 0 #000,
+            1px -1px 0 #000,
+            -1px 1px 0 #000,
+            1px 1px 0 #000;
+    background-color: var(--button-color);
+    color: var(--card-color);
+    border-radius: 4px;
+    padding: 0.5em 1em;
+    width: 8em;
+    height: 2em;
+    display: block;
+    position: relative;
+    letter-spacing: 1.5px;
+}
 
-    .routerLinkBtnText {
-        display: block;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        position: absolute;
-        text-decoration: none;
-        color: var(--card-color);
-        line-height: 1.8em;
-    }
-
-
-
+.routerLinkBtnText {
+    display: block;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    position: absolute;
+    text-decoration: none;
+    color: var(--card-color);
+    line-height: 1.8em;
 }

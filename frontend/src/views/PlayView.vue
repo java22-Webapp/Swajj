@@ -127,6 +127,7 @@ function showCorrectAnswer(){
 </script>
 
 <template>
+  <main>
   <section class="clouds">
     <section class="cloud cloud2">
       <img id="cloud1" src="../assets/gultNyttNy1.png" alt="Medium yellow cloud" />
@@ -169,6 +170,7 @@ function showCorrectAnswer(){
   <section>
     <img class="rotatedCardBrain" src="../assets/cardBrainYellow.png" alt="Brain holding a card" />
   </section>
+  </main>
 </template>
 
 <style scoped>
@@ -187,6 +189,7 @@ function showCorrectAnswer(){
   z-index: 1;
   width: fit-content;
   font-size: 24px;
+  font-family: var(--question-font);
 }
 
 #deckDiv {
@@ -214,6 +217,7 @@ function showCorrectAnswer(){
   justify-items: center;
   align-items: center;
   width: 100%;
+  font-family: var(--timer-round-font);
 }
 
 .QNA {
@@ -271,7 +275,7 @@ function showCorrectAnswer(){
   transform: scaleX(-1);
 }
 .cloud4 {
-  top: -10%;
+  top: 150%;
   left: 5%;
   transform: scaleX(-1);
 }
