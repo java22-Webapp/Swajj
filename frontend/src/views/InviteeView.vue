@@ -1,4 +1,6 @@
-<script></script>
+<script>
+
+</script>
 <template>
   <div>Invitee View</div>
 </template>

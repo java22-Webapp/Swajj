@@ -35,7 +35,7 @@ export const router = createRouter({
         },
         {
             path: '/inviteeView',
-            name: 'invitee',
+            name: 'Invitee',
             component: InviteeView
         }
 
