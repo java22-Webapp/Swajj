@@ -102,6 +102,7 @@ console.log(nickNameStore.nickname);
 </template>
 
 <style scoped>
+
 .result-card {
   display: flex;
   justify-content: space-around;
@@ -154,31 +155,37 @@ section {
   left: -8em;
   transform: rotate(30deg);
 }
+
 .clouds {
   position: relative;
 
 }
+
 .cloud {
   position: absolute;
 }
+
 .cloud1 {
   top: 1%;
   left: 12%;
 }
+
 .cloud2 {
   left: 5%;
   top: 67%;
   transform: rotate(-5deg);
-
 }
+
 .cloud3 {
   top: -10%;
   left: 61%;
   transform: scaleX(-1);
 }
+
 .cloud4 {
   top: -5%;
   left: 5%;
   transform: scaleX(-1);
 }
+
 </style>

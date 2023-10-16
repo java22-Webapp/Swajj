@@ -238,6 +238,7 @@ function showCorrectAnswer(){
   flex-wrap: wrap;
   flex-direction: row;
   justify-content: space-between;
+  gap: 0.5em;
   align-items: center;
   margin-top: 1em;
   z-index: 1;
@@ -251,10 +252,10 @@ function showCorrectAnswer(){
   padding: 2px;
 }
 .correct-answer {
-  border: 15px solid green;
+  border: 0.25em solid green;
 }
 .incorrect-answer{
-  border: 15px solid red;
+  border: 0.25em solid red;
 }
 .selected-answer{
   background-color: #91B2B3;
