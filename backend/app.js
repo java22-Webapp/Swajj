@@ -1,12 +1,40 @@
 const express = require('express');
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000; //ta bort env. senare
 const db = require('./database/sqlite.js');
 const runSeed = require('./seeder');
 const cors = require('cors');
+
 const { v4: uuidv4 } = require('uuid');
+const http = require('http');
+
+const socketIo = require('socket.io');
+const server = http.createServer(app);
+
+const io = socketIo(server);
 
 app.use(cors());
+
+io.attach(server, {
+  transports: ['websocket', 'polling']
+});
+
+io.on('connection', (socket) => {
+  console.log('A user connected')
+
+  socket.on('chatMessage' , (message) => {
+    console.log(`received message: ${message}`)
+    //Handle event
+    socket.emit('messageAcknowledgement', `You said: ${message}`  )
+
+  });
+
+  socket.on('disconnect', ()=>{
+    console.log('User disconnected')
+  })
+
+});
+
 
 app.get('/', (req, res) => {
   try {
@@ -93,6 +121,8 @@ app.get('/inviteeView', (req, res) => {
   const roomId = req.query.roomId;
 
   res.send(`received room ID: ${roomId}`)
-} )
+} );
+
+
 
 
