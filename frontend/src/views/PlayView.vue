@@ -10,11 +10,21 @@ const settingsStore = useSettingsStore();
 const questions = ref('');
 const answers = ref([]);
 const isCorrect = ref([]);
+const answerID = ref([]);
 const nextRound = useGameStore();
 const userScoreHolder = useGameStore();
 const timerInterval = ref(null);
 let selectedAnswerIndex = ref(null);
 let correctAnswerIndex = ref(-1);
+const buttonDisabled = ref(false);
+
+const answersCombo = computed(() => {
+  const result = [];
+  for (let i = 0; i < answers.value.length; i++) {
+    result.push({answer_text: answers.value[i], id: answerID.value[i]});
+  }
+  return result;
+})
 
 const imgSrc = ref(questionCardStack);
 const isFlipped = computed(() => imgSrc.value === questionCardStackFlipped);
@@ -32,6 +42,7 @@ const fetchQuestionAndAnswers = async () => {
     questions.value = data.db_question;
     answers.value = data.db_answers;
     isCorrect.value = data.db_isCorrect;
+    answerID.value = data.db_answerId;
 
     imgSrc.value = questionCardStackFlipped;
   } catch (error) {
@@ -44,8 +55,14 @@ const startTimer = () => {
     if (useGameStore().remainingTime > 0) {
       useGameStore().remainingTime--;
     } else {
-      useGameStore().nextRound();
-      fetchQuestionAndAnswers();
+      showCorrectAnswer();
+      clearInterval(timerInterval.value);
+      setTimeout(()=> {
+        resetBtnClasses();
+        useGameStore().nextRound();
+        fetchQuestionAndAnswers();
+        startTimer();
+      }, 2000);
     }
   }, 1000);
 };
@@ -59,23 +76,54 @@ onBeforeUnmount(() => {
   clearInterval(timerInterval.value);
 });
 
-function userAnswer(index) {
+function userAnswer(e, index) {
+  if (buttonDisabled.value) return;
+
+  buttonDisabled.value = true;
+
+  e.target.classList.add("selected-answer");
+
   selectedAnswerIndex.value = index;
   correctAnswerIndex.value = isCorrect.value.findIndex((correctValue) => correctValue === 1);
 
   if (isCorrect.value[index] === 1) {
     userScoreHolder.userScore++;
-    // TODO Add Green border on the user answer choice btn
+    e.target.classList.add("correct-answer")
   } else {
-    // TODO Add Red border on the user answer choice btn
-    // TODO Add green border on the correct answer btn
+    e.target.classList.add("incorrect-answer")
+    showCorrectAnswer();
   }
 
   selectedAnswerIndex.value = null;
   correctAnswerIndex.value = -1;
-  nextRound.nextRound();
-  fetchQuestionAndAnswers();
+  setTimeout(()=> {
+    resetBtnClasses();
+    nextRound.nextRound();
+    fetchQuestionAndAnswers();
+    buttonDisabled.value = false;
+  }, 3000)
 }
+
+function resetBtnClasses() {
+  const buttons = document.getElementsByClassName("menuButton");
+  for (let i = 0; i < buttons.length; i++) {
+    buttons[i].classList.remove("correct-answer")
+    buttons[i].classList.remove("incorrect-answer")
+    buttons[i].classList.remove("selected-answer")
+  }
+}
+
+function showCorrectAnswer(){
+  const indexOfCorrectAnswer = isCorrect.value.findIndex((correctValue) => correctValue === 1);
+
+  const buttons = document.getElementsByClassName("menuButton");
+  [...buttons].forEach((btn)=> {
+    if (btn.dataset.key === indexOfCorrectAnswer + "") {
+      btn.classList.add("correct-answer")
+    }
+  })
+}
+
 </script>
 
 <template>
@@ -92,6 +140,7 @@ function userAnswer(index) {
     <section class="cloud cloud1">
       <img id="cloud" src="../assets/gultNyttNy.png" alt="Small yellow cloud" />
     </section>
+  </section>
     <section>
       <div class="showRound">
         <RoundCounter />
@@ -106,17 +155,18 @@ function userAnswer(index) {
       <div id="answerBtns">
         <button
           class="menuButton"
-          v-for="(answers, index) in answers"
-          id="btnAnswerA"
-          :key="index"
-          @click="userAnswer(index)"
-          :class="{ 'correct-answer': correctAnswerIndex.value === index }"
+          v-for="(answer, index) in answersCombo"
+          :id="'btnAnswer-' + answer.id"
+          :key="answer.id"
+          @click="(e) => userAnswer(e, index)"
+          :data-key="index"
+          :disabled="buttonDisabled"
         >
-          {{ answers }}
+          {{ answer.answer_text }}
         </button>
       </div>
     </section>
-
+  <section>
     <img class="rotatedCardBrain" src="../assets/cardBrainYellow.png" alt="Brain holding a card" />
   </section>
 </template>
@@ -188,10 +238,15 @@ function userAnswer(index) {
   width: 6em;
   height: 4em;
   padding: 2px;
-
-  .correct-answer {
-    border: 2px solid green;
-  }
+}
+.correct-answer {
+  border: 15px solid green;
+}
+.incorrect-answer{
+  border: 15px solid red;
+}
+.selected-answer{
+  background-color: rgb(128, 128, 128);
 }
 .clouds {
   position: relative;
