@@ -127,6 +127,7 @@ function showCorrectAnswer(){
 </script>
 
 <template>
+  <main>
   <section class="clouds">
     <section class="cloud cloud2">
       <img id="cloud1" src="../assets/gultNyttNy1.png" alt="Medium yellow cloud" />
@@ -140,7 +141,7 @@ function showCorrectAnswer(){
     <section class="cloud cloud1">
       <img id="cloud" src="../assets/gultNyttNy.png" alt="Small yellow cloud" />
     </section>
-  </section>
+
     <section>
       <div class="showRound">
         <RoundCounter />
@@ -169,6 +170,8 @@ function showCorrectAnswer(){
   <section>
     <img class="rotatedCardBrain" src="../assets/cardBrainYellow.png" alt="Brain holding a card" />
   </section>
+  </section>
+  </main>
 </template>
 
 <style scoped>
@@ -177,6 +180,7 @@ function showCorrectAnswer(){
   top: 20em;
   left: -8em;
   transform: rotate(30deg);
+  z-index: 0;
 }
 
 .deckQuestions {
@@ -187,6 +191,7 @@ function showCorrectAnswer(){
   z-index: 1;
   width: fit-content;
   font-size: 24px;
+  font-family: var(--question-font);
 }
 
 #deckDiv {
@@ -213,7 +218,12 @@ function showCorrectAnswer(){
   flex-direction: column;
   justify-items: center;
   align-items: center;
-  width: 100%;
+  width: fit-content;
+  padding: 1em;
+  margin: 0 auto;
+  font-family: var(--timer-round-font);
+  z-index: 1;
+  background: #FFDCF4;
 }
 
 .QNA {
@@ -230,6 +240,7 @@ function showCorrectAnswer(){
   justify-content: space-between;
   align-items: center;
   margin-top: 1em;
+  z-index: 1;
 }
 
 #answerBtns button {
@@ -250,6 +261,7 @@ function showCorrectAnswer(){
 }
 .clouds {
   position: relative;
+  z-index: 0;
 
 }
 .cloud {
@@ -261,7 +273,7 @@ function showCorrectAnswer(){
 }
 .cloud2 {
   left: 5%;
-  top: 82%;
+  top: 68%;
   transform: rotate(-5deg);
 
 }
@@ -271,7 +283,7 @@ function showCorrectAnswer(){
   transform: scaleX(-1);
 }
 .cloud4 {
-  top: -10%;
+  top: -9%;
   left: 5%;
   transform: scaleX(-1);
 }

@@ -54,7 +54,7 @@ main {
 }
 .clouds {
   position: relative;
-
+  z-index: 0;
 }
 .cloud {
   position: absolute;
@@ -83,7 +83,7 @@ main {
 #cardBrain {
   top: 35%;
   left: 45%;
-
+  z-index: 0;
 }
 
 
