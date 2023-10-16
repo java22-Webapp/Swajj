@@ -57,13 +57,13 @@ console.log(nickNameStore.nickname);
         </p>
         <svg
           width="442"
-          height="559"
-          viewBox="0 0 442 559"
+          height="350"
+          viewBox="0 0 442 350"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
           <g filter="url(#filter0_d_69_37)">
-            <rect x="4" width="434" height="551" rx="10" fill="#FFF6C2" />
+            <rect x="4" width="434" height="340" rx="10" fill="#FFF6C2" />
           </g>
           <defs>
             <filter
@@ -92,11 +92,11 @@ console.log(nickNameStore.nickname);
           </defs>
         </svg>
       </div>
-      <section>
-        <button class="menuButton" id="playBtn" @click="redirectToPlay">Play again</button>
-        <button class="menuButton" id="playBtn" @click="redirectToMenu">Menu</button>
-        <img class="rotatedCardBrain" src="../assets/cardBrainYellow.png" alt="Brain holding a card" />
+      <section class="buttons">
+        <button class="button" id="playBtn" @click="redirectToPlay">PLAY AGAIN</button>
+        <button class="button" id="playBtn" @click="redirectToMenu">MENU</button>
       </section>
+      <img class="rotatedCardBrain" src="../assets/cardBrainYellow.png" alt="Brain holding a card" />
     </section>
   </main>
 </template>
@@ -105,14 +105,25 @@ console.log(nickNameStore.nickname);
 .result-card {
   display: flex;
   justify-content: space-around;
+  padding: 2em;
   position: relative;
+}
+
+#playBtn {
+  display: block;
+  top: 0;
+  left: 0;
+  position: relative;
+  text-decoration: none;
+  color: var(--card-text-color);
+  height: initial;
 }
 
 .nickname {
   font-size: large;
   position: absolute;
   z-index: 1;
-  top: 12%;
+  top: 15%;
   left: 50%;
   transform: translate(-50%, -50%);
 }
@@ -123,7 +134,7 @@ console.log(nickNameStore.nickname);
   text-decoration: underline;
   position: absolute;
   z-index: 1;
-  top: 5%;
+  top: 7%;
   left: 50%;
   transform: translate(-50%, -50%);
 }

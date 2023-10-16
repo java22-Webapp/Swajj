@@ -21,13 +21,14 @@ import NicknameInput from "@/components/NicknameInput.vue";
       <section class="cloud cloud1">
         <img id="cloud" src="../assets/gultNyttNy.png" alt="Small yellow cloud" />
       </section>
+
       <section class="buttons">
         <img id="cardBrain" src="../assets/cardBrainYellow.png" alt="Brain holding a card" />
         <NicknameInput />
-        <button  class="menuButton" id="soloPlay" >
+        <button class="button" id="soloPlay" >
           <router-link  to="/solo" class="routerLinkBtnText" >Play Solo</router-link>
         </button>
-        <button class="menuButton" id="multiPlay">
+        <button class="button" id="multiPlay">
           <router-link to="/Multiplayer" class="routerLinkBtnText">Multiplayer</router-link>
         </button>
       </section>
