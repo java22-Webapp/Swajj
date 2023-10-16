@@ -3,6 +3,7 @@ import Home from '../views/HomePage.vue'
 import LobbySolo from '../views/LobbySolo.vue'
 import GameStart from "@/views/PlayView.vue";
 import ResultView from "@/views/ResultView.vue";
+import InviteeView from "@/views/InviteeView.vue";
 
 export const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -31,7 +32,13 @@ export const router = createRouter({
             path: '/result',
             name: 'Result',
             component: ResultView
+        },
+        {
+            path: '/inviteeView',
+            name: 'Invitee',
+            component: InviteeView
         }
+
     ]
 })
 

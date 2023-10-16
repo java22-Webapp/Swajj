@@ -4,6 +4,7 @@ const port = 3000;
 const db = require('./database/sqlite.js');
 const runSeed = require('./seeder');
 const cors = require('cors');
+const { v4: uuidv4 } = require('uuid');
 
 app.use(cors());
 
@@ -81,5 +82,17 @@ app.listen(port, () => {
     }
   });
 });
+
+app.get('/generate-game-link', (req, res) => {
+  const uniqueRoomId = uuidv4();
+  const gameLink = `http://localhost:5173/inviteeView/?roomId=${uniqueRoomId}`;
+  res.json({gameLink});
+});
+
+app.get('/inviteeView', (req, res) => {
+  const roomId = req.query.roomId;
+
+  res.send(`received room ID: ${roomId}`)
+} )
 
 

@@ -12,7 +12,7 @@ function updateNickname(newNick){
 
 <template>
 
-  <input type="text" :value="nickNameStore.nickname" class="nicknameInput" placeholder="Nickname" @change="e => updateNickname(e.target.value)">
+  <input type="text" :value="nickNameStore.nickname" class="nicknameInput" placeholder="Nickname" spellcheck="false" @change="e => updateNickname(e.target.value)">
 
 </template>
 
