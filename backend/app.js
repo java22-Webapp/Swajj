@@ -56,6 +56,11 @@ io.on("connection", (socket) => {
 });
 
 
+app.get("/players", (req, res) => {
+  res.json(players);
+})
+
+
 app.get("/", (req, res) => {
   try {
     let database = db.getConnection();

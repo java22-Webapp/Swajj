@@ -3,6 +3,7 @@ import { io } from 'socket.io-client';
 import NicknameInput from "@/components/NicknameInput.vue";
 import { ref } from "vue";
 import { useNicknameStore } from "@/stores/nickname";
+import ListOfPlayers from "@/components/ListOfPlayers.vue";
 
 const nickNameStore = useNicknameStore();
 const socket = ref(null);
@@ -29,18 +30,6 @@ function connectToSocket() {
   });
 }
 
-
-// const socket = io('http://localhost:3000');
-
-// socket.emit('chatMessage', 'Hello world!');
-// socket.on('messageAcknowledgement', (acknowledgement) =>{
-//   console.log(acknowledgement);
-//   console.log("Socket from inviteView is connected");
-// })
-// socket.on('connect', ()=>{
-//   console.log('Connected to Socket server')
-// })
-
 </script>
 <template>
   <main>
@@ -58,6 +47,7 @@ function connectToSocket() {
         <img id="cloud" src="../assets/gultNyttNy.png" alt="Small yellow cloud" />
       </section>
       <section>
+        <ListOfPlayers />
         <NicknameInput v-model="nickNameStore.nickname" />
         <button class="button" id="readyBtn" @click="connectToSocket">Ready</button>
         <p>Waiting for the game to start...</p>

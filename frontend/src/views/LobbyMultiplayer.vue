@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import SettingsPanel from '@/components/SettingsPanel.vue';
 import { useNicknameStore } from '@/stores/nickname';
+import ListOfPlayers from "@/components/ListOfPlayers.vue";
 
 const gameLink = ref('');
 const copied = ref(false);
@@ -68,6 +69,7 @@ async function copyLink(event) {
         <img id="cloud" src="../assets/gultNyttNy.png" alt="Small yellow cloud" />
       </section>
       <section>
+        <ListOfPlayers />
         <SettingsPanel />
         <div>Nickname: {{ nickNameStore.nickname }}</div>
         <button ref="copyButtonRef" @click="copyLink" class="button" id="copyLinkBtn">
