@@ -1,7 +1,7 @@
 <script setup>
 import { io } from 'socket.io-client';
 
-const socket = io();
+const socket = io('http://localhost:3000');
 
 socket.emit('chatMessage', 'Hello world!');
 socket.on('messageAcknowledgement', (acknowledgement) =>{
