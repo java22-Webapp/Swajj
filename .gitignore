@@ -7,6 +7,11 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# db
+database.sqlite
+backend/database.sqlite
+
+
 node_modules
 
 frontend/node_modules
@@ -30,3 +35,4 @@ backend/node_modules
 *.njsproj
 *.sln
 *.sw?
+
