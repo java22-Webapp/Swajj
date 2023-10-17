@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000; //ta bort env. senare
 const db = require('./database/sqlite.js');
 const runSeed = require('./seeder');
 const cors = require('cors');
@@ -11,27 +11,16 @@ const http = require('http');
 const socketIo = require('socket.io');
 const server = http.createServer(app);
 
-const corsOptions = {
-  origin: '*',
-  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT', 'HEAD'],
-  credentials: true,
-  optionsSuccessStatus: 204
-};
+const io = socketIo(server);
 
-const io = socketIo(server, {
-  cors:{
-    origin: '*',
-    methods: ["GET", "POST"],
-    credentials: true,
-    transports: ['websocket', 'polling']
-  }
+app.use(cors());
+
+io.attach(server, {
+  transports: ['websocket', 'polling']
 });
-
-app.use(cors(corsOptions));
 
 io.on('connection', (socket) => {
   console.log('A user connected')
-
 
   socket.on('chatMessage' , (message) => {
     console.log(`received message: ${message}`)
@@ -111,7 +100,7 @@ app.get('/get-question', (req, res) => {
   });
 });
 
-server.listen(port, () => {
+app.listen(port, () => {
   db.initializeDB((err) => {
     if (err) {
       console.log('Failed to connect to SQLite:', err);
