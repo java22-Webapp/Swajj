@@ -70,11 +70,11 @@ async function copyLink(event) {
       <section>
         <SettingsPanel />
         <div>Nickname: {{ nickNameStore.nickname }}</div>
+        <button ref="copyButtonRef" @click="copyLink" class="button" id="copyLinkBtn">
+          Copy link <span class="tooltip">Link copied</span>
+        </button>
         <button class="button" id="playBtn">
           <router-link to="/Play" class="routerLinkBtnText">Play</router-link>
-        </button>
-        <button ref="copyButtonRef" @click="copyLink" class="button" id="copyLinkBtn">
-          COPY LINK <span class="tooltip">Link copied</span>
         </button>
         <img
           class="rotatedCardBrain"
