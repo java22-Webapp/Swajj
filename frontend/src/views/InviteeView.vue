@@ -1,18 +1,45 @@
 <script setup>
 import { io } from 'socket.io-client';
 import NicknameInput from "@/components/NicknameInput.vue";
+import { ref } from "vue";
+import { useNicknameStore } from "@/stores/nickname";
 
-const socket = io('http://localhost:3000');
+const nickNameStore = useNicknameStore();
+const socket = ref(null);
+const buttonDisabled = ref(false);
 
-socket.emit('chatMessage', 'Hello world!');
-socket.on('messageAcknowledgement', (acknowledgement) =>{
-  console.log(acknowledgement);
-  console.log("Socket from inviteView is connected");
-})
-socket.on('connect', ()=>{
-  console.log('Connected to Socket server')
-})
+function connectToSocket() {
+  if (nickNameStore.nickname.trim() === '') {
+    console.error("Nickname cannot be empty");
+    return;
+  }
+  if (buttonDisabled.value) return;
 
+  buttonDisabled.value = true;
+
+  socket.value = io('http://localhost:3000');
+
+  socket.value.on('connect', () => {
+    console.log('Connected to server');
+    socket.value.emit('newPlayer', nickNameStore.nickname);
+  });
+
+  socket.value.on('disconnect', () => {
+    console.log('Disconnected from server')
+  });
+}
+
+
+// const socket = io('http://localhost:3000');
+
+// socket.emit('chatMessage', 'Hello world!');
+// socket.on('messageAcknowledgement', (acknowledgement) =>{
+//   console.log(acknowledgement);
+//   console.log("Socket from inviteView is connected");
+// })
+// socket.on('connect', ()=>{
+//   console.log('Connected to Socket server')
+// })
 
 </script>
 <template>
@@ -30,9 +57,9 @@ socket.on('connect', ()=>{
       <section class="cloud cloud1">
         <img id="cloud" src="../assets/gultNyttNy.png" alt="Small yellow cloud" />
       </section>
-      <section id="test">
-        <NicknameInput />
-        <button class="button" id="playBtn">Ready</button>
+      <section>
+        <NicknameInput v-model="nickNameStore.nickname" />
+        <button class="button" id="readyBtn" @click="connectToSocket">Ready</button>
         <p>Waiting for the game to start...</p>
         <img
           class="rotatedCardBrain"
@@ -58,9 +85,6 @@ section {
   gap: 1em;
   z-index: 1;
 
-  #test {
-    top: 25em;
-  }
 }
 
 .rotatedCardBrain {
