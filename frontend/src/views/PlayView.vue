@@ -105,7 +105,7 @@ function userAnswer(e, index) {
 }
 
 function resetBtnClasses() {
-  const buttons = document.getElementsByClassName("menuButton");
+  const buttons = document.getElementsByClassName("button");
   for (let i = 0; i < buttons.length; i++) {
     buttons[i].classList.remove("correct-answer")
     buttons[i].classList.remove("incorrect-answer")
@@ -116,7 +116,7 @@ function resetBtnClasses() {
 function showCorrectAnswer(){
   const indexOfCorrectAnswer = isCorrect.value.findIndex((correctValue) => correctValue === 1);
 
-  const buttons = document.getElementsByClassName("menuButton");
+  const buttons = document.getElementsByClassName("button");
   [...buttons].forEach((btn)=> {
     if (btn.dataset.key === indexOfCorrectAnswer + "") {
       btn.classList.add("correct-answer")
@@ -155,7 +155,7 @@ function showCorrectAnswer(){
 
       <div id="answerBtns">
         <button
-          class="menuButton"
+          class="button"
           v-for="(answer, index) in answersCombo"
           :id="'btnAnswer-' + answer.id"
           :key="answer.id"
@@ -238,6 +238,7 @@ function showCorrectAnswer(){
   flex-wrap: wrap;
   flex-direction: row;
   justify-content: space-between;
+  gap: 0.5em;
   align-items: center;
   margin-top: 1em;
   z-index: 1;
@@ -246,18 +247,18 @@ function showCorrectAnswer(){
 #answerBtns button {
   flex-basis: calc(50% - 10px);
   font-size: 18px;
-  width: 6em;
+  width: 7em;
   height: 4em;
   padding: 2px;
 }
 .correct-answer {
-  border: 15px solid green;
+  border: 0.25em solid green;
 }
 .incorrect-answer{
-  border: 15px solid red;
+  border: 0.25em solid red;
 }
 .selected-answer{
-  background-color: rgb(128, 128, 128);
+  background-color: #91B2B3;
 }
 .clouds {
   position: relative;

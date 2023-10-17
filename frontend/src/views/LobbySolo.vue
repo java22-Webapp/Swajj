@@ -25,7 +25,7 @@ const nickNameStore = useNicknameStore();
       <section>
         <SettingsPanel />
         <div>Nickname: {{ nickNameStore.nickname }} </div>
-        <button class="menuButton" id="playBtn">
+        <button class="button" id="playBtn">
           <router-link to="/Play" class="routerLinkBtnText">Play</router-link>
         </button>
         <img class="rotatedCardBrain" src="../assets/cardBrainYellow.png" alt="Brain holding a card">

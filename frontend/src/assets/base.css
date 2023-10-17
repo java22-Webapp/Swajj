@@ -15,7 +15,7 @@
     --button-font: 'Arsenal', sans-serif;
 }
 
-.menuButton {
+.button {
     font-family: var(--button-font);
     font-weight: bold;
     font-size: 60px;
