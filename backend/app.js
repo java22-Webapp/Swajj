@@ -124,11 +124,11 @@ server.listen(port, () => {
 
 app.get('/generate-game-link', (req, res) => {
   const uniqueRoomId = uuidv4();
-  const gameLink = `http://localhost:5173/inviteeView/?roomId=${uniqueRoomId}`;
+  const gameLink = `http://localhost:5173/join/?roomId=${uniqueRoomId}`;
   res.json({gameLink});
 });
 
-app.get('/inviteeView', (req, res) => {
+app.get('/join', (req, res) => {
   const roomId = req.query.roomId;
 
   res.send(`received room ID: ${roomId}`)
