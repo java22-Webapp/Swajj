@@ -1,79 +1,93 @@
-const express = require('express');
+const express = require("express");
 const app = express();
 const port = 3000;
-const db = require('./database/sqlite.js');
-const runSeed = require('./seeder');
-const cors = require('cors');
+const db = require("./database/sqlite.js");
+const runSeed = require("./seeder");
+const cors = require("cors");
 
-const { v4: uuidv4 } = require('uuid');
-const http = require('http');
+const { v4: uuidv4 } = require("uuid");
+const http = require("http");
 
-const socketIo = require('socket.io');
+const socketIo = require("socket.io");
 const server = http.createServer(app);
 
+let players = [];
+
 const corsOptions = {
-  origin: '*',
-  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT', 'HEAD'],
+  origin: "*",
+  methods: ["GET", "POST", "PATCH", "DELETE", "PUT", "HEAD"],
   credentials: true,
   optionsSuccessStatus: 204
 };
 
 const io = socketIo(server, {
-  cors:{
-    origin: '*',
+  cors: {
+    origin: "*",
     methods: ["GET", "POST"],
     credentials: true,
-    transports: ['websocket', 'polling']
+    transports: ["websocket", "polling"]
   }
 });
 
 app.use(cors(corsOptions));
 
-io.on('connection', (socket) => {
-  console.log('A user connected')
+io.on("connection", (socket) => {
+  console.log("A user connected");
+  console.log(players)
 
 
-  socket.on('chatMessage' , (message) => {
-    console.log(`received message: ${message}`)
-    //Handle event
-    socket.emit('messageAcknowledgement', `You said: ${message}`  )
+  socket.on("newPlayer", (playerName) => {
+    socket.playerName = playerName;
+    players.push(playerName);
+    console.log(players);
 
+    io.emit("update-player-list", players);
   });
 
-  socket.on('disconnect', ()=>{
-    console.log('User disconnected')
-  })
+  socket.on("disconnect", () => {
+    players = players.filter(p => p !== socket.playerName);
 
+    io.emit("update-player-list", players);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected: ", socket.playerName);
+  });
 });
 
 
-app.get('/', (req, res) => {
+app.get("/players", (req, res) => {
+  res.json(players);
+})
+
+
+app.get("/", (req, res) => {
   try {
     let database = db.getConnection();
     if (database) {
-      res.send('Connected to SQLite!');
+      res.send("Connected to SQLite!");
     } else {
-      res.send('No connection...');
+      res.send("No connection...");
     }
   } catch (error) {
     console.error(error);
-    res.send('Error connecting..');
+    res.send("Error connecting..");
   }
 });
 
 function populateDatabase() {
-  runSeed('modes.sql', () => {
+  runSeed("modes.sql", () => {
   });
-  runSeed('languages.sql', () => {
+  runSeed("languages.sql", () => {
   });
-  runSeed('questions.sql', () => {
+  runSeed("questions.sql", () => {
   });
-  runSeed('answers.sql', () => {
+  runSeed("answers.sql", () => {
   });
 }
 
 
-app.get('/get-question', (req, res) => {
+app.get("/get-question", (req, res) => {
   const query = "SELECT id, question_text FROM questions WHERE mode_id = ? AND language_id = ? ORDER BY random() LIMIT 1";
   const answersQuery = "SELECT id, answers_text, is_correct FROM answers WHERE questions_id = ?";
 
@@ -114,7 +128,7 @@ app.get('/get-question', (req, res) => {
 server.listen(port, () => {
   db.initializeDB((err) => {
     if (err) {
-      console.log('Failed to connect to SQLite:', err);
+      console.log("Failed to connect to SQLite:", err);
     } else {
       console.log(`App listening on port ${port}`);
       populateDatabase();
@@ -122,14 +136,14 @@ server.listen(port, () => {
   });
 });
 
-app.get('/generate-game-link', (req, res) => {
+app.get("/generate-game-link", (req, res) => {
   const uniqueRoomId = uuidv4();
-  const gameLink = `http://localhost:5173/inviteeView/?roomId=${uniqueRoomId}`;
-  res.json({gameLink});
+  const gameLink = `http://localhost:5173/join/?roomId=${uniqueRoomId}`;
+  res.json({ gameLink });
 });
 
-app.get('/inviteeView', (req, res) => {
+app.get("/join", (req, res) => {
   const roomId = req.query.roomId;
 
-  res.send(`received room ID: ${roomId}`)
-} );
+  res.send(`received room ID: ${roomId}`);
+});
