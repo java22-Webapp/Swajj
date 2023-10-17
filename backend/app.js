@@ -4,9 +4,48 @@ const port = 3000;
 const db = require('./database/sqlite.js');
 const runSeed = require('./seeder');
 const cors = require('cors');
-const { v4: uuidv4 } = require('uuid');
 
-app.use(cors());
+const { v4: uuidv4 } = require('uuid');
+const http = require('http');
+
+const socketIo = require('socket.io');
+const server = http.createServer(app);
+
+const corsOptions = {
+  origin: '*',
+  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT', 'HEAD'],
+  credentials: true,
+  optionsSuccessStatus: 204
+};
+
+const io = socketIo(server, {
+  cors:{
+    origin: '*',
+    methods: ["GET", "POST"],
+    credentials: true,
+    transports: ['websocket', 'polling']
+  }
+});
+
+app.use(cors(corsOptions));
+
+io.on('connection', (socket) => {
+  console.log('A user connected')
+
+
+  socket.on('chatMessage' , (message) => {
+    console.log(`received message: ${message}`)
+    //Handle event
+    socket.emit('messageAcknowledgement', `You said: ${message}`  )
+
+  });
+
+  socket.on('disconnect', ()=>{
+    console.log('User disconnected')
+  })
+
+});
+
 
 app.get('/', (req, res) => {
   try {
@@ -72,7 +111,7 @@ app.get('/get-question', (req, res) => {
   });
 });
 
-app.listen(port, () => {
+server.listen(port, () => {
   db.initializeDB((err) => {
     if (err) {
       console.log('Failed to connect to SQLite:', err);
@@ -93,6 +132,4 @@ app.get('/inviteeView', (req, res) => {
   const roomId = req.query.roomId;
 
   res.send(`received room ID: ${roomId}`)
-} )
-
-
+} );
