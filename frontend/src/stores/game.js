@@ -30,7 +30,6 @@ export const useGameStore = defineStore('game', {
         try {
           this.stopTimer();
           await router.push('/result');
-          console.log('pushing to /result');
         } catch (error) {
           if (error.name !== 'NavigationDuplicated') {
             console.error(error);

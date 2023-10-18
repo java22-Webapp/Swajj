@@ -11,6 +11,8 @@ const http = require("http");
 const socketIo = require("socket.io");
 const server = http.createServer(app);
 
+const askedQuestions = [];
+
 let players = [];
 
 const corsOptions = {
@@ -58,11 +60,6 @@ io.on("connection", (socket) => {
 });
 
 
-app.get("/players", (req, res) => {
-  res.json(players);
-})
-
-
 app.get("/", (req, res) => {
   try {
     let database = db.getConnection();
@@ -88,27 +85,29 @@ function populateDatabase() {
   });
 }
 
+app.get("/play-again", (req, res) => {
+  console.log("Recieved req to /play-again");
+  askedQuestions.length = 0;
+  res.status(200).end();
+})
 
 app.get("/get-question", (req, res) => {
-  const query = "SELECT id, question_text FROM questions WHERE mode_id = ? AND language_id = ? ORDER BY random() LIMIT 1";
+  const query = `SELECT id, question_text FROM questions WHERE mode_id = ? AND language_id = ? AND id NOT IN (${askedQuestions.join(",")}) ORDER BY random() LIMIT 1`;
   const answersQuery = "SELECT id, answers_text, is_correct FROM answers WHERE questions_id = ?";
 
   let kidsMode = req.query.kidsMode;
   let english = req.query.english;
 
-  console.log(`kidsMode: ${kidsMode}, english: ${english}`);
-
-
   db.get(query, [kidsMode, english], (error, question) => {
     if (error) {
       console.error("database error: ", error.message);
       return res.status(500).json({ error: error.message });
-
     }
-
     if (!question) {
       return res.status(404).send("No questions found");
     }
+
+    askedQuestions.push(question.id);
 
     db.all(answersQuery, [question.id], (error, answers) => {
       if (error) {
