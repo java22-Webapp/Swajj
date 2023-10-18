@@ -51,6 +51,7 @@ const fetchQuestionAndAnswers = async () => {
 };
 
 const startTimer = () => {
+  useGameStore().updateState();
   timerInterval.value = setInterval(() => {
     if (useGameStore().remainingTime > 0) {
       useGameStore().remainingTime--;
@@ -78,7 +79,7 @@ onBeforeUnmount(() => {
 
 function userAnswer(e, index) {
   if (buttonDisabled.value) return;
-
+  clearInterval(timerInterval.value);
   buttonDisabled.value = true;
 
   e.target.classList.add("selected-answer");
@@ -89,9 +90,11 @@ function userAnswer(e, index) {
   if (isCorrect.value[index] === 1) {
     userScoreHolder.userScore++;
     e.target.classList.add("correct-answer")
+
   } else {
     e.target.classList.add("incorrect-answer")
     showCorrectAnswer();
+
   }
 
   selectedAnswerIndex.value = null;
@@ -101,6 +104,7 @@ function userAnswer(e, index) {
     nextRound.nextRound();
     fetchQuestionAndAnswers();
     buttonDisabled.value = false;
+    startTimer();
   }, 3000)
 }
 

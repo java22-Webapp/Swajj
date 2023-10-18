@@ -15,6 +15,11 @@ export const useGameStore = defineStore('game', {
   },
 
   actions: {
+    updateState() {
+      const settings = useSettingsStore();
+      this.remainingTime = settings.settings.time;
+    },
+
     async nextRound() {
       const settings = useSettingsStore();
 
