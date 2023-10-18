@@ -32,26 +32,28 @@ const io = socketIo(server, {
 app.use(cors(corsOptions));
 
 io.on("connection", (socket) => {
-  console.log("A user connected");
-  console.log(players)
+
+  socket.on('set-host-nickname', (nickname) => {
+    socket.playerName = nickname;
+    players.push(nickname);
+    console.log("Host connected: ", socket.playerName);
+
+  })
+
+    io.emit('update-player-list', players);
 
 
   socket.on("newPlayer", (playerName) => {
     socket.playerName = playerName;
     players.push(playerName);
     console.log(players);
-
+    console.log("A user connected", socket.playerName);
     io.emit("update-player-list", players);
   });
 
   socket.on("disconnect", () => {
     players = players.filter(p => p !== socket.playerName);
-
     io.emit("update-player-list", players);
-  });
-
-  socket.on("disconnect", () => {
-    console.log("User disconnected: ", socket.playerName);
   });
 });
 
@@ -143,7 +145,7 @@ app.get("/generate-game-link", (req, res) => {
 });
 
 app.get("/join", (req, res) => {
-  const roomId = req.query.roomId;
+  const roomId = req.query;
 
   res.send(`received room ID: ${roomId}`);
 });

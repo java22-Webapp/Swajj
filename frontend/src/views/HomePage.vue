@@ -1,8 +1,20 @@
 <script setup>
+import NicknameInput from '@/components/NicknameInput.vue';
+import { io } from 'socket.io-client';
+import { useNicknameStore } from '@/stores/nickname';
+import { useRouter } from "vue-router";
 
-import NicknameInput from "@/components/NicknameInput.vue";
+const nicknameStore = useNicknameStore();
+const socket = io('http://localhost:3000');
+
+const router = useRouter();
 
 
+
+const handleMultiplayerClick = () => {
+  socket.emit('set-host-nickname', nicknameStore.nickname);
+  router.push('/Multiplayer');
+};
 
 </script>
 
@@ -25,20 +37,18 @@ import NicknameInput from "@/components/NicknameInput.vue";
       <section class="buttons">
         <img id="cardBrain" src="../assets/cardBrainYellow.png" alt="Brain holding a card" />
         <NicknameInput />
-        <button class="button" id="soloPlay" >
-          <router-link  to="/solo" class="routerLinkBtnText" >Play Solo</router-link>
+        <button class="button" id="soloPlay">
+          <router-link to="/solo" class="routerLinkBtnText">Play Solo</router-link>
         </button>
-        <button class="button" id="multiPlay">
-          <router-link to="/Multiplayer" class="routerLinkBtnText">Multiplayer</router-link>
+        <button class="button" id="multiPlay" @click="handleMultiplayerClick">
+          Multiplayer
         </button>
       </section>
     </section>
   </main>
 </template>
 
-
 <style scoped>
-
 main {
   height: 100%;
   width: 100%;
@@ -68,7 +78,6 @@ main {
   left: 5%;
   top: 68%;
   transform: rotate(-5deg);
-
 }
 .cloud3 {
   top: -8%;
@@ -86,6 +95,4 @@ main {
   left: 45%;
   z-index: 0;
 }
-
-
 </style>
