@@ -151,7 +151,7 @@ section {
 
 .rotatedCardBrain {
   position: absolute;
-  top: 20em;
+  top: 18em;
   left: -8em;
   transform: rotate(30deg);
 }

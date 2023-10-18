@@ -23,7 +23,7 @@ const nickNameStore = useNicknameStore();
         <img id="cloud" src="../assets/gultNyttNy.png" alt="Small yellow cloud" />
       </section>
       <section>
-        <SettingsPanel />
+        <SettingsPanel id="settingsPanel" />
         <div>Nickname: {{ nickNameStore.nickname }} </div>
         <button class="button" id="playBtn">
           <router-link to="/Play" class="routerLinkBtnText">Play</router-link>
@@ -45,6 +45,10 @@ main {
   background-color: var(--background-color);
 }
 
+#settingsPanel {
+  font-size: 24px;
+}
+
 section {
   display: flex;
   justify-content: center;
@@ -56,7 +60,7 @@ section {
 
 .rotatedCardBrain {
   position: absolute;
-  top: 20em;
+  top: 18em;
   left: -8em;
   transform: rotate(30deg);
 }
@@ -73,9 +77,8 @@ section {
 }
 .cloud2 {
   left: 5%;
-  top: 105%;
+  top: 95%;
   transform: rotate(-5deg);
-
 }
 .cloud3 {
   top: -15%;

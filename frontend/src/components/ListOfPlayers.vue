@@ -28,10 +28,9 @@ onUnmounted(() => {
 <style scoped>
 
 .playerList {
-  width: 14em;
-  height: 20em;
-  max-width: 14em;
-  max-height: 20em;
+  font-size: 1.5em;
+  max-width: 318px;
+  max-height: 500px;
   font-family: var(--question-font);
   border: 1px solid black;
   border-radius: 10px;

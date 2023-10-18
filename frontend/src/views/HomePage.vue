@@ -76,7 +76,7 @@ main {
 }
 .cloud2 {
   left: 5%;
-  top: 68%;
+  top: 58%;
   transform: rotate(-5deg);
 }
 .cloud3 {
@@ -91,6 +91,7 @@ main {
 }
 
 #cardBrain {
+  max-height: 45vh;
   top: 35%;
   left: 45%;
   z-index: 0;
