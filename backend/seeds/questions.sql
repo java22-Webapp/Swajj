@@ -112,7 +112,7 @@ INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 2, 'What 
 INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 1, 'Vem upptäckte penicillin?');
 INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 2, 'Who discovered penicillin?');
 INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 1, 'I hur många filmer spelade Sean Connery James Bond?');
-INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 2, 'How many films did Sean Connery play James Bond in??');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 2, 'How many films did Sean Connery play James Bond in?');
 INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 1, 'Vem har vunnit "the French Open" mest gånger(Tennis)?');
 INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 2, 'Who has won "the French Open" more times(Tennis)?');
 INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 1, 'Vilka två länder delar den längsta internationella gränsen?');
