@@ -12,7 +12,14 @@ const roundTimer = useGameStore();
 const settings = useSettingsStore();
 const maxRounds = useSettingsStore();
 
-const redirectToPlay = () => {
+const redirectToPlay = async () => {
+  try {
+    await fetch('http://localhost:3000/play-again', {
+      method: 'GET',
+    });
+  } catch (error) {
+    console.error('Error clearing questions: ', error);
+  }
   newGameSettings();
   useRouter.push('/Play');
 };
@@ -30,7 +37,7 @@ function newGameSettings() {
   maxRounds.settings.rounds = settings.settings.rounds;
 }
 
-console.log(nickNameStore.nickname);
+
 </script>
 
 <template>

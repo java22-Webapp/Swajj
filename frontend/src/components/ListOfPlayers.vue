@@ -20,6 +20,7 @@ onUnmounted(() => {
 <template>
   <div class="playerList">
     <ul>
+      <p> PLAYERS </p>
       <li v-for="player in players" :key="player">{{ player }}</li>
     </ul>
   </div>
