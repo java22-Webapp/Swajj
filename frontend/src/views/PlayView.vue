@@ -177,7 +177,7 @@ function showCorrectAnswer(){
 <style scoped>
 .rotatedCardBrain {
   position: absolute;
-  top: 20em;
+  top: 18em;
   left: -8em;
   transform: rotate(30deg);
   z-index: 0;
@@ -276,7 +276,6 @@ function showCorrectAnswer(){
   left: 5%;
   top: 68%;
   transform: rotate(-5deg);
-
 }
 .cloud3 {
   top: -15%;

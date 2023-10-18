@@ -28,6 +28,7 @@ function updateNickname(newNick){
   box-sizing: border-box;
   text-align: center;
   font-family: var(--button-font);
+  z-index: 100;
 }
 
 .nicknameInput:focus::placeholder {

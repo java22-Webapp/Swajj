@@ -68,16 +68,18 @@ async function copyLink(event) {
       <section class="cloud cloud1">
         <img id="cloud" src="../assets/gultNyttNy.png" alt="Small yellow cloud" />
       </section>
-      <section>
-        <ListOfPlayers />
-        <SettingsPanel />
-        <div>Nickname: {{ nickNameStore.nickname }}</div>
-        <button ref="copyButtonRef" @click="copyLink" class="button" id="copyLinkBtn">
-          Copy link <span class="tooltip">Link copied</span>
-        </button>
-        <button class="button" id="playBtn">
-          <router-link to="/Play" class="routerLinkBtnText">Play</router-link>
-        </button>
+      <section id="content">
+        <ListOfPlayers id="listOfPlayers" />
+        <div id="settings">
+          <SettingsPanel id="settingsPanel" />
+          <div id="nickname">Nickname: {{ nickNameStore.nickname }}</div>
+          <button ref="copyButtonRef" @click="copyLink" class="button" id="copyLinkBtn">
+            Copy link <span class="tooltip">Link copied</span>
+          </button>
+          <button class="button" id="playBtn">
+            <router-link to="/Play" class="routerLinkBtnText">Play</router-link>
+          </button>
+        </div>
         <img
           class="rotatedCardBrain"
           src="../assets/cardBrainYellow.png"
@@ -89,6 +91,39 @@ async function copyLink(event) {
 </template>
 
 <style scoped>
+
+#nickname{
+  margin-top: 1em;
+}
+
+#settingsPanel {
+  font-size: 24px;
+}
+
+#content {
+  width: 100%;
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: center;
+  gap: 10em;
+}
+
+.button {
+  margin-top: 0.5em;
+}
+
+#settings {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#listOfPlayers {
+  margin-right: -20em;
+  min-width: 318px;
+  min-height: 500px;
+}
+
 main {
   height: 100%;
   width: 100%;
@@ -124,7 +159,7 @@ section {
 
 .rotatedCardBrain {
   position: absolute;
-  top: 20em;
+  top: 16em;
   left: -8em;
   transform: rotate(30deg);
 }
@@ -144,7 +179,7 @@ section {
 
 .cloud2 {
   left: 5%;
-  top: 105%;
+  top: 60%;
   transform: rotate(-5deg);
 }
 

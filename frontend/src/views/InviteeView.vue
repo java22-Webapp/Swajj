@@ -47,8 +47,8 @@ function connectToSocket() {
         <img id="cloud" src="../assets/gultNyttNy.png" alt="Small yellow cloud" />
       </section>
       <section>
-        <ListOfPlayers />
-        <NicknameInput v-model="nickNameStore.nickname" />
+        <ListOfPlayers id="listOfPlayers" />
+        <NicknameInput  v-model="nickNameStore.nickname" />
         <button class="button" id="readyBtn" @click="connectToSocket">Ready</button>
         <p>Waiting for the game to start...</p>
         <img
@@ -66,6 +66,10 @@ main {
   width: 100%;
   background-color: var(--background-color);
 }
+#listOfPlayers{
+  min-width: 318px;
+  min-height: 192px;
+}
 
 section {
   display: flex;
@@ -79,7 +83,7 @@ section {
 
 .rotatedCardBrain {
   position: absolute;
-  top: 20em;
+  top: 18em;
   left: -8em;
   transform: rotate(30deg);
 }
@@ -99,7 +103,7 @@ section {
 
 .cloud2 {
   left: 5%;
-  top: 105%;
+  top: 60%;
   transform: rotate(-5deg);
 }
 
