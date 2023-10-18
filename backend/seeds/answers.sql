@@ -281,12 +281,12 @@ INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (70, 'Baboon
 INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (70, 'Hippo', true);
 INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (71, 'Flygande ekorre', false);
 INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (71, 'Havsörn', false);
-INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (71, 'Fladdermus', false);
-INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (71, 'Stork', true);
+INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (71, 'Fladdermus', true);
+INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (71, 'Stork', false);
 INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (72, 'Flying squirrel', false);
 INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (72, 'Bald eagle', false);
-INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (72, 'Bat', false);
-INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (72, 'Stork', true);
+INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (72, 'Bat', true);
+INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (72, 'Stork', false);
 INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (73, 'Rovdjur', false);
 INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (73, 'Växtätare', false);
 INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (73, 'Allätare', true);
