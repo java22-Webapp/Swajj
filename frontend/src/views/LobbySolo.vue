@@ -74,11 +74,13 @@ main {
   left: 60%;
   transform: scale(0.65) scaleX(-1);
 }
+
 #cloud4 {
   top: -10%;
   left: -5%;
   transform: scale(0.7) scaleX(1);
 }
+
 #settingsSection {
   display: flex;
   justify-content: center;

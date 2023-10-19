@@ -29,5 +29,7 @@ onBeforeUnmount( () => {
 </template>
 
 <style scoped>
-
+  h2 {
+    margin: 0 auto;
+  }
 </style>

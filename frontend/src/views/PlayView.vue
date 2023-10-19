@@ -132,19 +132,13 @@ function showCorrectAnswer(){
 
 <template>
   <main>
-  <section class="clouds">
-    <section class="cloud cloud2">
+    <section class="clouds">
       <img id="cloud1" src="../assets/gultNyttNy1.png" alt="Medium yellow cloud" />
-    </section>
-    <section class="cloud cloud3">
       <img id="cloud2" src="../assets/gultNyttNy2.png" alt="Big yellow cloud" />
-    </section>
-    <section class="cloud cloud4">
       <img id="cloud3" src="../assets/gultNyttNy3.png" alt="Bigger yellow cloud" />
+      <img id="cloud4" src="../assets/gultNyttNy.png" alt="Small yellow cloud" />
     </section>
-    <section class="cloud cloud1">
-      <img id="cloud" src="../assets/gultNyttNy.png" alt="Small yellow cloud" />
-    </section>
+    <img class="rotatedCardBrain" src="../assets/cardBrainYellow.png" alt="Brain holding a card" />
 
     <section>
       <div class="showRound">
@@ -156,7 +150,6 @@ function showCorrectAnswer(){
         <div class="deckQuestions">{{ questions }}</div>
         <img id="idleDeck" :src="imgSrc" :class="{ flipped: isFlipped }" alt="Card deck" />
       </div>
-
       <div id="answerBtns">
         <button
           class="button"
@@ -171,21 +164,11 @@ function showCorrectAnswer(){
         </button>
       </div>
     </section>
-  <section>
-    <img class="rotatedCardBrain" src="../assets/cardBrainYellow.png" alt="Brain holding a card" />
-  </section>
-  </section>
   </main>
 </template>
 
 <style scoped>
-.rotatedCardBrain {
-  position: absolute;
-  top: 18em;
-  left: -8em;
-  transform: rotate(30deg);
-  z-index: 0;
-}
+
 
 .deckQuestions {
   position: absolute;
@@ -223,7 +206,6 @@ function showCorrectAnswer(){
   justify-items: center;
   align-items: center;
   width: fit-content;
-  padding: 1em;
   margin: 0 auto;
   font-family: var(--timer-round-font);
   z-index: 1;
@@ -242,9 +224,8 @@ function showCorrectAnswer(){
   flex-wrap: wrap;
   flex-direction: row;
   justify-content: space-between;
-  gap: 0.5em;
+  gap: 0.25em;
   align-items: center;
-  margin-top: 1em;
   z-index: 1;
 }
 
@@ -264,32 +245,48 @@ function showCorrectAnswer(){
 .selected-answer{
   background-color: #91B2B3;
 }
-.clouds {
-  position: relative;
-  z-index: 0;
 
-}
-.cloud {
+#cloud1, #cloud4, #cloud2, #cloud3 {
   position: absolute;
 }
-.cloud1 {
-  top: 1%;
+
+.clouds {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: 0;
+}
+
+#cloud1 {
+  top: 52%;
   left: 12%;
+  transform: scale(0.7);
 }
-.cloud2 {
-  left: 5%;
-  top: 68%;
-  transform: rotate(-5deg);
+
+#cloud2 {
+  top: -18%;
+  left: 4%;
+  transform: scale(0.7) rotate(-5deg);
 }
-.cloud3 {
-  top: -15%;
+
+#cloud3 {
+  top: -8%;
   left: 60%;
-  transform: scaleX(-1);
+  transform: scale(0.65) scaleX(-1);
 }
-.cloud4 {
-  top: -9%;
-  left: 5%;
-  transform: scaleX(-1);
+
+#cloud4 {
+  top: -10%;
+  left: -5%;
+  transform: scale(0.7) scaleX(1);
 }
+
+.rotatedCardBrain {
+  position: absolute;
+  top: 8em;
+  left: -8em;
+  transform: scale(0.7) rotate(40deg);
+}
+
 </style>
 
