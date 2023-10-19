@@ -4,40 +4,32 @@ import SettingsPanel from "@/components/SettingsPanel.vue";
 
 const nickNameStore = useNicknameStore();
 
-
 </script>
 
 <template>
   <main>
     <section class="clouds">
-      <section class="cloud cloud2">
-        <img id="cloud1" src="../assets/gultNyttNy1.png" alt="Medium yellow cloud" />
-      </section>
-      <section class="cloud cloud3">
-        <img id="cloud2" src="../assets/gultNyttNy2.png" alt="Big yellow cloud" />
-      </section>
-      <section class="cloud cloud4">
-        <img id="cloud3" src="../assets/gultNyttNy3.png" alt="Bigger yellow cloud" />
-      </section>
-      <section class="cloud cloud1">
-        <img id="cloud" src="../assets/gultNyttNy.png" alt="Small yellow cloud" />
-      </section>
-      <section>
+      <img id="cloud1" src="../assets/gultNyttNy1.png" alt="Medium yellow cloud" />
+      <img id="cloud2" src="../assets/gultNyttNy2.png" alt="Big yellow cloud" />
+      <img id="cloud3" src="../assets/gultNyttNy3.png" alt="Bigger yellow cloud" />
+      <img id="cloud4" src="../assets/gultNyttNy.png" alt="Small yellow cloud" />
+    </section>
+    <img class="rotatedCardBrain" src="../assets/cardBrainYellow.png" alt="Brain holding a card">
+    <section id="settingsSection">
         <SettingsPanel id="settingsPanel" />
-        <div>Nickname: {{ nickNameStore.nickname }} </div>
+        <div id="nicknameField">Nickname: {{ nickNameStore.nickname }} </div>
         <button class="button" id="playBtn">
           <router-link to="/Play" class="routerLinkBtnText">Play</router-link>
         </button>
-        <img class="rotatedCardBrain" src="../assets/cardBrainYellow.png" alt="Brain holding a card">
-      </section>
     </section>
   </main>
-
-
 </template>
 
-
 <style scoped>
+
+* {
+  box-sizing: border-box;
+}
 
 main {
   height: 100%;
@@ -46,49 +38,60 @@ main {
 }
 
 #settingsPanel {
+  z-index: 10;
   font-size: 24px;
 }
 
-section {
+#nicknameField {
+  z-index: 10;
+}
+
+#cloud1, #cloud4, #cloud2, #cloud3 {
+  position: absolute;
+}
+
+.clouds {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: 0;
+}
+
+#cloud1 {
+  top: 52%;
+  left: 12%;
+  transform: scale(0.7);
+}
+
+#cloud2 {
+  top: -18%;
+  left: 4%;
+  transform: scale(0.7) rotate(-5deg);
+}
+
+#cloud3 {
+  top: -8%;
+  left: 60%;
+  transform: scale(0.65) scaleX(-1);
+}
+#cloud4 {
+  top: -10%;
+  left: -5%;
+  transform: scale(0.7) scaleX(1);
+}
+#settingsSection {
   display: flex;
   justify-content: center;
   flex-direction: column;
   align-items: center;
   gap: 1em;
-  z-index: 1;
 }
 
 .rotatedCardBrain {
   position: absolute;
-  top: 18em;
+  top: 8em;
   left: -8em;
-  transform: rotate(30deg);
-}
-.clouds {
-  position: relative;
-
-}
-.cloud {
-  position: absolute;
-}
-.cloud1 {
-  top: 1%;
-  left: 12%;
-}
-.cloud2 {
-  left: 5%;
-  top: 80%;
-  transform: rotate(-5deg);
-}
-.cloud3 {
-  top: -15%;
-  left: 60%;
-  transform: scaleX(-1);
-}
-.cloud4 {
-  top: -10%;
-  left: 5%;
-  transform: scaleX(-1);
+  transform: scale(0.7) rotate(40deg);
 }
 
 </style>

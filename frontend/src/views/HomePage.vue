@@ -43,6 +43,10 @@ const handleMultiplayerClick = () => {
 
 <style scoped>
 
+* {
+  box-sizing: border-box;
+}
+
 main {
   height: 100%;
   width: 100%;
