@@ -21,34 +21,32 @@ const handleMultiplayerClick = () => {
 <template>
   <main>
     <section class="clouds">
-      <section class="cloud cloud2">
-        <img id="cloud1" src="../assets/gultNyttNy1.png" alt="Medium yellow cloud" />
-      </section>
-      <section class="cloud cloud3">
-        <img id="cloud2" src="../assets/gultNyttNy2.png" alt="Big yellow cloud" />
-      </section>
-      <section class="cloud cloud4">
-        <img id="cloud3" src="../assets/gultNyttNy3.png" alt="Bigger yellow cloud" />
-      </section>
-      <section class="cloud cloud1">
-        <img id="cloud" src="../assets/gultNyttNy.png" alt="Small yellow cloud" />
-      </section>
-
-      <section class="buttons">
-        <img id="cardBrain" src="../assets/cardBrainYellow.png" alt="Brain holding a card" />
-        <NicknameInput />
-        <button class="button" id="soloPlay">
-          <router-link to="/solo" class="routerLinkBtnText">Play Solo</router-link>
-        </button>
-        <button class="button" id="multiPlay" @click="handleMultiplayerClick">
-          Multiplayer
-        </button>
-      </section>
+      <img id="cloud1" src="../assets/gultNyttNy1.png" alt="Medium yellow cloud" />
+      <img id="cloud2" src="../assets/gultNyttNy2.png" alt="Big yellow cloud" />
+      <img id="cloud3" src="../assets/gultNyttNy3.png" alt="Bigger yellow cloud" />
+      <img id="cloud4" src="../assets/gultNyttNy.png" alt="Small yellow cloud" />
     </section>
+
+    <section class="buttons">
+      <img id="cardBrain" src="../assets/cardBrainYellow.png" alt="Brain holding a card" />
+      <NicknameInput />
+      <button class="button" id="soloPlay">
+        <router-link to="/solo" class="routerLinkBtnText">Play Solo</router-link>
+      </button>
+      <button class="button" id="multiPlay" @click="handleMultiplayerClick">
+        Multiplayer
+      </button>
+    </section>
+
   </main>
 </template>
 
 <style scoped>
+
+* {
+  box-sizing: border-box;
+}
+
 main {
   height: 100%;
   width: 100%;
@@ -56,6 +54,7 @@ main {
 }
 
 .buttons {
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -63,31 +62,40 @@ main {
   gap: 1em;
   z-index: 1;
 }
-.clouds {
-  position: relative;
-  z-index: 0;
-}
-.cloud {
+
+#cloud1, #cloud4, #cloud2, #cloud3 {
   position: absolute;
 }
-.cloud1 {
-  top: 1%;
-  left: 12%;
+
+.clouds {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: 0;
 }
-.cloud2 {
-  left: 5%;
-  top: 58%;
-  transform: rotate(-5deg);
+
+#cloud1 {
+  top: 52%;
+  left: 17%;
+  transform: scale(0.7);
 }
-.cloud3 {
+
+#cloud2 {
+  left: 4%;
+  top: 4%;
+  transform: scale(0.7) rotate(-5deg);
+}
+
+#cloud3 {
   top: -8%;
   left: 60%;
-  transform: scaleX(-1);
+  transform: scale(0.65) scaleX(-1);
 }
-.cloud4 {
-  top: -7%;
-  left: 5%;
-  transform: scaleX(-1);
+
+#cloud4 {
+  top: 9%;
+  left: -5%;
+  transform: scale(0.7) scaleX(1);
 }
 
 #cardBrain {
@@ -96,4 +104,5 @@ main {
   left: 45%;
   z-index: 0;
 }
+
 </style>

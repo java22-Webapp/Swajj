@@ -44,19 +44,13 @@ function newGameSettings() {
 <template>
   <main>
     <section class="clouds">
-      <section class="cloud cloud2">
-        <img id="cloud1" src="../assets/gultNyttNy1.png" alt="Medium yellow cloud" />
-      </section>
-      <section class="cloud cloud3">
-        <img id="cloud2" src="../assets/gultNyttNy2.png" alt="Big yellow cloud" />
-      </section>
-      <section class="cloud cloud4">
-        <img id="cloud3" src="../assets/gultNyttNy3.png" alt="Bigger yellow cloud" />
-      </section>
-      <section class="cloud cloud1">
-        <img id="cloud" src="../assets/gultNyttNy.png" alt="Small yellow cloud" />
-      </section>
-      <div class="result-card">
+      <img id="cloud1" src="../assets/gultNyttNy1.png" alt="Medium yellow cloud" />
+      <img id="cloud2" src="../assets/gultNyttNy2.png" alt="Big yellow cloud" />
+      <img id="cloud3" src="../assets/gultNyttNy3.png" alt="Bigger yellow cloud" />
+      <img id="cloud4" src="../assets/gultNyttNy.png" alt="Small yellow cloud" />
+    </section>
+    <img class="rotatedCardBrain" src="../assets/cardBrainYellow.png" alt="Brain holding a card" />
+    <div class="result-card">
         <p class="result">Result</p>
         <p class="nickname">
           {{ nickNameStore.nickname }} | Score: {{ userScoreStore.userScore }}/{{
@@ -100,12 +94,10 @@ function newGameSettings() {
           </defs>
         </svg>
       </div>
-      <section class="buttons">
+      <section>
         <button class="button" id="playBtn" @click="redirectToPlay">PLAY AGAIN</button>
         <button class="button" id="playBtn" @click="redirectToMenu">MENU</button>
       </section>
-      <img class="rotatedCardBrain" src="../assets/cardBrainYellow.png" alt="Brain holding a card" />
-    </section>
   </main>
 </template>
 
@@ -114,14 +106,12 @@ function newGameSettings() {
 .result-card {
   display: flex;
   justify-content: space-around;
-  padding: 2em;
+  padding: 1em;
   position: relative;
 }
 
 #playBtn {
   display: block;
-  top: 0;
-  left: 0;
   position: relative;
   text-decoration: none;
   color: var(--card-text-color);
@@ -157,43 +147,46 @@ section {
   z-index: 0;
 }
 
-.rotatedCardBrain {
+#cloud1, #cloud4, #cloud2, #cloud3 {
   position: absolute;
-  top: 18em;
-  left: -8em;
-  transform: rotate(30deg);
 }
 
 .clouds {
-  position: relative;
-
-}
-
-.cloud {
+  width: 100%;
+  height: 100%;
   position: absolute;
+  z-index: 0;
 }
 
-.cloud1 {
-  top: 1%;
+#cloud1 {
+  top: 52%;
   left: 12%;
+  transform: scale(0.7);
 }
 
-.cloud2 {
-  left: 5%;
-  top: 67%;
-  transform: rotate(-5deg);
+#cloud2 {
+  top: -18%;
+  left: 4%;
+  transform: scale(0.7) rotate(-5deg);
 }
 
-.cloud3 {
+#cloud3 {
+  top: -8%;
+  left: 60%;
+  transform: scale(0.65) scaleX(-1);
+}
+
+#cloud4 {
   top: -10%;
-  left: 61%;
-  transform: scaleX(-1);
+  left: -5%;
+  transform: scale(0.7) scaleX(1);
 }
 
-.cloud4 {
-  top: -5%;
-  left: 5%;
-  transform: scaleX(-1);
+.rotatedCardBrain {
+  position: absolute;
+  top: 8em;
+  left: -8em;
+  transform: scale(0.7) rotate(40deg);
 }
 
 </style>
