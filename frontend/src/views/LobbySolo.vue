@@ -77,7 +77,7 @@ section {
 }
 .cloud2 {
   left: 5%;
-  top: 95%;
+  top: 80%;
   transform: rotate(-5deg);
 }
 .cloud3 {

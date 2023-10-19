@@ -22,7 +22,7 @@ function updateNickname(newNick){
   width: 20em;
   height: 3em;
   border-radius: 0.25em;
-  font-size: 24px;
+  font-size: 1em;
   line-height: 1;
   padding: calc(1.5em - 24px / 2) 1em;
   box-sizing: border-box;

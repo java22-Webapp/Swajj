@@ -18,7 +18,7 @@
 .button {
     font-family: var(--button-font);
     font-weight: bold;
-    font-size: 60px;
+    font-size: 2em;
     text-decoration: none;
     background-color: var(--button-color);
     color: var(--card-text-color);
