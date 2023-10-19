@@ -35,6 +35,7 @@ function newGameSettings() {
   newRounds.currentRound = 1;
   roundTimer.remainingTime = useGameStore().remainingTime;
   maxRounds.settings.rounds = settings.settings.rounds;
+  userScoreStore.lives = settings.settings.kidsMode ? 3 : 0
 }
 
 

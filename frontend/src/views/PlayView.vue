@@ -5,6 +5,8 @@ import questionCardStack from '../assets/questionCardStack.png';
 import questionCardStackFlipped from '../assets/questionCardStackFlipped.png';
 import { useGameStore } from '@/stores/game';
 import { useSettingsStore } from '@/stores/settings';
+import fullHeart from '../assets/fullHeart.png';
+import emptyHeart from '../assets/emptyHeart.png';
 
 const settingsStore = useSettingsStore();
 const questions = ref('');
@@ -13,6 +15,7 @@ const isCorrect = ref([]);
 const answerID = ref([]);
 const nextRound = useGameStore();
 const userScoreHolder = useGameStore();
+const gameLives = useGameStore();
 const timerInterval = ref(null);
 let selectedAnswerIndex = ref(null);
 let correctAnswerIndex = ref(-1);
@@ -79,41 +82,64 @@ onBeforeUnmount(() => {
 
 function userAnswer(e, index) {
   if (buttonDisabled.value) return;
-  clearInterval(timerInterval.value);
-  buttonDisabled.value = true;
 
+  buttonDisabled.value = true;
   e.target.classList.add("selected-answer");
 
   selectedAnswerIndex.value = index;
+
   correctAnswerIndex.value = isCorrect.value.findIndex((correctValue) => correctValue === 1);
+  let goToNextRound = false;
 
   if (isCorrect.value[index] === 1) {
+    clearInterval(timerInterval.value);
     userScoreHolder.userScore++;
     e.target.classList.add("correct-answer")
-
+    goToNextRound = true;
   } else {
     e.target.classList.add("incorrect-answer")
-    showCorrectAnswer();
+    if (settingsStore.settings.kidsMode === 2) {
+      useGameStore().loseOneLife();
+      console.log("EXTRA LIVES LEFT::: ", useGameStore().lives)
 
+      if (useGameStore().lives < 0) {
+        showCorrectAnswer();
+        goToNextRound = true;
+        e.target.classList.add("selected-answer");
+
+      } else {
+        e.target.classList.add("incorrect-answer")
+        e.target.disabled = true;
+
+      }
+    } else {
+      showCorrectAnswer();
+      goToNextRound = true;
+    }
   }
 
   selectedAnswerIndex.value = null;
   correctAnswerIndex.value = -1;
-  setTimeout(()=> {
-    resetBtnClasses();
-    nextRound.nextRound();
-    fetchQuestionAndAnswers();
-    buttonDisabled.value = false;
-    startTimer();
-  }, 3000)
-}
 
+  if (goToNextRound) {
+    setTimeout(() => {
+      resetBtnClasses();
+      nextRound.nextRound();
+      fetchQuestionAndAnswers();
+      buttonDisabled.value = false;
+      startTimer();
+    }, 3000)
+  } else {
+    buttonDisabled.value = false;
+  }
+}
 function resetBtnClasses() {
   const buttons = document.getElementsByClassName("button");
   for (let i = 0; i < buttons.length; i++) {
     buttons[i].classList.remove("correct-answer")
     buttons[i].classList.remove("incorrect-answer")
     buttons[i].classList.remove("selected-answer")
+    clearInterval(timerInterval.value);
   }
 }
 
@@ -150,6 +176,14 @@ function showCorrectAnswer(){
         <div class="deckQuestions">{{ questions }}</div>
         <img id="idleDeck" :src="imgSrc" :class="{ flipped: isFlipped }" alt="Card deck" />
       </div>
+
+      <div class="hearts" v-if="settingsStore.settings.kidsMode === 2">
+      <img v-for="l in settingsStore.settings.kidsMode ? 3 : 0"
+           :src="l <= gameLives.lives ? fullHeart : emptyHeart"
+           :alt="l <= gameLives.lives ? 'Full Heart' : 'Empty Heart'"
+           :key="l"
+      />
+      </div>
       <div id="answerBtns">
         <button
           class="button"
@@ -170,6 +204,12 @@ function showCorrectAnswer(){
 <style scoped>
 
 
+.hearts img {
+  height: 2.5em;
+  width: 2.5em;
+
+
+}
 .deckQuestions {
   position: absolute;
   top: 60%;

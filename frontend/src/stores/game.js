@@ -10,14 +10,22 @@ export const useGameStore = defineStore('game', {
       totalRounds: settings.settings.rounds,
       remainingTime: settings.settings.time,
       timerInterval: 1000,
-      userScore: 0
+      userScore: 0,
+      lives: settings.settings.kidsMode ? 3 : 0
     };
+
   },
 
   actions: {
     updateState() {
       const settings = useSettingsStore();
       this.remainingTime = settings.settings.time;
+    },
+
+    loseOneLife() {
+      if (this.lives >= 0) {
+        this.lives--;
+      }
     },
 
     async nextRound() {

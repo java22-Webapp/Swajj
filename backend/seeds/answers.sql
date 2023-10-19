@@ -255,10 +255,10 @@ INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (64, 'Dolphi
 INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (64, 'Sailfish', true);
 INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (64, 'Eel', false);
 INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (64, 'Tuna', false);
-INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (65, 'Schimpans', false);
+INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (65, 'Apa', true);
 INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (65, 'Hund', false);
 INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (65, 'Katt', false);
-INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (65, 'Kanin', true);
+INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (65, 'Kanin', false);
 INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (66, 'Chimpanzee', false);
 INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (66, 'Dog', false);
 INSERT INTO answers (questions_id, answers_text, is_correct) VALUES (66, 'Cat', false);
