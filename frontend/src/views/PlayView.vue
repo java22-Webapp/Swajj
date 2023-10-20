@@ -203,11 +203,9 @@ function showCorrectAnswer(){
 
 <style scoped>
 
-
 .hearts img {
   height: 2.5em;
   width: 2.5em;
-
 
 }
 .deckQuestions {

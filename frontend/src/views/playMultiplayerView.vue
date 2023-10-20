@@ -185,19 +185,14 @@ function showCorrectAnswer() {
 <template>
   <main>
     <section class="clouds">
-      <section class="cloud cloud2">
-        <img id="cloud1" src="../assets/gultNyttNy1.png" alt="Medium yellow cloud" />
-      </section>
-      <section class="cloud cloud3">
-        <img id="cloud2" src="../assets/gultNyttNy2.png" alt="Big yellow cloud" />
-      </section>
-      <section class="cloud cloud4">
-        <img id="cloud3" src="../assets/gultNyttNy3.png" alt="Bigger yellow cloud" />
-      </section>
-      <section class="cloud cloud1">
-        <img id="cloud" src="../assets/gultNyttNy.png" alt="Small yellow cloud" />
-      </section>
-      <section>
+      <img id="cloud1" src="../assets/gultNyttNy1.png" alt="Medium yellow cloud" />
+      <img id="cloud2" src="../assets/gultNyttNy2.png" alt="Big yellow cloud" />
+      <img id="cloud3" src="../assets/gultNyttNy3.png" alt="Bigger yellow cloud" />
+      <img id="cloud4" src="../assets/gultNyttNy.png" alt="Small yellow cloud" />
+    </section>
+    <img class="rotatedCardBrain" src="../assets/cardBrainYellow.png" alt="Brain holding a card" />
+
+    <section>
         <div class="showRound">
           <RoundCounter />
         </div>
@@ -231,17 +226,51 @@ function showCorrectAnswer() {
           alt="Brain holding a card"
         />
       </section>
-    </section>
   </main>
 </template>
 
 <style scoped>
+
+#cloud1, #cloud4, #cloud2, #cloud3 {
+  position: absolute;
+}
+
+.clouds {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: 0;
+}
+
+#cloud1 {
+  top: 52%;
+  left: 12%;
+  transform: scale(0.7);
+}
+
+#cloud2 {
+  top: -18%;
+  left: 4%;
+  transform: scale(0.7) rotate(-5deg);
+}
+
+#cloud3 {
+  top: -8%;
+  left: 60%;
+  transform: scale(0.65) scaleX(-1);
+}
+
+#cloud4 {
+  top: -10%;
+  left: -5%;
+  transform: scale(0.7) scaleX(1);
+}
+
 .rotatedCardBrain {
   position: absolute;
-  top: 18em;
+  top: 8em;
   left: -8em;
-  transform: rotate(30deg);
-  z-index: 0;
+  transform: scale(0.7) rotate(40deg);
 }
 
 .hearts img {
@@ -285,7 +314,6 @@ function showCorrectAnswer() {
   justify-items: center;
   align-items: center;
   width: fit-content;
-  padding: 1em;
   margin: 0 auto;
   font-family: var(--timer-round-font);
   z-index: 1;
@@ -330,51 +358,20 @@ function showCorrectAnswer() {
   background-color: #91b2b3;
 }
 
-.clouds {
-  position: relative;
-  z-index: 0;
-}
-
-.cloud {
-  position: absolute;
-}
-
-.cloud1 {
-  top: 1%;
-  left: 12%;
-}
-
-.cloud2 {
-  left: 5%;
-  top: 68%;
-  transform: rotate(-5deg);
-}
-
-.cloud3 {
-  top: -15%;
-  left: 60%;
-  transform: scaleX(-1);
-}
-
-.cloud4 {
-  top: -9%;
-  left: 5%;
-  transform: scaleX(-1);
-}
-
 #listOfPlayers {
-  margin-right: -20em;
+  margin-right: -15em;
   min-width: 318px;
-  min-height: 500px;
+  min-height: 450px;
+  z-index: 10;
 }
 
 #content {
-  position: relative;
   z-index: 1;
   width: 100%;
   display: flex;
   flex-direction: row-reverse;
   justify-content: center;
-  gap: 10em;
+  align-items: center;
+  gap: 3em;
 }
 </style>
