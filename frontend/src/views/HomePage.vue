@@ -9,10 +9,8 @@ const socket = io('http://localhost:3000');
 
 const router = useRouter();
 
-
-
 const handleMultiplayerClick = () => {
-  socket.emit('set-host-nickname', nicknameStore.nickname);
+  socket.emit('set-host-nickname', nicknameStore.nickname + " (Host)");
   router.push('/Multiplayer');
 };
 
