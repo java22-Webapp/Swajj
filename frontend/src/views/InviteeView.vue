@@ -1,35 +1,48 @@
 <script setup>
 import { io } from 'socket.io-client';
-import NicknameInput from "@/components/NicknameInput.vue";
-import { ref } from "vue";
-import { useNicknameStore } from "@/stores/nickname";
-import ListOfPlayers from "@/components/ListOfPlayers.vue";
+import NicknameInput from '@/components/NicknameInput.vue';
+import { ref } from 'vue';
+import { useNicknameStore } from '@/stores/nickname';
+import ListOfPlayers from '@/components/ListOfPlayers.vue';
+import { useRouter } from 'vue-router';
 
 const nickNameStore = useNicknameStore();
 const socket = ref(null);
 const buttonDisabled = ref(false);
+const router = useRouter();
 
 function connectToSocket() {
+  const roomId = router.currentRoute.value.query.roomId;
+  console.log('ROOM ID::: ', roomId);
   if (nickNameStore.nickname.trim() === '') {
-    console.error("Nickname cannot be empty");
+    console.error('Nickname cannot be empty');
     return;
   }
   if (buttonDisabled.value) return;
 
   buttonDisabled.value = true;
 
+  // Establish a connection to server
   socket.value = io('http://localhost:3000');
 
+  // Connect to server
   socket.value.on('connect', () => {
-    console.log('Connected to server');
+    // Join Room
+    socket.value.emit('joinRoom', roomId);
+    // Add to playerList
     socket.value.emit('newPlayer', nickNameStore.nickname);
   });
 
+  // Listen for game start
+  socket.value.on('gameStarted', () => {
+    router.push({ name: 'PlayMultiplayer', params: { roomId: roomId }})
+      .catch(err => console.log("Routing error from clients: ", err));
+  });
+
   socket.value.on('disconnect', () => {
-    console.log('Disconnected from server')
+    console.log('Disconnected from server');
   });
 }
-
 </script>
 <template>
   <main>
@@ -46,7 +59,7 @@ function connectToSocket() {
     />
       <section>
         <ListOfPlayers id="listOfPlayers" />
-        <NicknameInput  v-model="nickNameStore.nickname" />
+        <NicknameInput v-model="nickNameStore.nickname" />
         <button class="button" id="readyBtn" @click="connectToSocket">Ready</button>
         <p>Waiting for the game to start...</p>
       </section>
@@ -60,7 +73,7 @@ main {
   background-color: var(--background-color);
 }
 
-#listOfPlayers{
+#listOfPlayers {
   min-width: 318px;
   min-height: 192px;
   max-height: 320px;
@@ -123,3 +136,5 @@ NicknameInput {
 }
 
 </style>
+
+
