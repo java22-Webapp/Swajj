@@ -3,11 +3,24 @@ import { ref } from 'vue';
 import SettingsPanel from '@/components/SettingsPanel.vue';
 import { useNicknameStore } from '@/stores/nickname';
 import ListOfPlayers from "@/components/ListOfPlayers.vue";
+import { io } from "socket.io-client";
+import router from "@/router";
 
 const gameLink = ref('');
 const copied = ref(false);
 const nickNameStore = useNicknameStore();
 const copyButtonRef = ref(null);
+const socket = ref(null);
+
+socket.value = io('http://localhost:3000');
+function startMultiplayerGame() {
+  const url = new URL(gameLink.value);
+  const roomId = url.searchParams.get('roomId');
+
+  // Call for startGame to server + all clients with the roomId
+  socket.value.emit("startGame", roomId);
+  router.push({ name: 'PlayMultiplayer', params: { roomId: roomId}})
+}
 
 async function copyLink(event) {
   try {
@@ -18,7 +31,6 @@ async function copyLink(event) {
       .writeText(gameLink.value)
       .then(() => {
         copied.value = true;
-        console.log('Copy link copied');
       }).catch((err) => {
       console.error('Failed to copy link:', err);
       copied.value = false;
@@ -76,9 +88,7 @@ async function copyLink(event) {
           <button ref="copyButtonRef" @click="copyLink" class="button" id="copyLinkBtn">
             Copy link <span class="tooltip">Link copied</span>
           </button>
-          <button class="button" id="playBtn">
-            <router-link to="/Play" class="routerLinkBtnText">Play</router-link>
-          </button>
+          <button class="button" id="playBtn" @click="startMultiplayerGame">Play</button>
         </div>
         <img
           class="rotatedCardBrain"
