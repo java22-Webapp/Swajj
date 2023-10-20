@@ -47,33 +47,26 @@ function connectToSocket() {
 <template>
   <main>
     <section class="clouds">
-      <section class="cloud cloud2">
-        <img id="cloud1" src="../assets/gultNyttNy1.png" alt="Medium yellow cloud" />
-      </section>
-      <section class="cloud cloud3">
-        <img id="cloud2" src="../assets/gultNyttNy2.png" alt="Big yellow cloud" />
-      </section>
-      <section class="cloud cloud4">
-        <img id="cloud3" src="../assets/gultNyttNy3.png" alt="Bigger yellow cloud" />
-      </section>
-      <section class="cloud cloud1">
-        <img id="cloud" src="../assets/gultNyttNy.png" alt="Small yellow cloud" />
-      </section>
+      <img id="cloud1" src="../assets/gultNyttNy1.png" alt="Medium yellow cloud" />
+      <img id="cloud2" src="../assets/gultNyttNy2.png" alt="Big yellow cloud" />
+      <img id="cloud3" src="../assets/gultNyttNy3.png" alt="Bigger yellow cloud" />
+      <img id="cloud4" src="../assets/gultNyttNy.png" alt="Small yellow cloud" />
+    </section>
+    <img
+      class="rotatedCardBrain"
+      src="../assets/cardBrainYellow.png"
+      alt="Brain holding a card"
+    />
       <section>
         <ListOfPlayers id="listOfPlayers" />
         <NicknameInput v-model="nickNameStore.nickname" />
         <button class="button" id="readyBtn" @click="connectToSocket">Ready</button>
         <p>Waiting for the game to start...</p>
-        <img
-          class="rotatedCardBrain"
-          src="../assets/cardBrainYellow.png"
-          alt="Brain holding a card"
-        />
       </section>
-    </section>
   </main>
 </template>
 <style scoped>
+
 main {
   height: 100%;
   width: 100%;
@@ -83,6 +76,7 @@ main {
 #listOfPlayers {
   min-width: 318px;
   min-height: 192px;
+  max-height: 320px;
 }
 
 section {
@@ -94,46 +88,53 @@ section {
   z-index: 1;
 }
 
-.rotatedCardBrain {
-  position: absolute;
-  top: 18em;
-  left: -8em;
-  transform: rotate(30deg);
-}
-
-.clouds {
-  position: relative;
-}
-
-.cloud {
-  position: absolute;
-}
-
-.cloud1 {
-  top: 1%;
-  left: 12%;
-}
-
-.cloud2 {
-  left: 5%;
-  top: 60%;
-  transform: rotate(-5deg);
-}
-
-.cloud3 {
-  top: -15%;
-  left: 60%;
-  transform: scaleX(-1);
-}
-
-.cloud4 {
-  top: -10%;
-  left: 5%;
-  transform: scaleX(-1);
-}
-
 NicknameInput {
   width: 20em;
   height: 20em;
 }
+
+#cloud1, #cloud4, #cloud2, #cloud3 {
+  position: absolute;
+}
+
+.clouds {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: 0;
+}
+
+#cloud1 {
+  top: 52%;
+  left: 12%;
+  transform: scale(0.7);
+}
+
+#cloud2 {
+  top: -18%;
+  left: 4%;
+  transform: scale(0.7) rotate(-5deg);
+}
+
+#cloud3 {
+  top: -8%;
+  left: 60%;
+  transform: scale(0.65) scaleX(-1);
+}
+
+#cloud4 {
+  top: -10%;
+  left: -5%;
+  transform: scale(0.7) scaleX(1);
+}
+
+.rotatedCardBrain {
+  position: absolute;
+  top: 8em;
+  left: -8em;
+  transform: scale(0.7) rotate(40deg);
+}
+
 </style>
+
+
