@@ -103,4 +103,47 @@ main {
   z-index: 0;
 }
 
+@media only screen and (min-width: 320px) and (max-width: 799px){
+  #cloud1, #cloud2, #cloud3 {
+    display: none;
+  }
+
+main{
+  margin-top: -10px;
+}
+#cloud4{
+  left: 15%;
+  top: 14%;
+}
+}
+
+@media only screen and (min-width: 800px)  and (max-width: 1440px){
+  #cloud4 {
+    display: none;
+}
+
+main{
+  margin-top: -10px;
+}
+  #cloud1 {
+    top: 60%;
+    left: -10%;
+    transform: scale(0.7);
+  }
+
+  #cloud2 {
+    left: -10%;
+    top: 4%;
+    transform: scale(0.7) rotate(-5deg);
+  }
+
+  #cloud3 {
+    top:  30%;
+    left: 60%;
+    transform: scale(0.65) scaleX(-1);
+  }
+
+
+  }
+
 </style>
