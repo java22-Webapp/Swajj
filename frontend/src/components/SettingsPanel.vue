@@ -44,7 +44,7 @@ watch(
   <section id="settingsPanel">
     <h2>Settings</h2>
     <div id="modeSettings">
-      <span class="text">Kids</span>
+      <span class="text">Easy</span>
       <label class="toggleButton">
         <input
           type="checkbox"
