@@ -17,6 +17,8 @@ const handleMultiplayerClick = () => {
 </script>
 
 <template>
+  <header><div id="logo_s">S</div>
+  </header>
   <main>
     <section class="clouds">
       <img id="cloud1" src="../assets/gultNyttNy1.png" alt="Medium yellow cloud" />
@@ -43,6 +45,19 @@ const handleMultiplayerClick = () => {
 
 * {
   box-sizing: border-box;
+}
+
+#logo_s {
+  background-color: var(--background-color);
+  font-family: var(--logo-font);
+  font-size: 6em;
+  margin-left: 0.25em;
+  color: var(--card-color);
+  text-shadow:
+    -0.5px -1px 0 #000,
+    1px -1px 0 #000,
+    -0.5px 1px 0 #000,
+    1px 1px 0 #000;
 }
 
 main {
