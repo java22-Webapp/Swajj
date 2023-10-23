@@ -104,16 +104,12 @@ main {
 }
 
 @media only screen and (min-width: 320px) and (max-width: 799px){
-  #cloud1, #cloud2, #cloud3 {
+  #cloud1, #cloud2, #cloud3, #cloud4 {
     display: none;
   }
 
 main{
   margin-top: -10px;
-}
-#cloud4{
-  left: 15%;
-  top: 14%;
 }
 }
 
@@ -142,8 +138,6 @@ main{
     left: 60%;
     transform: scale(0.65) scaleX(-1);
   }
-
-
   }
 
 </style>

@@ -96,4 +96,45 @@ main {
   transform: scale(0.7) rotate(40deg);
 }
 
+@media only screen and (min-width: 320px) and (max-width: 799px){
+  #cloud1, #cloud2, #cloud3, #cloud4, .rotatedCardBrain{
+    display: none;
+  }
+
+  main{
+    margin-top: -10px;
+  }
+
+  #settingsPanel{
+    transform: scale(0.7);
+    width: max-content;
+  }
+
+  #nicknameField, #playBtn {
+    margin-top: -10px;
+    }
+}
+
+@media only screen and (min-width: 800px)  and (max-width: 1440px){
+  #cloud4, #cloud2, .rotatedCardBrain {
+    display: none;
+  }
+
+  main{
+    margin-top: -10px;
+  }
+  #cloud1 {
+    top: 60%;
+    left: -10%;
+    transform: scale(0.7);
+  }
+
+
+  #cloud3 {
+    top:  60%;
+    left: 60%;
+    transform: scale(0.65) scaleX(-1);
+  }
+}
+
 </style>
