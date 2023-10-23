@@ -125,6 +125,7 @@ watch(
 </template>
 
 <style scoped>
+
 #settingsPanel {
   background: var(--button-color);
   border: 1px solid black;
@@ -223,5 +224,7 @@ input[type='radio']:checked + label {
 
 input[type='radio'] + label {
   border: 2px solid transparent;
+  cursor: pointer;
 }
+
 </style>
