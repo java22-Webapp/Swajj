@@ -23,45 +23,47 @@ function startMultiplayerGame() {
 }
 
 async function copyLink(event) {
-  try {
-    const response = await fetch('http://localhost:3000/generate-game-link');
-    const data = await response.json();
-    gameLink.value = data.gameLink;
-    navigator.clipboard
-      .writeText(gameLink.value)
-      .then(() => {
-        copied.value = true;
-      }).catch((err) => {
-      console.error('Failed to copy link:', err);
+  if (!gameLink.value) {
+    try {
+      const response = await fetch('http://localhost:3000/generate-game-link');
+      const data = await response.json();
+      gameLink.value = data.gameLink;
+    } catch (error) {
+      console.error('Error generating game link: ', error);
       copied.value = false;
-    });
+    }
+  }
+  navigator.clipboard
+    .writeText(gameLink.value)
+    .then(() => {
+      copied.value = true;
+    }).catch((err) => {
+    console.error('Failed to copy link:', err);
+    copied.value = false;
+  });
 
+  const tooltip = document.querySelector('.tooltip');
+  const top = event.clientY + 10;
+  const left = event.clientX + 10;
+  tooltip.style.top = `${top}px`;
+  tooltip.style.left = `${left}px`;
+  tooltip.style.display = 'block';
+
+  const updateTooltipPosition = (e) => {
     const tooltip = document.querySelector('.tooltip');
-    const top = event.clientY + 10;
-    const left = event.clientX + 10;
+    const top = e.clientY + 10;
+    const left = e.clientX + 10;
     tooltip.style.top = `${top}px`;
     tooltip.style.left = `${left}px`;
-    tooltip.style.display = 'block';
-
-    const updateTooltipPosition = (e) => {
-      const tooltip = document.querySelector('.tooltip');
-      const top = e.clientY + 10;
-      const left = e.clientX + 10;
-      tooltip.style.top = `${top}px`;
-      tooltip.style.left = `${left}px`;
-    }
-
-    document.addEventListener('mousemove', updateTooltipPosition);
-
-    setTimeout(() => {
-      tooltip.style.display = 'none';
-      document.removeEventListener('mousemove', updateTooltipPosition);
-    }, 1000);
-
-  } catch (error) {
-    console.error('Error generating game link: ', error);
-    copied.value = false;
   }
+
+  document.addEventListener('mousemove', updateTooltipPosition);
+
+  setTimeout(() => {
+    tooltip.style.display = 'none';
+    document.removeEventListener('mousemove', updateTooltipPosition);
+  }, 1000);
+
 }
 </script>
 
@@ -84,7 +86,7 @@ async function copyLink(event) {
         <SettingsPanel id="settingsPanel" />
         <div id="nickname">Nickname: {{ nickNameStore.nickname }}</div>
         <button ref="copyButtonRef" @click="copyLink" class="button" id="copyLinkBtn">
-          Copy link <span class="tooltip">Link copied</span>
+          Copy link <span class="tooltip" >Link copied</span>
         </button>
         <button class="button" id="playBtn" @click="startMultiplayerGame">Play</button>
       </section>
