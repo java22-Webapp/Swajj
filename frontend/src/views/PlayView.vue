@@ -247,7 +247,9 @@ function showCorrectAnswer(){
   margin: 0 auto;
   font-family: var(--timer-round-font);
   z-index: 1;
-  background: #FFDCF4;
+  background: var(--background-color);
+  padding: 0 1em;
+  border-radius: 4px;
 }
 
 .QNA {

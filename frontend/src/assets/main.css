@@ -1,5 +1,6 @@
 @import 'base.css';
 
 body {
-    background-color: var(--background-color)
+    background-color: var(--background-color);
+    font-family: var(--question-font);
 }
