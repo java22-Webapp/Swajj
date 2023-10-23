@@ -30,6 +30,12 @@ const nickNameStore = useNicknameStore();
 * {
   box-sizing: border-box;
 }
+#nicknameField {
+  background: var(--background-color);
+  border-radius: 4px;
+  padding: 0.25em 0.5em;
+  font-size: 1.25em;
+}
 
 main {
   height: 100%;
