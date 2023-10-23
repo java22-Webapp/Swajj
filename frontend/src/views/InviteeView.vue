@@ -19,7 +19,6 @@ function connectToSocket() {
     return;
   }
   if (buttonDisabled.value) return;
-
   buttonDisabled.value = true;
 
   // Establish a connection to server
@@ -59,9 +58,9 @@ function connectToSocket() {
     />
       <section>
         <ListOfPlayers id="listOfPlayers" />
-        <NicknameInput v-model="nickNameStore.nickname" />
-        <button class="button" id="readyBtn" @click="connectToSocket">Ready</button>
-        <p>Waiting for the game to start...</p>
+        <NicknameInput v-model="nickNameStore.nickname" v-if="!buttonDisabled"/>
+        <button class="button" id="readyBtn" @click="connectToSocket" v-if="!buttonDisabled">Ready</button>
+        <h2 v-if="buttonDisabled">Waiting for the game to start...</h2>
       </section>
   </main>
 </template>
