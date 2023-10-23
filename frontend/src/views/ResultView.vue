@@ -188,5 +188,48 @@ section {
   left: -8em;
   transform: scale(0.7) rotate(40deg);
 }
+@media only screen and (min-width: 320px) and (max-width: 799px){
+  #cloud1, #cloud2, #cloud3, #cloud4, .rotatedCardBrain{
+    display: none;
+  }
+
+  main{
+    margin-top: -10px;
+  }
+
+  .nickname{
+    top: 25%;
+  }
+  .result{
+    top: 15%;
+  }
+
+}
+
+@media only screen and (min-width: 800px)  and (max-width: 1440px){
+  #cloud4, #cloud2 {
+    display: none;
+  }
+
+  main{
+    margin-top: -10px;
+  }
+  #cloud1 {
+    top: 10%;
+    left: -11%;
+    transform: scale(0.7);
+  }
+
+  .rotatedCardBrain{
+    top: 50%;
+  }
+
+  #cloud3 {
+    top:  60%;
+    left: 60%;
+    transform: scale(0.65) scaleX(-1);
+  }
+
+}
 
 </style>

@@ -116,7 +116,7 @@ main {
 }
 
 @media only screen and (min-width: 800px)  and (max-width: 1440px){
-  #cloud4, #cloud2, .rotatedCardBrain {
+  #cloud4, #cloud2, #cloud1 {
     display: none;
   }
 
@@ -129,6 +129,9 @@ main {
     transform: scale(0.7);
   }
 
+  .rotatedCardBrain{
+  top: 50%;
+  }
 
   #cloud3 {
     top:  60%;

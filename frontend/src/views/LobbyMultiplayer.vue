@@ -96,6 +96,10 @@ async function copyLink(event) {
 
 <style scoped>
 
+#iphoneIpadButton{
+  display: none;
+}
+
 #nickname {
   margin-top: 1em;
   z-index: 10;
@@ -193,6 +197,48 @@ main {
   top: 8em;
   left: -8em;
   transform: scale(0.7) rotate(40deg);
+}
+
+@media only screen and (min-width: 320px) and (max-width: 799px){
+  #cloud1, #cloud2, #cloud3, #cloud4, .rotatedCardBrain, #listOfPlayers{
+    display: none;
+  }
+
+
+  main{
+    margin-top: -10px;
+  }
+
+  #settingsPanel{
+    transform: scale(0.7);
+    width: max-content;
+  }
+
+}
+
+@media only screen and (min-width: 800px)  and (max-width: 1440px){
+  #cloud4, #cloud2, #cloud1, #listOfPlayers {
+    display: none;
+  }
+
+  main{
+    margin-top: -10px;
+  }
+  #cloud1 {
+    top: 60%;
+    left: -10%;
+    transform: scale(0.7);
+  }
+
+  .rotatedCardBrain{
+    top: 50%;
+  }
+
+  #cloud3 {
+    top:  60%;
+    left: 60%;
+    transform: scale(0.65) scaleX(-1);
+  }
 }
 
 </style>

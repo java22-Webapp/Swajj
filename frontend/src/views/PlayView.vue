@@ -326,5 +326,45 @@ function showCorrectAnswer(){
   transform: scale(0.7) rotate(40deg);
 }
 
+@media only screen and (min-width: 320px) and (max-width: 799px){
+  #cloud1, #cloud2, #cloud3, #cloud4, .rotatedCardBrain{
+    display: none;
+  }
+
+  main{
+    margin-top: -10px;
+  }
+  .deckQuestions{
+    font-size: 16px;
+  }
+
+}
+
+@media only screen and (min-width: 800px)  and (max-width: 1440px){
+  #cloud4, #cloud2, .rotatedCardBrain {
+    display: none;
+  }
+
+  main{
+    margin-top: -10px;
+  }
+  #cloud1 {
+    top: 20%;
+    left: -11%;
+    transform: scale(0.7);
+  }
+
+
+  #cloud3 {
+    top:  20%;
+    left: 60%;
+    transform: scale(0.65) scaleX(-1);
+  }
+
+  .deckQuestions{
+    font-size: 20px;
+  }
+}
+
 </style>
 
