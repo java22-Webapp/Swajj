@@ -183,6 +183,9 @@ function showCorrectAnswer() {
 </script>
 
 <template>
+  <header><div id="logo_s">S</div>
+    <button class="button" id="iphoneIpadButton" >Players</button>
+  </header>
   <main>
     <section class="clouds">
       <img id="cloud1" src="../assets/gultNyttNy1.png" alt="Medium yellow cloud" />
@@ -231,8 +234,29 @@ function showCorrectAnswer() {
 
 <style scoped>
 
+
+
 #cloud1, #cloud4, #cloud2, #cloud3 {
   position: absolute;
+
+}#logo_s {
+   background-color: var(--background-color);
+   font-family: var(--logo-font);
+   font-size: 6em;
+   margin-left: 0.25em;
+   color: var(--card-color);
+   text-shadow:
+     -0.5px -1px 0 #000,
+     1px -1px 0 #000,
+     -0.5px 1px 0 #000,
+     1px 1px 0 #000;
+ }
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1em;
 }
 
 .clouds {
@@ -268,7 +292,7 @@ function showCorrectAnswer() {
 
 .rotatedCardBrain {
   position: absolute;
-  top: 8em;
+  top: 15em;
   left: -8em;
   transform: scale(0.7) rotate(40deg);
 }
@@ -373,5 +397,53 @@ function showCorrectAnswer() {
   justify-content: center;
   align-items: center;
   gap: 3em;
+}
+
+@media only screen and (min-width: 320px) and (max-width: 799px){
+  #cloud1, #cloud2, #cloud3, #cloud4, .rotatedCardBrain, #listOfPlayers  {
+    display: none;
+  }
+  .deckQuestions{
+    font-size: 16px;
+  }
+  #iphoneIpadButton{
+    display: block;
+    transform: scale(0.5);
+
+  }
+
+  main{
+    margin-top: -10px;
+  }
+
+
+}
+
+@media only screen and (min-width: 800px)  and (max-width: 1440px) {
+  #cloud4, #cloud2, #cloud1, #listOfPlayers {
+    display: none;
+  }
+
+  #iphoneIpadButton {
+    display: block;
+  }
+
+  main {
+    margin-top: -10px;
+  }
+
+
+  .rotatedCardBrain {
+    top: 20%;
+  }
+
+  #cloud3 {
+    top: 10%;
+    left: 60%;
+    transform: scale(0.65) scaleX(-1);
+  }
+  .deckQuestions{
+    font-size: 20px;
+  }
 }
 </style>

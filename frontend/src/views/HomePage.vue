@@ -17,6 +17,8 @@ const handleMultiplayerClick = () => {
 </script>
 
 <template>
+  <header><div id="logo_s">S</div>
+  </header>
   <main>
     <section class="clouds">
       <img id="cloud1" src="../assets/gultNyttNy1.png" alt="Medium yellow cloud" />
@@ -43,6 +45,19 @@ const handleMultiplayerClick = () => {
 
 * {
   box-sizing: border-box;
+}
+
+#logo_s {
+  background-color: var(--background-color);
+  font-family: var(--logo-font);
+  font-size: 6em;
+  margin-left: 0.25em;
+  color: var(--card-color);
+  text-shadow:
+    -0.5px -1px 0 #000,
+    1px -1px 0 #000,
+    -0.5px 1px 0 #000,
+    1px 1px 0 #000;
 }
 
 main {
@@ -102,5 +117,42 @@ main {
   left: 45%;
   z-index: 0;
 }
+
+@media only screen and (min-width: 320px) and (max-width: 799px){
+  #cloud1, #cloud2, #cloud3, #cloud4 {
+    display: none;
+  }
+
+main{
+  margin-top: -10px;
+}
+}
+
+@media only screen and (min-width: 800px)  and (max-width: 1440px){
+  #cloud4 {
+    display: none;
+}
+
+main{
+  margin-top: -10px;
+}
+  #cloud1 {
+    top: 60%;
+    left: -10%;
+    transform: scale(0.7);
+  }
+
+  #cloud2 {
+    left: -10%;
+    top: 4%;
+    transform: scale(0.7) rotate(-5deg);
+  }
+
+  #cloud3 {
+    top:  30%;
+    left: 60%;
+    transform: scale(0.65) scaleX(-1);
+  }
+  }
 
 </style>

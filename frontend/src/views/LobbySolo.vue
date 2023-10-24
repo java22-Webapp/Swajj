@@ -7,6 +7,8 @@ const nickNameStore = useNicknameStore();
 </script>
 
 <template>
+  <header><div id="logo_s">S</div>
+  </header>
   <main>
     <section class="clouds">
       <img id="cloud1" src="../assets/gultNyttNy1.png" alt="Medium yellow cloud" />
@@ -26,6 +28,17 @@ const nickNameStore = useNicknameStore();
 </template>
 
 <style scoped>
+#logo_s {
+  background-color: var(--background-color);
+  font-family: var(--logo-font);
+  font-size: 6em;
+  margin-left: 0.25em;
+  color: var(--card-color);
+  text-shadow: -0.5px -1px 0 #000,
+  1px -1px 0 #000,
+  -0.5px 1px 0 #000,
+  1px 1px 0 #000;
+}
 
 * {
   box-sizing: border-box;
@@ -97,9 +110,53 @@ main {
 
 .rotatedCardBrain {
   position: absolute;
-  top: 8em;
+  top: 20em;
   left: -8em;
   transform: scale(0.7) rotate(40deg);
+}
+
+@media only screen and (min-width: 320px) and (max-width: 799px){
+  #cloud1, #cloud2, #cloud3, #cloud4, .rotatedCardBrain{
+    display: none;
+  }
+
+  main{
+    margin-top: -10px;
+  }
+
+  #settingsPanel{
+    transform: scale(0.7);
+    width: max-content;
+  }
+
+  #nicknameField, #playBtn {
+    margin-top: -10px;
+    }
+}
+
+@media only screen and (min-width: 800px)  and (max-width: 1440px){
+  #cloud4, #cloud2, #cloud1 {
+    display: none;
+  }
+
+  main{
+    margin-top: -10px;
+  }
+  #cloud1 {
+    top: 60%;
+    left: -10%;
+    transform: scale(0.7);
+  }
+
+  .rotatedCardBrain{
+  top: 50%;
+  }
+
+  #cloud3 {
+    top:  60%;
+    left: 60%;
+    transform: scale(0.65) scaleX(-1);
+  }
 }
 
 </style>
