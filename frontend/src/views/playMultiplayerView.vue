@@ -154,20 +154,23 @@ const listOfPlayers = () => {
   showListOfPlayers.value = !showListOfPlayers.value;
 };
 
-const shouldShowListOfPlayers = computed(() => {
-  return showListOfPlayers.value || !isMobile.value;
-});
-
 const isMobile = ref(window.innerWidth <= 1000);
 window.addEventListener('resize', () => {
   isMobile.value = window.innerWidth <= 1000;
 });
+
+const shouldShowListOfPlayers = computed(() => {
+  if (isMobile.value) {
+    return showListOfPlayers.value;
+  }
+  return true;
+});
+
 </script>
 
 <template>
-  <header>
-    <div id="logo_s">S</div>
-    <button class="button" id="iphoneIpadButton" @click="listOfPlayers">Players</button>
+  <header><div id="logo_s">S</div>
+    <button v-if="isMobile" class="button" id="iphoneIpadButton" @click="listOfPlayers">Players</button>
   </header>
   <main>
     <section class="clouds">
@@ -367,11 +370,12 @@ header {
 }
 
 #listOfPlayers {
-  margin-right: -15em;
+  margin-right: -20em;
   min-width: 318px;
-  min-height: 450px;
+  min-height: 500px;
   z-index: 10;
 }
+
 
 #content {
   z-index: 1;
@@ -383,12 +387,8 @@ header {
   gap: 3em;
 }
 
-@media only screen and (min-width: 320px) and (max-width: 799px) {
-  #cloud1,
-  #cloud2,
-  #cloud3,
-  #cloud4,
-  .rotatedCardBrain {
+@media only screen and (min-width: 320px) and (max-width: 799px){
+  #cloud1, #cloud2, #cloud3, #cloud4, .rotatedCardBrain {
     display: none;
   }
 
@@ -404,7 +404,7 @@ header {
   #listOfPlayers {
     position: absolute;
     top: 20%;
-    left: 5%;
+    left: 15%;
     z-index: 100;
   }
 
@@ -414,9 +414,7 @@ header {
 }
 
 @media only screen and (min-width: 800px) and (max-width: 1000px) {
-  #cloud4,
-  #cloud2,
-  #cloud1 {
+  #cloud4, #cloud2, #cloud1 {
     display: none;
   }
 
