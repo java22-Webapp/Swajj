@@ -74,20 +74,23 @@ const listOfPlayers = () => {
   showListOfPlayers.value = !showListOfPlayers.value;
 };
 
-const shouldShowListOfPlayers = computed(() => {
-  return showListOfPlayers.value || !isMobile.value;
-});
-
 const isMobile = ref(window.innerWidth <= 1000);
 window.addEventListener('resize', () => {
   isMobile.value = window.innerWidth <= 1000;
+});
+
+const shouldShowListOfPlayers = computed(() => {
+  if (isMobile.value) {
+    return showListOfPlayers.value;
+  }
+  return true;
 });
 
 </script>
 
 <template>
   <header><div id="logo_s">S</div>
-      <button class="button" id="iphoneIpadButton" @click="listOfPlayers">Players</button>
+    <button v-if="isMobile" class="button" id="iphoneIpadButton" @click="listOfPlayers">Players</button>
   </header>
 
   <main>
