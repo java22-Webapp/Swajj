@@ -3,22 +3,23 @@ import { ref } from 'vue';
 import SettingsPanel from '@/components/SettingsPanel.vue';
 import { useNicknameStore } from '@/stores/nickname';
 import ListOfPlayers from "@/components/ListOfPlayers.vue";
-import { io } from "socket.io-client";
 import router from "@/router";
+import { useSocketStore } from "@/stores/socket";
 
 const gameLink = ref('');
 const copied = ref(false);
 const nickNameStore = useNicknameStore();
 const copyButtonRef = ref(null);
-const socket = ref(null);
 
-socket.value = io('http://localhost:3000');
+const socket = useSocketStore();
+socket.initializeSocket();
+
 function startMultiplayerGame() {
   const url = new URL(gameLink.value);
   const roomId = url.searchParams.get('roomId');
 
-  // Call for startGame to server + all clients with the roomId
-  socket.value.emit("startGame", roomId);
+  socket.emit('joinRoom', roomId.value);
+  socket.emit("startGame", roomId);
   router.push({ name: 'PlayMultiplayer', params: { roomId: roomId}})
 }
 
