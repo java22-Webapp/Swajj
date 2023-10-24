@@ -1,19 +1,18 @@
 <script setup>
 import RoundCounter from '@/components/RoundCounter.vue';
-import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
+import { ref, onMounted, onBeforeUnmount, computed, onUnmounted } from "vue";
 import questionCardStack from '../assets/questionCardStack.png';
 import questionCardStackFlipped from '../assets/questionCardStackFlipped.png';
 import { useGameStore } from '@/stores/game';
 import { useSettingsStore } from '@/stores/settings';
 import ListOfPlayers from '@/components/ListOfPlayers.vue';
 import { useRouter } from 'vue-router';
-import { io } from "socket.io-client";
+import { useSocketStore } from "@/stores/socket";
 const settingsStore = useSettingsStore();
 const questions = ref('');
 const answers = ref([]);
 const isCorrect = ref([]);
 const answerID = ref([]);
-const nextRound = useGameStore();
 const userScoreHolder = useGameStore();
 const timerInterval = ref(null);
 let selectedAnswerIndex = ref(null);
@@ -21,8 +20,8 @@ let correctAnswerIndex = ref(-1);
 const buttonDisabled = ref(false);
 const router = useRouter();
 let roomId = ref('');
-const socket = ref(null);
-socket.value = io('http://localhost:3000');
+const socket = useSocketStore();
+
 
 const answersCombo = computed(() => {
   const result = [];
@@ -35,95 +34,88 @@ const answersCombo = computed(() => {
 const imgSrc = ref(questionCardStack);
 const isFlipped = computed(() => imgSrc.value === questionCardStackFlipped);
 
+  const startTimer = () => {
+    clearInterval(timerInterval.value);
+    useGameStore().updateState();
+    timerInterval.value = setInterval(() => {
+      if (useGameStore().remainingTime > 0) {
+        useGameStore().remainingTime--;
+      } else {
+        showCorrectAnswer();
+        clearInterval(timerInterval.value);
+        setTimeout(() => {
+          resetBtnClasses();
+          useGameStore().nextRound();
+          getNewQuestion();
+          console.log("ROOM ID VALUE IN START-TIMER:::: ", roomId)
+          startTimer();
+        }, 2000);
+      }
+    }, 1000);
+  };
 
-const fetchQuestionAndAnswers = async (roomId) => {
-  console.log('FETCH FROM MULTIPLAYER ID:::: ', roomId);
-  try {
-    const response = await fetch(
-      `http://localhost:3000/set-room-questions?roomId=${roomId}`
-    );
-
-    if (!response.ok)
-      throw new Error(`fetchQuestionAndAnswers() >> ${response.status}`)
-
-    const data = await response.json();
-    questions.value = data.question;
-    answers.value = data.answers;
-    isCorrect.value = data.isCorrect;
-    answerID.value = data.answerId;
-    console.log(questions.value)
-
-    imgSrc.value = questionCardStackFlipped;
-  } catch (error) {
-    console.log("ERROR FETCHING")
-    console.log('ERROR fetching questions in Multiplayer-PlayView', error);
-  }
-};
-
-const startTimer = () => {
-  useGameStore().updateState();
-  timerInterval.value = setInterval(() => {
-    if (useGameStore().remainingTime > 0) {
-      useGameStore().remainingTime--;
-    } else {
-      showCorrectAnswer();
-      clearInterval(timerInterval.value);
-      setTimeout(() => {
-        resetBtnClasses();
-        useGameStore().nextRound();
-        fetchQuestionAndAnswers(roomId.value);
-        console.log("VALUE IN START-TIMER:::: ", roomId.value)
-        startTimer();
-      }, 2000);
-    }
-  }, 1000);
-};
 
 onMounted(() => {
   roomId.value = router.currentRoute.value.params.roomId;
-  socket.value = io('http://localhost:3000');
-  console.log("MOUNTED ROOM ID::: ", roomId.value)
-  socket.value.emit('joinRoom', roomId.value)
-  console.log("ROOM JOINED ON MOUNTED")
+  console.log("Component mounted")
+  socket.emit('joinRoom', roomId.value)
+  getNewQuestion()
+  startTimer();
 
-  // request a new question
-  socket.value.emit('requestNewQuestion');
-
-  // listen for the new question + retrieve the data from it
-  socket.value.on('new-question', (data) => {
+  socket.on('new-question', (data) => {
+    console.log("new-question event received");
     questions.value = data.question;
     answers.value = data.answers;
     isCorrect.value = data.isCorrect;
     answerID.value = data.answerId;
     imgSrc.value = questionCardStackFlipped;
-  console.log("RECEIVED NEW QUESTION FROM SERVER >>>>>")
+  })
 
-    //fetchQuestionAndAnswers(roomId.value);
-    // startTimer();
-  });
+  socket.on('round-completed', () => {
+    getNewQuestion()
+    startTimer();
+  })
 });
-
 
 onBeforeUnmount(() => {
   clearInterval(timerInterval.value);
+  socket.off('new-question', roomId);
+  socket.off('round-completed', roomId);
+  console.log('Component about to be destroyed');
 });
 
+onUnmounted(() => {
+  if (socket)
+    socket.disconnect();
+})
+
+
+function getNewQuestion() {
+  console.log("GETTING NEW QUESTION")
+  socket.emit('requestNewQuestion', roomId);
+}
+
 function userAnswer(e, index) {
+
+  console.log(">>> CALLING userAnswer <<<")
+
   if (buttonDisabled.value) return;
 
   buttonDisabled.value = true;
   e.target.classList.add('selected-answer');
-
   selectedAnswerIndex.value = index;
 
+  socket.emit('user-selected-answer', {
+    roomId: roomId.value,
+    answerIndex: index
+  });
+
   correctAnswerIndex.value = isCorrect.value.findIndex((correctValue) => correctValue === 1);
-  let goToNextRound = false;
 
   if (isCorrect.value[index] === 1) {
     clearInterval(timerInterval.value);
     userScoreHolder.userScore++;
     e.target.classList.add('correct-answer');
-    goToNextRound = true;
   } else {
     e.target.classList.add('incorrect-answer');
     if (settingsStore.settings.kidsMode === 2) {
@@ -132,7 +124,6 @@ function userAnswer(e, index) {
 
       if (useGameStore().lives < 0) {
         showCorrectAnswer();
-        goToNextRound = true;
         e.target.classList.add('selected-answer');
       } else {
         e.target.classList.add('incorrect-answer');
@@ -140,27 +131,16 @@ function userAnswer(e, index) {
       }
     } else {
       showCorrectAnswer();
-      goToNextRound = true;
     }
   }
 
   selectedAnswerIndex.value = null;
   correctAnswerIndex.value = -1;
-
-  if (goToNextRound) {
-    setTimeout(() => {
-      resetBtnClasses();
-      nextRound.nextRound();
-      fetchQuestionAndAnswers(roomId.value);
-      buttonDisabled.value = false;
-      startTimer();
-    }, 3000);
-  } else {
-    buttonDisabled.value = false;
-  }
+  buttonDisabled.value = false;
 }
 
 function resetBtnClasses() {
+  console.log("RESETTING BUTTONS")
   const buttons = document.getElementsByClassName('button');
   for (let i = 0; i < buttons.length; i++) {
     buttons[i].classList.remove('correct-answer');
