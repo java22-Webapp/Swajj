@@ -157,12 +157,27 @@ function showCorrectAnswer() {
     }
   });
 }
+
+const showListOfPlayers = ref(false)
+
+const listOfPlayers = () => {
+  showListOfPlayers.value = !showListOfPlayers.value;
+};
+
+const shouldShowListOfPlayers = computed(() => {
+  return showListOfPlayers.value || !isMobile.value;
+});
+
+const isMobile = ref(window.innerWidth <= 1000);
+window.addEventListener('resize', () => {
+  isMobile.value = window.innerWidth <= 1000;
+});
+
 </script>
 
 <template>
-  <header>
-    <div id="logo_s">S</div>
-    <button class="button" id="iphoneIpadButton">Players</button>
+  <header><div id="logo_s">S</div>
+    <button class="button" id="iphoneIpadButton" @click="listOfPlayers">Players</button>
   </header>
   <main>
     <section class="clouds">
@@ -178,34 +193,35 @@ function showCorrectAnswer() {
         <RoundCounter />
       </div>
     </section>
-    <section id="content">
-      <ListOfPlayers id="listOfPlayers" />
-      <section class="QNA">
-        <div id="deckDiv">
-          <div class="deckQuestions">{{ questions }}</div>
-          <img id="idleDeck" :src="imgSrc" :class="{ flipped: isFlipped }" alt="Card deck" />
-        </div>
-        <div id="answerBtns">
-          <button
-            class="button"
-            v-for="(answer, index) in answersCombo"
-            :id="'btnAnswer-' + answer.id"
-            :key="answer.id"
-            @click="(e) => userAnswer(e, index)"
-            :data-key="index"
-            :disabled="buttonDisabled"
-          >
-            {{ answer.answer_text }}
-          </button>
-        </div>
+      <section id="content">
+        <ListOfPlayers id="listOfPlayers" v-if="shouldShowListOfPlayers" />
+        <section class="QNA">
+          <div id="deckDiv">
+            <div class="deckQuestions">{{ questions }}</div>
+            <img id="idleDeck" :src="imgSrc" :class="{ flipped: isFlipped }" alt="Card deck" />
+          </div>
+          <div id="answerBtns">
+            <button
+              class="button"
+              v-for="(answer, index) in answersCombo"
+              :id="'btnAnswer-' + answer.id"
+              :key="answer.id"
+              @click="(e) => userAnswer(e, index)"
+              :data-key="index"
+              :disabled="buttonDisabled"
+            >
+              {{ answer.answer_text }}
+            </button>
+          </div>
+        </section>
       </section>
-    </section>
-    <section>
-      <img
-        class="rotatedCardBrain"
-        src="../assets/cardBrainYellow.png"
-        alt="Brain holding a card"
-      />
+      <section>
+        <img
+          class="rotatedCardBrain"
+          src="../assets/cardBrainYellow.png"
+          alt="Brain holding a card"
+        />
+      </section>
     </section>
   </main>
 </template>
@@ -377,55 +393,68 @@ header {
   gap: 3em;
 }
 
-@media only screen and (min-width: 320px) and (max-width: 799px) {
-  #cloud1,
-  #cloud2,
-  #cloud3,
-  #cloud4,
-  .rotatedCardBrain,
-  #listOfPlayers {
+@media only screen and (min-width: 320px) and (max-width: 799px){
+  #cloud1, #cloud2, #cloud3, #cloud4, .rotatedCardBrain {
     display: none;
   }
-  .deckQuestions {
-    font-size: 16px;
-  }
-  #iphoneIpadButton {
+
+  #iphoneIpadButton{
     display: block;
-    transform: scale(0.5);
+    transform: scale(.7);
   }
 
   main {
     margin-top: -10px;
   }
+
+  #listOfPlayers {
+    position: absolute;
+    top: 20%;
+    left: 5%;
+    z-index: 100;
+  }
+
+  .deckQuestions {
+    font-size: 20px;
+
+  }
+
 }
 
-@media only screen and (min-width: 800px) and (max-width: 1440px) {
-  #cloud4,
-  #cloud2,
-  #cloud1,
-  #listOfPlayers {
+@media only screen and (min-width: 800px)  and (max-width: 1000px){
+  #cloud4, #cloud2, #cloud1{
+}
+
     display: none;
   }
-
-  #iphoneIpadButton {
+  #iphoneIpadButton{
     display: block;
+    left: -5%;
   }
-
-  main {
-    margin-top: -10px;
-  }
-
-  .rotatedCardBrain {
+  #listOfPlayers {
+    position: absolute;
     top: 20%;
+    left: 30%;
+    z-index: 100;
+  }
+  main{
+    margin-top: 40px;
+  }
+  #cloud1 {
+    top: 60%;
+    left: -10%;
+    transform: scale(0.7);
+  }
+
+  .rotatedCardBrain{
+    top: 50%;
   }
 
   #cloud3 {
-    top: 10%;
+    top:  60%;
     left: 60%;
     transform: scale(0.65) scaleX(-1);
   }
-  .deckQuestions {
-    font-size: 20px;
-  }
 }
+
 </style>

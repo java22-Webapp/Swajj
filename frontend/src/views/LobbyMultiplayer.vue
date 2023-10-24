@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { computed, ref } from "vue";
 import SettingsPanel from '@/components/SettingsPanel.vue';
 import { useNicknameStore } from '@/stores/nickname';
 import ListOfPlayers from "@/components/ListOfPlayers.vue";
@@ -68,12 +68,26 @@ async function copyLink(event) {
 
 }
 
+const showListOfPlayers = ref(false)
+
+const listOfPlayers = () => {
+  showListOfPlayers.value = !showListOfPlayers.value;
+};
+
+const shouldShowListOfPlayers = computed(() => {
+  return showListOfPlayers.value || !isMobile.value;
+});
+
+const isMobile = ref(window.innerWidth <= 1000);
+window.addEventListener('resize', () => {
+  isMobile.value = window.innerWidth <= 1000;
+});
 
 </script>
 
 <template>
   <header><div id="logo_s">S</div>
-    <button class="button" id="iphoneIpadButton" >Players</button>
+      <button class="button" id="iphoneIpadButton" @click="listOfPlayers">Players</button>
   </header>
 
   <main>
@@ -89,7 +103,7 @@ async function copyLink(event) {
       alt="Brain holding a card"
     />
     <section id="content">
-      <ListOfPlayers id="listOfPlayers" />
+      <ListOfPlayers id="listOfPlayers" v-if="shouldShowListOfPlayers" />
       <section id="settingsSection">
         <SettingsPanel id="settingsPanel" />
         <div id="nickname">Nickname: {{ nickNameStore.nickname }}</div>
@@ -245,19 +259,32 @@ main {
     transform: scale(0.7);
     width: max-content;
   }
+  #listOfPlayers {
+    position: absolute;
+    top: 20%;
+    left: 5%;
+    z-index: 10000;
+  }
 
 }
 
-@media only screen and (min-width: 800px)  and (max-width: 1440px){
-  #cloud4, #cloud2, #cloud1, #listOfPlayers {
+@media only screen and (min-width: 800px)  and (max-width: 1000px){
+  #cloud4, #cloud2, #cloud1{
     display: none;
   }
   #iphoneIpadButton{
     display: block;
+    transform: scale(1.4);
+    left: -5%;
   }
-
+  #listOfPlayers {
+    position: absolute;
+    top: 20%;
+    left: 30%;
+    z-index: 100;
+  }
   main{
-    margin-top: -10px;
+    margin-top: 40px;
   }
   #cloud1 {
     top: 60%;

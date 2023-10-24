@@ -134,13 +134,13 @@ main {
     }
 }
 
-@media only screen and (min-width: 800px)  and (max-width: 1440px){
+@media only screen and (min-width: 800px)  and (max-width: 1000px){
   #cloud4, #cloud2, #cloud1 {
     display: none;
   }
 
   main{
-    margin-top: -10px;
+    margin-top: 40px;
   }
   #cloud1 {
     top: 60%;
@@ -149,7 +149,7 @@ main {
   }
 
   .rotatedCardBrain{
-  top: 50%;
+  top: 70%;
   }
 
   #cloud3 {
