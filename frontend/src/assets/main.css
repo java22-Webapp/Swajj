@@ -1,6 +1,14 @@
 @import 'base.css';
 
+html {
+    overflow: hidden;
+    background: var(--background-color);
+}
+
 body {
     background-color: var(--background-color);
     font-family: var(--question-font);
+    max-width: 1440px;
+    margin: 0 auto;
+    overflow: hidden;
 }
