@@ -4,19 +4,15 @@ const port = 3000;
 const db = require("./database/sqlite.js");
 const runSeed = require("./seeder");
 const cors = require("cors");
-
 const { v4: uuidv4 } = require("uuid");
 const http = require("http");
-
 const socketIo = require("socket.io");
 const server = http.createServer(app);
-
 const askedQuestions = [];
 const askedQuestionsMultiplayer = [];
 const roomState = {};
 const roomAnswers = {};
 
-const answeredQuestions = new Map();
 
 let gameState = {
   isStarted: false
@@ -58,8 +54,7 @@ io.on("connection", (socket) => {
     if (!players.includes(playerName)) {
       socket.playerName = playerName;
       players.push(playerName);
-      console.log("PLAYERS IN NEW PLAYER:::: ", players);
-      console.log("A user connected", socket.playerName);
+      console.log("A new player connected: ", socket.playerName);
       io.emit("update-player-list", players);
     }
   });
@@ -76,17 +71,34 @@ io.on("connection", (socket) => {
     fetchNewQuestion(socket.roomId);
   });
 
-  socket.on("user-selected-answer", (data, isCorrect) => {
-    console.log("in user-selected-answer");
+  socket.on('timer-expired', (roomId) => {
+    console.log("IN TIMER-EXPIRED BACKEND")
+
+    if (!roomAnswers[roomId]) {
+      roomAnswers[roomId] = [];
+    }
+
+    roomAnswers[roomId].push({ clientId: socket.id, answerIndex: -1 })
+
+
+    if (roomAnswers[roomId].length === io.sockets.adapter.rooms.get(roomId).size) {
+      handleRoundCompletion(roomId);
+    }
+  })
+
+  socket.on("user-selected-answer", (data) => {
+    console.log("CALLING 'user-selected-answer' BACKEND");
     const { roomId, answerIndex } = data;
 
     const currentQuestion = roomState[roomId].currentQuestion;
     const isAnswerCorrect = currentQuestion.isCorrect[answerIndex] === 1;
 
+    const clientsInRoom = io.sockets.adapter.rooms.get(roomId);
+    const numberOfClients = clientsInRoom ? clientsInRoom.size : 0;
+
     socket.emit('answer-result', {
       correct: isAnswerCorrect,
       isCorrectArray: currentQuestion.isCorrect
-
     });
 
     if (!roomAnswers[roomId]) {
@@ -99,25 +111,15 @@ io.on("connection", (socket) => {
     }
 
     roomAnswers[roomId].push({ clientId: socket.id, answerIndex });
-    const clientsInRoom = io.sockets.adapter.rooms.get(roomId);
 
-    console.log("ROOM_ANSWERS[roomId]:::", roomAnswers[roomId]);
-    console.log("CLIENTS_IN_ROOM::::: ", clientsInRoom);
-
-    if (roomAnswers[roomId].length === clientsInRoom.size) {
-      console.log("All clients have answered!!!");
-      setTimeout(() => {
-      io.in(roomId).emit("round-completed");
-      roomAnswers[roomId] = [];
-      }, 2000);
+    if (roomAnswers[roomId] && roomAnswers[roomId].length === numberOfClients) {
+        handleRoundCompletion(roomId)
     }
   });
-
 
   // Lobby leader is emitting(calling) this from LobbyMultiplayer.vue to start the game
   // Clients are listening (in InviteeView.vue) for the "gameStarted" emit with the corresponding roomId
   socket.on("startGame", (roomId) => {
-    console.log("startGame was called");
 
     const clientsInRoom = io.sockets.adapter.rooms.get(roomId);
     const numberOfClients = clientsInRoom ? clientsInRoom.size : 0;
@@ -127,7 +129,6 @@ io.on("connection", (socket) => {
     if (!gameState.isStarted) {
       io.in(roomId).emit("gameStarted");
       gameState.isStarted = true;
-      console.log(">> GAME WAS STARTED FROM SERVER << roomID: ", roomId);
     }
   });
 
@@ -139,9 +140,16 @@ io.on("connection", (socket) => {
       }
       socket.leave(socket.roomId);
     }
-
   });
 });
+
+function handleRoundCompletion(roomId) {
+  console.log("All clients have answered or the timer has run out!")
+  setTimeout(() => {
+    io.in(roomId).emit('round-completed');
+    roomAnswers[roomId] = [];
+  }, 2000);
+}
 
 // Get a single question per request. The idea is that we call this function each time we go to a new game round
 function fetchNewQuestion(roomId) {
@@ -179,7 +187,6 @@ function fetchNewQuestion(roomId) {
       };
       io.in(roomId).emit("new-question", questionObject);
     });
-
   });
 }
 
