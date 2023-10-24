@@ -16,6 +16,8 @@ const askedQuestionsMultiplayer = [];
 const roomState = {};
 const roomAnswers = {};
 
+const answeredQuestions = new Map();
+
 let gameState = {
   isStarted: false
 };
@@ -81,14 +83,19 @@ io.on("connection", (socket) => {
     const currentQuestion = roomState[roomId].currentQuestion;
     const isAnswerCorrect = currentQuestion.isCorrect[answerIndex] === 1;
 
+    socket.emit('answer-result', {
+      correct: isAnswerCorrect,
+      isCorrectArray: currentQuestion.isCorrect
+
+    });
+
     if (!roomAnswers[roomId]) {
       roomAnswers[roomId] = [];
     }
 
-    if (isAnswerCorrect) {
-      console.log("Correct answer");
-    } else {
-      console.log("Incorrect answer");
+    if (roomAnswers[roomId].some(answer => answer.clientId === socket.id)) {
+      console.log(`Client ${socket.id} has already answered this round.`);
+      return;
     }
 
     roomAnswers[roomId].push({ clientId: socket.id, answerIndex });
@@ -99,8 +106,10 @@ io.on("connection", (socket) => {
 
     if (roomAnswers[roomId].length === clientsInRoom.size) {
       console.log("All clients have answered!!!");
+      setTimeout(() => {
       io.in(roomId).emit("round-completed");
       roomAnswers[roomId] = [];
+      }, 2000);
     }
   });
 
@@ -244,7 +253,6 @@ app.get("/get-question", (req, res) => {
         db_isCorrect: answers.map(a => a.is_correct),
         db_answerId: answers.map(a => a.id)
       });
-
     });
   });
 });

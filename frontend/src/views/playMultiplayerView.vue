@@ -4,11 +4,9 @@ import { ref, onMounted, onBeforeUnmount, computed, onUnmounted } from "vue";
 import questionCardStack from '../assets/questionCardStack.png';
 import questionCardStackFlipped from '../assets/questionCardStackFlipped.png';
 import { useGameStore } from '@/stores/game';
-import { useSettingsStore } from '@/stores/settings';
 import ListOfPlayers from '@/components/ListOfPlayers.vue';
 import { useRouter } from 'vue-router';
 import { useSocketStore } from "@/stores/socket";
-const settingsStore = useSettingsStore();
 const questions = ref('');
 const answers = ref([]);
 const isCorrect = ref([]);
@@ -16,7 +14,6 @@ const answerID = ref([]);
 const userScoreHolder = useGameStore();
 const timerInterval = ref(null);
 let selectedAnswerIndex = ref(null);
-let correctAnswerIndex = ref(-1);
 const buttonDisabled = ref(false);
 const router = useRouter();
 let roomId = ref('');
@@ -34,32 +31,34 @@ const answersCombo = computed(() => {
 const imgSrc = ref(questionCardStack);
 const isFlipped = computed(() => imgSrc.value === questionCardStackFlipped);
 
-  const startTimer = () => {
-    clearInterval(timerInterval.value);
-    useGameStore().updateState();
-    timerInterval.value = setInterval(() => {
-      if (useGameStore().remainingTime > 0) {
-        useGameStore().remainingTime--;
-      } else {
-        showCorrectAnswer();
-        clearInterval(timerInterval.value);
-        setTimeout(() => {
-          resetBtnClasses();
-          useGameStore().nextRound();
-          getNewQuestion();
-          console.log("ROOM ID VALUE IN START-TIMER:::: ", roomId)
-          startTimer();
-        }, 2000);
-      }
-    }, 1000);
-  };
+
+function resetGameState(){
+  resetBtnClasses();
+  clearInterval(timerInterval.value);
+  useGameStore().nextRound();
+  getNewQuestion();
+}
+
+const startTimer = () => {
+  clearInterval(timerInterval.value);
+  useGameStore().updateState();
+  timerInterval.value = setInterval(() => {
+    if (useGameStore().remainingTime > 0) {
+      useGameStore().remainingTime--;
+    } else {
+      showCorrectAnswer();
+      clearInterval(timerInterval.value);
+      setTimeout(resetGameState, 2000);
+    }
+  },1000)
+};
 
 
 onMounted(() => {
   roomId.value = router.currentRoute.value.params.roomId;
   console.log("Component mounted")
   socket.emit('joinRoom', roomId.value)
-  getNewQuestion()
+  getNewQuestion();
   startTimer();
 
   socket.on('new-question', (data) => {
@@ -72,7 +71,7 @@ onMounted(() => {
   })
 
   socket.on('round-completed', () => {
-    getNewQuestion()
+    resetGameState();
     startTimer();
   })
 });
@@ -96,51 +95,49 @@ function getNewQuestion() {
 }
 
 function userAnswer(e, index) {
-
   console.log(">>> CALLING userAnswer <<<")
 
-  if (buttonDisabled.value) return;
-
-  buttonDisabled.value = true;
-  e.target.classList.add('selected-answer');
   selectedAnswerIndex.value = index;
+
+  if (buttonDisabled.value) return;
+  buttonDisabled.value = true;
 
   socket.emit('user-selected-answer', {
     roomId: roomId.value,
     answerIndex: index
   });
+  e.target.classList.add("selected-answer");
+}
 
-  correctAnswerIndex.value = isCorrect.value.findIndex((correctValue) => correctValue === 1);
 
-  if (isCorrect.value[index] === 1) {
+socket.on('answer-result', (data) => {
+  const { correct, isCorrectArray } = data;
+  const correctAnswerIndex = isCorrectArray.findIndex(value => value === 1);
+  const correctButtonSelector = `#btnAnswer-${answerID.value[correctAnswerIndex]}`;
+  const correctButton = document.querySelector(correctButtonSelector);
+
+  if (correctButton) {
     clearInterval(timerInterval.value);
-    userScoreHolder.userScore++;
-    e.target.classList.add('correct-answer');
-  } else {
-    e.target.classList.add('incorrect-answer');
-    if (settingsStore.settings.kidsMode === 2) {
-      useGameStore().loseOneLife();
-      console.log('EXTRA LIVES LEFT::: ', useGameStore().lives);
-
-      if (useGameStore().lives < 0) {
-        showCorrectAnswer();
-        e.target.classList.add('selected-answer');
-      } else {
-        e.target.classList.add('incorrect-answer');
-        e.target.disabled = true;
-      }
+    if (correct) {
+      userScoreHolder.userScore++;
+      correctButton.classList.add('correct-answer')
     } else {
       showCorrectAnswer();
+      const selectedButton =
+        document.querySelector(`#btnAnswer-${answerID.value[selectedAnswerIndex.value]}`);
+      if (selectedButton)
+        selectedButton.classList.add('incorrect-answer');
     }
+  } else {
+    console.log("Could not find the button with the provided selector.")
   }
-
   selectedAnswerIndex.value = null;
-  correctAnswerIndex.value = -1;
-  buttonDisabled.value = false;
-}
+});
+
 
 function resetBtnClasses() {
   console.log("RESETTING BUTTONS")
+  buttonDisabled.value = false;
   const buttons = document.getElementsByClassName('button');
   for (let i = 0; i < buttons.length; i++) {
     buttons[i].classList.remove('correct-answer');
@@ -163,8 +160,9 @@ function showCorrectAnswer() {
 </script>
 
 <template>
-  <header><div id="logo_s">S</div>
-    <button class="button" id="iphoneIpadButton" >Players</button>
+  <header>
+    <div id="logo_s">S</div>
+    <button class="button" id="iphoneIpadButton">Players</button>
   </header>
   <main>
     <section class="clouds">
@@ -176,61 +174,61 @@ function showCorrectAnswer() {
     <img class="rotatedCardBrain" src="../assets/cardBrainYellow.png" alt="Brain holding a card" />
 
     <section>
-        <div class="showRound">
-          <RoundCounter />
+      <div class="showRound">
+        <RoundCounter />
+      </div>
+    </section>
+    <section id="content">
+      <ListOfPlayers id="listOfPlayers" />
+      <section class="QNA">
+        <div id="deckDiv">
+          <div class="deckQuestions">{{ questions }}</div>
+          <img id="idleDeck" :src="imgSrc" :class="{ flipped: isFlipped }" alt="Card deck" />
+        </div>
+        <div id="answerBtns">
+          <button
+            class="button"
+            v-for="(answer, index) in answersCombo"
+            :id="'btnAnswer-' + answer.id"
+            :key="answer.id"
+            @click="(e) => userAnswer(e, index)"
+            :data-key="index"
+            :disabled="buttonDisabled"
+          >
+            {{ answer.answer_text }}
+          </button>
         </div>
       </section>
-      <section id="content">
-        <ListOfPlayers id="listOfPlayers" />
-        <section class="QNA">
-          <div id="deckDiv">
-            <div class="deckQuestions">{{ questions }}</div>
-            <img id="idleDeck" :src="imgSrc" :class="{ flipped: isFlipped }" alt="Card deck" />
-          </div>
-          <div id="answerBtns">
-            <button
-              class="button"
-              v-for="(answer, index) in answersCombo"
-              :id="'btnAnswer-' + answer.id"
-              :key="answer.id"
-              @click="(e) => userAnswer(e, index)"
-              :data-key="index"
-              :disabled="buttonDisabled"
-            >
-              {{ answer.answer_text }}
-            </button>
-          </div>
-        </section>
-      </section>
-      <section>
-        <img
-          class="rotatedCardBrain"
-          src="../assets/cardBrainYellow.png"
-          alt="Brain holding a card"
-        />
-      </section>
+    </section>
+    <section>
+      <img
+        class="rotatedCardBrain"
+        src="../assets/cardBrainYellow.png"
+        alt="Brain holding a card"
+      />
+    </section>
   </main>
 </template>
 
 <style scoped>
-
-
-
-#cloud1, #cloud4, #cloud2, #cloud3 {
+#cloud1,
+#cloud4,
+#cloud2,
+#cloud3 {
   position: absolute;
-
-}#logo_s {
-   background-color: var(--background-color);
-   font-family: var(--logo-font);
-   font-size: 6em;
-   margin-left: 0.25em;
-   color: var(--card-color);
-   text-shadow:
-     -0.5px -1px 0 #000,
-     1px -1px 0 #000,
-     -0.5px 1px 0 #000,
-     1px 1px 0 #000;
- }
+}
+#logo_s {
+  background-color: var(--background-color);
+  font-family: var(--logo-font);
+  font-size: 6em;
+  margin-left: 0.25em;
+  color: var(--card-color);
+  text-shadow:
+    -0.5px -1px 0 #000,
+    1px -1px 0 #000,
+    -0.5px 1px 0 #000,
+    1px 1px 0 #000;
+}
 
 header {
   display: flex;
@@ -379,28 +377,33 @@ header {
   gap: 3em;
 }
 
-@media only screen and (min-width: 320px) and (max-width: 799px){
-  #cloud1, #cloud2, #cloud3, #cloud4, .rotatedCardBrain, #listOfPlayers  {
+@media only screen and (min-width: 320px) and (max-width: 799px) {
+  #cloud1,
+  #cloud2,
+  #cloud3,
+  #cloud4,
+  .rotatedCardBrain,
+  #listOfPlayers {
     display: none;
   }
-  .deckQuestions{
+  .deckQuestions {
     font-size: 16px;
   }
-  #iphoneIpadButton{
+  #iphoneIpadButton {
     display: block;
     transform: scale(0.5);
-
   }
 
-  main{
+  main {
     margin-top: -10px;
   }
-
-
 }
 
-@media only screen and (min-width: 800px)  and (max-width: 1440px) {
-  #cloud4, #cloud2, #cloud1, #listOfPlayers {
+@media only screen and (min-width: 800px) and (max-width: 1440px) {
+  #cloud4,
+  #cloud2,
+  #cloud1,
+  #listOfPlayers {
     display: none;
   }
 
@@ -412,7 +415,6 @@ header {
     margin-top: -10px;
   }
 
-
   .rotatedCardBrain {
     top: 20%;
   }
@@ -422,7 +424,7 @@ header {
     left: 60%;
     transform: scale(0.65) scaleX(-1);
   }
-  .deckQuestions{
+  .deckQuestions {
     font-size: 20px;
   }
 }
