@@ -14,6 +14,9 @@ const server = http.createServer(app);
 const askedQuestions = [];
 const askedQuestionsMultiplayer = [];
 const roomState = {};
+const roomAnswers = {};
+
+const answeredQuestions = new Map();
 
 let gameState = {
   isStarted: false
@@ -40,6 +43,7 @@ const io = socketIo(server, {
 app.use(cors(corsOptions));
 
 io.on("connection", (socket) => {
+  console.log(`New connection with socket id: ${socket.id}`);
 
   socket.on("set-host-nickname", (nickname) => {
     socket.playerName = nickname;
@@ -51,39 +55,91 @@ io.on("connection", (socket) => {
   io.emit("update-player-list", players);
 
   socket.on("newPlayer", (playerName) => {
-    socket.playerName = playerName;
-    players.push(playerName);
-    console.log(players);
-    console.log("A user connected", socket.playerName);
-    io.emit("update-player-list", players);
+    if (!players.includes(playerName)) {
+      socket.playerName = playerName;
+      players.push(playerName);
+      console.log("PLAYERS IN NEW PLAYER:::: ", players);
+      console.log("A user connected", socket.playerName);
+      io.emit("update-player-list", players);
+    }
   });
 
   // Let clients/users the game room
   socket.on("joinRoom", (roomId) => {
     socket.join(roomId);
     socket.roomId = roomId;
-    console.log("A user joined the room");
+    console.log(`Socket ${socket.id} joined room ${roomId}`);
   });
 
   // Frontend uses this to get a newQuestion
   socket.on("requestNewQuestion", () => {
-    console.log("GETTING Q WITH roomID::: >> ", socket.roomId)
     fetchNewQuestion(socket.roomId);
   });
+
+  socket.on("user-selected-answer", (data, isCorrect) => {
+    console.log("in user-selected-answer");
+    const { roomId, answerIndex } = data;
+
+    const currentQuestion = roomState[roomId].currentQuestion;
+    const isAnswerCorrect = currentQuestion.isCorrect[answerIndex] === 1;
+
+    socket.emit('answer-result', {
+      correct: isAnswerCorrect,
+      isCorrectArray: currentQuestion.isCorrect
+
+    });
+
+    if (!roomAnswers[roomId]) {
+      roomAnswers[roomId] = [];
+    }
+
+    if (roomAnswers[roomId].some(answer => answer.clientId === socket.id)) {
+      console.log(`Client ${socket.id} has already answered this round.`);
+      return;
+    }
+
+    roomAnswers[roomId].push({ clientId: socket.id, answerIndex });
+    const clientsInRoom = io.sockets.adapter.rooms.get(roomId);
+
+    console.log("ROOM_ANSWERS[roomId]:::", roomAnswers[roomId]);
+    console.log("CLIENTS_IN_ROOM::::: ", clientsInRoom);
+
+    if (roomAnswers[roomId].length === clientsInRoom.size) {
+      console.log("All clients have answered!!!");
+      setTimeout(() => {
+      io.in(roomId).emit("round-completed");
+      roomAnswers[roomId] = [];
+      }, 2000);
+    }
+  });
+
 
   // Lobby leader is emitting(calling) this from LobbyMultiplayer.vue to start the game
   // Clients are listening (in InviteeView.vue) for the "gameStarted" emit with the corresponding roomId
   socket.on("startGame", (roomId) => {
-    console.log(">> GAME WAS STARTED FROM SERVER <<")
+    console.log("startGame was called");
+
+    const clientsInRoom = io.sockets.adapter.rooms.get(roomId);
+    const numberOfClients = clientsInRoom ? clientsInRoom.size : 0;
+
+    console.log(`NUMBER OF CLIENTS IN ROOM ${roomId} : `, numberOfClients);
+
     if (!gameState.isStarted) {
       io.in(roomId).emit("gameStarted");
       gameState.isStarted = true;
+      console.log(">> GAME WAS STARTED FROM SERVER << roomID: ", roomId);
     }
   });
 
   socket.on("disconnect", () => {
-    players = players.filter(p => p !== socket.playerName);
-    io.emit("update-player-list", players);
+    if (socket.roomId) {
+      console.log(`Socket ${socket.id} left room ${socket.roomId}`);
+      if (roomAnswers[socket.roomId]) {
+        roomAnswers[socket.roomId] = roomAnswers[socket.roomId].filter(answer => answer.clientId !== socket.id);
+      }
+      socket.leave(socket.roomId);
+    }
+
   });
 });
 
@@ -121,7 +177,6 @@ function fetchNewQuestion(roomId) {
       roomState[roomId] = {
         currentQuestion: questionObject
       };
-
       io.in(roomId).emit("new-question", questionObject);
     });
 
@@ -159,19 +214,6 @@ app.get("/play-again", (req, res) => {
   res.status(200).end();
 });
 
-
-// This __should__ be unused even though it is not atm
-app.get("/set-room-questions", (req, res) => {
-  console.log("SETTING ROOM QUESTIONS::::");
-  const roomId = req.query.roomId;
-  const question = roomState[roomId]?.currentQuestion;
-
-  if (question) {
-    res.json(question);
-  } else {
-    res.status(404).send("No question found for room");
-  }
-});
 
 // For single player only
 app.get("/get-question", (req, res) => {
@@ -211,7 +253,6 @@ app.get("/get-question", (req, res) => {
         db_isCorrect: answers.map(a => a.is_correct),
         db_answerId: answers.map(a => a.id)
       });
-
     });
   });
 });

@@ -1,28 +1,24 @@
 <script setup>
 import RoundCounter from '@/components/RoundCounter.vue';
-import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
+import { ref, onMounted, onBeforeUnmount, computed, onUnmounted } from "vue";
 import questionCardStack from '../assets/questionCardStack.png';
 import questionCardStackFlipped from '../assets/questionCardStackFlipped.png';
 import { useGameStore } from '@/stores/game';
-import { useSettingsStore } from '@/stores/settings';
 import ListOfPlayers from '@/components/ListOfPlayers.vue';
 import { useRouter } from 'vue-router';
-import { io } from "socket.io-client";
-const settingsStore = useSettingsStore();
+import { useSocketStore } from "@/stores/socket";
 const questions = ref('');
 const answers = ref([]);
 const isCorrect = ref([]);
 const answerID = ref([]);
-const nextRound = useGameStore();
 const userScoreHolder = useGameStore();
 const timerInterval = ref(null);
 let selectedAnswerIndex = ref(null);
-let correctAnswerIndex = ref(-1);
 const buttonDisabled = ref(false);
 const router = useRouter();
 let roomId = ref('');
-const socket = ref(null);
-socket.value = io('http://localhost:3000');
+const socket = useSocketStore();
+
 
 const answersCombo = computed(() => {
   const result = [];
@@ -36,31 +32,15 @@ const imgSrc = ref(questionCardStack);
 const isFlipped = computed(() => imgSrc.value === questionCardStackFlipped);
 
 
-const fetchQuestionAndAnswers = async (roomId) => {
-  console.log('FETCH FROM MULTIPLAYER ID:::: ', roomId);
-  try {
-    const response = await fetch(
-      `http://localhost:3000/set-room-questions?roomId=${roomId}`
-    );
-
-    if (!response.ok)
-      throw new Error(`fetchQuestionAndAnswers() >> ${response.status}`)
-
-    const data = await response.json();
-    questions.value = data.question;
-    answers.value = data.answers;
-    isCorrect.value = data.isCorrect;
-    answerID.value = data.answerId;
-    console.log(questions.value)
-
-    imgSrc.value = questionCardStackFlipped;
-  } catch (error) {
-    console.log("ERROR FETCHING")
-    console.log('ERROR fetching questions in Multiplayer-PlayView', error);
-  }
-};
+function resetGameState(){
+  resetBtnClasses();
+  clearInterval(timerInterval.value);
+  useGameStore().nextRound();
+  getNewQuestion();
+}
 
 const startTimer = () => {
+  clearInterval(timerInterval.value);
   useGameStore().updateState();
   timerInterval.value = setInterval(() => {
     if (useGameStore().remainingTime > 0) {
@@ -68,99 +48,96 @@ const startTimer = () => {
     } else {
       showCorrectAnswer();
       clearInterval(timerInterval.value);
-      setTimeout(() => {
-        resetBtnClasses();
-        useGameStore().nextRound();
-        fetchQuestionAndAnswers(roomId.value);
-        console.log("VALUE IN START-TIMER:::: ", roomId.value)
-        startTimer();
-      }, 2000);
+      setTimeout(resetGameState, 2000);
     }
-  }, 1000);
+  },1000)
 };
+
 
 onMounted(() => {
   roomId.value = router.currentRoute.value.params.roomId;
-  socket.value = io('http://localhost:3000');
-  console.log("MOUNTED ROOM ID::: ", roomId.value)
-  socket.value.emit('joinRoom', roomId.value)
-  console.log("ROOM JOINED ON MOUNTED")
+  console.log("Component mounted")
+  socket.emit('joinRoom', roomId.value)
+  getNewQuestion();
+  startTimer();
 
-  // request a new question
-  socket.value.emit('requestNewQuestion');
-
-  // listen for the new question + retrieve the data from it
-  socket.value.on('new-question', (data) => {
+  socket.on('new-question', (data) => {
+    console.log("new-question event received");
     questions.value = data.question;
     answers.value = data.answers;
     isCorrect.value = data.isCorrect;
     answerID.value = data.answerId;
     imgSrc.value = questionCardStackFlipped;
-  console.log("RECEIVED NEW QUESTION FROM SERVER >>>>>")
+  })
 
-    //fetchQuestionAndAnswers(roomId.value);
-    // startTimer();
-  });
+  socket.on('round-completed', () => {
+    resetGameState();
+    startTimer();
+  })
 });
-
 
 onBeforeUnmount(() => {
   clearInterval(timerInterval.value);
+  socket.off('new-question', roomId);
+  socket.off('round-completed', roomId);
+  console.log('Component about to be destroyed');
 });
 
-function userAnswer(e, index) {
-  if (buttonDisabled.value) return;
+onUnmounted(() => {
+  if (socket)
+    socket.disconnect();
+})
 
-  buttonDisabled.value = true;
-  e.target.classList.add('selected-answer');
+
+function getNewQuestion() {
+  console.log("GETTING NEW QUESTION")
+  socket.emit('requestNewQuestion', roomId);
+}
+
+function userAnswer(e, index) {
+  console.log(">>> CALLING userAnswer <<<")
 
   selectedAnswerIndex.value = index;
 
-  correctAnswerIndex.value = isCorrect.value.findIndex((correctValue) => correctValue === 1);
-  let goToNextRound = false;
+  if (buttonDisabled.value) return;
+  buttonDisabled.value = true;
 
-  if (isCorrect.value[index] === 1) {
-    clearInterval(timerInterval.value);
-    userScoreHolder.userScore++;
-    e.target.classList.add('correct-answer');
-    goToNextRound = true;
-  } else {
-    e.target.classList.add('incorrect-answer');
-    if (settingsStore.settings.kidsMode === 2) {
-      useGameStore().loseOneLife();
-      console.log('EXTRA LIVES LEFT::: ', useGameStore().lives);
-
-      if (useGameStore().lives < 0) {
-        showCorrectAnswer();
-        goToNextRound = true;
-        e.target.classList.add('selected-answer');
-      } else {
-        e.target.classList.add('incorrect-answer');
-        e.target.disabled = true;
-      }
-    } else {
-      showCorrectAnswer();
-      goToNextRound = true;
-    }
-  }
-
-  selectedAnswerIndex.value = null;
-  correctAnswerIndex.value = -1;
-
-  if (goToNextRound) {
-    setTimeout(() => {
-      resetBtnClasses();
-      nextRound.nextRound();
-      fetchQuestionAndAnswers(roomId.value);
-      buttonDisabled.value = false;
-      startTimer();
-    }, 3000);
-  } else {
-    buttonDisabled.value = false;
-  }
+  socket.emit('user-selected-answer', {
+    roomId: roomId.value,
+    answerIndex: index
+  });
+  e.target.classList.add("selected-answer");
 }
 
+
+socket.on('answer-result', (data) => {
+  const { correct, isCorrectArray } = data;
+  const correctAnswerIndex = isCorrectArray.findIndex(value => value === 1);
+  const correctButtonSelector = `#btnAnswer-${answerID.value[correctAnswerIndex]}`;
+  const correctButton = document.querySelector(correctButtonSelector);
+
+  if (correctButton) {
+    clearInterval(timerInterval.value);
+    if (correct) {
+      userScoreHolder.userScore++;
+      correctButton.classList.add('correct-answer')
+    } else {
+      showCorrectAnswer();
+      const selectedButton =
+        document.querySelector(`#btnAnswer-${answerID.value[selectedAnswerIndex.value]}`);
+      if (selectedButton)
+        selectedButton.classList.add('incorrect-answer');
+    }
+  } else {
+    console.log("Could not find the button with the provided selector.")
+  }
+  selectedAnswerIndex.value = null;
+});
+
+
 function resetBtnClasses() {
+  console.log("RESETTING BUTTONS")
+  buttonDisabled.value = false;
   const buttons = document.getElementsByClassName('button');
   for (let i = 0; i < buttons.length; i++) {
     buttons[i].classList.remove('correct-answer');
@@ -212,10 +189,10 @@ window.addEventListener('resize', () => {
     <img class="rotatedCardBrain" src="../assets/cardBrainYellow.png" alt="Brain holding a card" />
 
     <section>
-        <div class="showRound">
-          <RoundCounter />
-        </div>
-      </section>
+      <div class="showRound">
+        <RoundCounter />
+      </div>
+    </section>
       <section id="content">
         <ListOfPlayers id="listOfPlayers" v-if="shouldShowListOfPlayers" />
         <section class="QNA">
@@ -245,28 +222,29 @@ window.addEventListener('resize', () => {
           alt="Brain holding a card"
         />
       </section>
+    </section>
   </main>
 </template>
 
 <style scoped>
-
-
-
-#cloud1, #cloud4, #cloud2, #cloud3 {
+#cloud1,
+#cloud4,
+#cloud2,
+#cloud3 {
   position: absolute;
-
-}#logo_s {
-   background-color: var(--background-color);
-   font-family: var(--logo-font);
-   font-size: 6em;
-   margin-left: 0.25em;
-   color: var(--card-color);
-   text-shadow:
-     -0.5px -1px 0 #000,
-     1px -1px 0 #000,
-     -0.5px 1px 0 #000,
-     1px 1px 0 #000;
- }
+}
+#logo_s {
+  background-color: var(--background-color);
+  font-family: var(--logo-font);
+  font-size: 6em;
+  margin-left: 0.25em;
+  color: var(--card-color);
+  text-shadow:
+    -0.5px -1px 0 #000,
+    1px -1px 0 #000,
+    -0.5px 1px 0 #000,
+    1px 1px 0 #000;
+}
 
 header {
   display: flex;
@@ -423,10 +401,9 @@ header {
   #iphoneIpadButton{
     display: block;
     transform: scale(.7);
-
   }
 
-  main{
+  main {
     margin-top: -10px;
   }
 
@@ -446,6 +423,8 @@ header {
 
 @media only screen and (min-width: 800px)  and (max-width: 1000px){
   #cloud4, #cloud2, #cloud1{
+}
+
     display: none;
   }
   #iphoneIpadButton{

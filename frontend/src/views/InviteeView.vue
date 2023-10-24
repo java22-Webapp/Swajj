@@ -1,15 +1,16 @@
 <script setup>
-import { io } from 'socket.io-client';
 import NicknameInput from '@/components/NicknameInput.vue';
 import { ref } from 'vue';
 import { useNicknameStore } from '@/stores/nickname';
 import ListOfPlayers from '@/components/ListOfPlayers.vue';
 import { useRouter } from 'vue-router';
+import { useSocketStore } from "@/stores/socket";
 
 const nickNameStore = useNicknameStore();
-const socket = ref(null);
 const buttonDisabled = ref(false);
 const router = useRouter();
+const socket = useSocketStore();
+socket.initializeSocket();
 
 function connectToSocket() {
   const roomId = router.currentRoute.value.query.roomId;
@@ -21,24 +22,16 @@ function connectToSocket() {
   if (buttonDisabled.value) return;
   buttonDisabled.value = true;
 
-  // Establish a connection to server
-  socket.value = io('http://localhost:3000');
-
-  // Connect to server
-  socket.value.on('connect', () => {
-    // Join Room
-    socket.value.emit('joinRoom', roomId);
-    // Add to playerList
-    socket.value.emit('newPlayer', nickNameStore.nickname);
-  });
+  socket.emit('joinRoom', roomId);
+  socket.emit('newPlayer', nickNameStore.nickname);
 
   // Listen for game start
-  socket.value.on('gameStarted', () => {
+  socket.on('gameStarted', () => {
     router.push({ name: 'PlayMultiplayer', params: { roomId: roomId }})
       .catch(err => console.log("Routing error from clients: ", err));
   });
 
-  socket.value.on('disconnect', () => {
+  socket.on('disconnect', () => {
     console.log('Disconnected from server');
   });
 }
