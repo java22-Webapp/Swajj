@@ -20,7 +20,7 @@ onUnmounted(() => {
 <template>
   <div class="playerList">
     <ul>
-      <p> PLAYERS </p>
+      <li><p> PLAYERS </p></li>
       <li v-for="player in players" :key="player">{{ player }}</li>
     </ul>
   </div>
@@ -29,7 +29,7 @@ onUnmounted(() => {
 <style scoped>
 
 .playerList {
-  font-size: 1.5em;
+  font-size: 1.45em;
   max-width: 318px;
   max-height: 500px;
   font-family: var(--question-font);
