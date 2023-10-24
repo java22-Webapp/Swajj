@@ -358,7 +358,7 @@ function showCorrectAnswer(){
 
 }
 
-@media only screen and (min-width: 800px)  and (max-width: 1440px){
+@media only screen and (min-width: 800px)  and (max-width: 1000px){
   #cloud4, #cloud2, .rotatedCardBrain {
     display: none;
   }

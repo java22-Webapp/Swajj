@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import {ref} from 'vue';
 import SettingsPanel from '@/components/SettingsPanel.vue';
 import { useNicknameStore } from '@/stores/nickname';
 import ListOfPlayers from "@/components/ListOfPlayers.vue";
@@ -72,7 +72,7 @@ async function copyLink(event) {
 
 <template>
   <header><div id="logo_s">S</div>
-    <button class="button" id="iphoneIpadButton" >Players</button>
+      <button class="button" id="iphoneIpadButton">Players</button>
   </header>
 
   <main>
@@ -228,7 +228,7 @@ main {
 }
 
 @media only screen and (min-width: 320px) and (max-width: 799px){
-  #cloud1, #cloud2, #cloud3, #cloud4, .rotatedCardBrain {
+  #cloud1, #cloud2, #cloud3, #cloud4, .rotatedCardBrain,#listOfPlayers {
     display: none;
   }
 
@@ -247,8 +247,8 @@ main {
 
 }
 
-@media only screen and (min-width: 800px)  and (max-width: 1440px){
-  #cloud4, #cloud2, #cloud1, #listOfPlayers {
+@media only screen and (min-width: 800px)  and (max-width: 1000px){
+  #cloud4, #cloud2, #cloud1,#listOfPlayers{
     display: none;
   }
   #iphoneIpadButton{
@@ -256,7 +256,10 @@ main {
     transform: scale(1.4);
     left: -5%;
   }
-
+  #listOfPlayers {
+    position: relative;
+    z-index: 2;
+  }
   main{
     margin-top: 40px;
   }
