@@ -222,7 +222,6 @@ window.addEventListener('resize', () => {
           alt="Brain holding a card"
         />
       </section>
-    </section>
   </main>
 </template>
 
@@ -455,6 +454,4 @@ header {
     left: 60%;
     transform: scale(0.65) scaleX(-1);
   }
-}
-
 </style>
