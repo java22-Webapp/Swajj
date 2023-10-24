@@ -349,11 +349,12 @@ function showCorrectAnswer(){
   }
 
   main{
-    margin-top: -10px;
+    margin-top: 40px;
   }
   .deckQuestions{
     font-size: 16px;
   }
+
 
 }
 

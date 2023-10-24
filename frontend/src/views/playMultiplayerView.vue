@@ -429,7 +429,7 @@ header {
   }
 
   main {
-    margin-top: -10px;
+    margin-top: 40px;
   }
 
 

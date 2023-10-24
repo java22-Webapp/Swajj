@@ -140,7 +140,7 @@ main {
   }
 
   main{
-    margin-top: -10px;
+    margin-top: 40px;
   }
   #cloud1 {
     top: 60%;
@@ -149,7 +149,7 @@ main {
   }
 
   .rotatedCardBrain{
-  top: 50%;
+  top: 70%;
   }
 
   #cloud3 {

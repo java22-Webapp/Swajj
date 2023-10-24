@@ -219,21 +219,20 @@ section {
     top: 15%;
   }
 
+  .result-card{
+    padding: 0;
+  }
 }
 
 @media only screen and (min-width: 800px)  and (max-width: 1440px){
-  #cloud4, #cloud2 {
+  #cloud4, #cloud2,  #cloud1{
     display: none;
   }
 
   main{
     margin-top: -10px;
   }
-  #cloud1 {
-    top: 10%;
-    left: -11%;
-    transform: scale(0.7);
-  }
+
 
   .rotatedCardBrain{
     top: 60%;

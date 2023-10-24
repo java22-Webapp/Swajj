@@ -253,10 +253,12 @@ main {
   }
   #iphoneIpadButton{
     display: block;
+    transform: scale(1.4);
+    left: -5%;
   }
 
   main{
-    margin-top: -10px;
+    margin-top: 40px;
   }
   #cloud1 {
     top: 60%;

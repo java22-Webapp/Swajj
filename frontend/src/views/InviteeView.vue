@@ -154,10 +154,8 @@ NicknameInput {
     display: none;
   }
 
-
-
   main{
-    margin-top: -10px;
+    margin-top: 30px;
   }
 
 
@@ -171,7 +169,7 @@ NicknameInput {
 
 
   main{
-    margin-top: -10px;
+    margin-top: 40px;
   }
   #cloud1 {
     top: 60%;
