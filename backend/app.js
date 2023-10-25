@@ -71,20 +71,19 @@ io.on("connection", (socket) => {
     fetchNewQuestion(socket.roomId);
   });
 
-  socket.on('timer-expired', (roomId) => {
-    console.log("IN TIMER-EXPIRED BACKEND")
+  socket.on("timer-expired", (roomId) => {
+    console.log("IN TIMER-EXPIRED BACKEND");
 
     if (!roomAnswers[roomId]) {
       roomAnswers[roomId] = [];
     }
 
-    roomAnswers[roomId].push({ clientId: socket.id, answerIndex: -1 })
-
+    roomAnswers[roomId].push({ clientId: socket.id, answerIndex: -1 });
 
     if (roomAnswers[roomId].length === io.sockets.adapter.rooms.get(roomId).size) {
       handleRoundCompletion(roomId);
     }
-  })
+  });
 
   socket.on("user-selected-answer", (data) => {
     console.log("CALLING 'user-selected-answer' BACKEND");
@@ -96,7 +95,7 @@ io.on("connection", (socket) => {
     const clientsInRoom = io.sockets.adapter.rooms.get(roomId);
     const numberOfClients = clientsInRoom ? clientsInRoom.size : 0;
 
-    socket.emit('answer-result', {
+    socket.emit("answer-result", {
       correct: isAnswerCorrect,
       isCorrectArray: currentQuestion.isCorrect
     });
@@ -113,22 +112,34 @@ io.on("connection", (socket) => {
     roomAnswers[roomId].push({ clientId: socket.id, answerIndex });
 
     if (roomAnswers[roomId] && roomAnswers[roomId].length === numberOfClients) {
-        handleRoundCompletion(roomId)
+      handleRoundCompletion(roomId);
     }
   });
 
   // Lobby leader is emitting(calling) this from LobbyMultiplayer.vue to start the game
   // Clients are listening (in InviteeView.vue) for the "gameStarted" emit with the corresponding roomId
-  socket.on("startGame", (roomId) => {
+  socket.on("startGame", (data) => {
+    if (!data || !data.roomId || !data.settings) {
+      console.log("Missing data for startGame event: ", data);
+      return;
+    }
+
+    const { roomId, settings } = data;
+
+    if (!roomState[roomId]) {
+      roomState[roomId] = { isStarted: false, players: [], settings: {} };
+    }
+
+    roomState[roomId].settings = settings;
 
     const clientsInRoom = io.sockets.adapter.rooms.get(roomId);
     const numberOfClients = clientsInRoom ? clientsInRoom.size : 0;
 
     console.log(`NUMBER OF CLIENTS IN ROOM ${roomId} : `, numberOfClients);
 
-    if (!gameState.isStarted) {
-      io.in(roomId).emit("gameStarted");
-      gameState.isStarted = true;
+    if (!roomState[roomId].isStarted) {
+      io.to(data.roomId).emit("gameStarted", data.settings);
+      roomState[roomId].isStarted = true;
     }
   });
 
@@ -144,24 +155,43 @@ io.on("connection", (socket) => {
 });
 
 function handleRoundCompletion(roomId) {
-  console.log("All clients have answered or the timer has run out!")
+  console.log("All clients have answered or the timer has run out!");
   setTimeout(() => {
-    io.in(roomId).emit('round-completed');
+    io.in(roomId).emit("round-completed");
     roomAnswers[roomId] = [];
   }, 2000);
 }
 
 // Get a single question per request. The idea is that we call this function each time we go to a new game round
 function fetchNewQuestion(roomId) {
+
+  if (!roomState[roomId]) {
+    console.log(`No state found for room ID: ${roomId}`);
+    return;
+  }
+
+  const roomSettings = roomState[roomId].settings;
+  if (!roomSettings) {
+    console.log(`No settings found for room ID: ${roomId}`);
+    return;
+  }
+
+  console.log("MODE: ", roomSettings.kidsMode);
+  console.log("LANGUAGE: ", roomSettings.english)
+  console.log("ROUNDS: ", roomSettings.rounds)
+  console.log("TIME: ", roomSettings.time)
+
   const query = `SELECT id, question_text
                  FROM questions
-                 WHERE id NOT IN (${askedQuestionsMultiplayer.join(",") || 0})
+                 WHERE mode_id = ?
+                   AND language_id = ?
+                   AND id NOT IN (${askedQuestionsMultiplayer.join(",") || 0})
                  ORDER BY random()
                  LIMIT 1`;
 
   const answersQuery = "SELECT id, answers_text, is_correct FROM answers WHERE questions_id = ?";
 
-  db.get(query, [], (error, question) => {
+  db.get(query, [roomSettings.kidsMode, roomSettings.english], (error, question) => {
     if (error) {
       console.error("Failed to fetch question:", error.message);
       return;
@@ -182,9 +212,7 @@ function fetchNewQuestion(roomId) {
         answerId: answers.map(a => a.id)
       };
 
-      roomState[roomId] = {
-        currentQuestion: questionObject
-      };
+      roomState[roomId].currentQuestion = questionObject;
       io.in(roomId).emit("new-question", questionObject);
     });
   });
@@ -204,6 +232,8 @@ app.get("/", (req, res) => {
   }
 });
 
+
+// we can remove the callbacks here
 function populateDatabase() {
   runSeed("modes.sql", () => {
   });
@@ -216,7 +246,7 @@ function populateDatabase() {
 }
 
 app.get("/play-again", (req, res) => {
-  console.log("Recieved req to /play-again");
+  console.log("Received req to /play-again");
   askedQuestions.length = 0;
   res.status(200).end();
 });

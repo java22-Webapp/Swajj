@@ -5,12 +5,13 @@ import { useNicknameStore } from '@/stores/nickname';
 import ListOfPlayers from "@/components/ListOfPlayers.vue";
 import router from "@/router";
 import { useSocketStore } from "@/stores/socket";
+import { useSettingsStore } from "@/stores/settings";
 
 const gameLink = ref('');
 const copied = ref(false);
 const nickNameStore = useNicknameStore();
 const copyButtonRef = ref(null);
-
+const settingsStore = useSettingsStore();
 const socket = useSocketStore();
 socket.initializeSocket();
 
@@ -18,8 +19,15 @@ function startMultiplayerGame() {
   const url = new URL(gameLink.value);
   const roomId = url.searchParams.get('roomId');
 
+  const currentSettings = {
+    kidsMode: settingsStore.settings.kidsMode,
+    english: settingsStore.settings.english,
+    rounds: settingsStore.settings.rounds,
+    time: settingsStore.settings.time
+  };
+
   socket.emit('joinRoom', roomId.value);
-  socket.emit("startGame", roomId);
+  socket.emit("startGame", { roomId, settings: currentSettings });
   router.push({ name: 'PlayMultiplayer', params: { roomId: roomId}})
 }
 
