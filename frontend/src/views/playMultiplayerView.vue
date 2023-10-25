@@ -37,21 +37,27 @@ function resetGameState() {
   getNewQuestion();
 }
 
-const startTimer = () => {
-  clearInterval(timerInterval.value);
-  useGameStore().nextRound();
-  timerInterval.value = setInterval(() => {
-    if (useGameStore().remainingTime > 0) {
-      useGameStore().remainingTime--;
-    } else {
-      showCorrectAnswer();
-      console.log('TIMER-EXPIRED EVENT');
-      socket.emit('timer-expired', roomId.value);
-      clearInterval(timerInterval.value);
-      setTimeout(resetGameState, 2000);
+const startTimer = (() => {
+  let firstTimeCalled = true;
+  return () => {
+    clearInterval(timerInterval.value);
+    if (!firstTimeCalled) {
+      useGameStore().nextRound();
     }
-  }, 1000);
-};
+    timerInterval.value = setInterval(() => {
+      if (useGameStore().remainingTime > 0) {
+        useGameStore().remainingTime--;
+      } else {
+        showCorrectAnswer();
+        console.log('TIMER-EXPIRED EVENT');
+        socket.emit('timer-expired', roomId.value);
+        clearInterval(timerInterval.value);
+        setTimeout(resetGameState, 2000);
+      }
+    }, 1000);
+    firstTimeCalled = false;
+  };
+})();
 
 onMounted(() => {
   roomId.value = router.currentRoute.value.params.roomId;
@@ -89,7 +95,6 @@ function getNewQuestion() {
 }
 
 function userAnswer(e, index) {
-
   selectedAnswerIndex.value = index;
 
   if (buttonDisabled.value) return;
@@ -165,12 +170,14 @@ const shouldShowListOfPlayers = computed(() => {
   }
   return true;
 });
-
 </script>
 
 <template>
-  <header><div id="logo_s">S</div>
-    <button v-if="isMobile" class="button" id="iphoneIpadButton" @click="listOfPlayers">Players</button>
+  <header>
+    <div id="logo_s">S</div>
+    <button v-if="isMobile" class="button" id="iphoneIpadButton" @click="listOfPlayers">
+      Players
+    </button>
   </header>
   <main>
     <section class="clouds">
@@ -376,7 +383,6 @@ header {
   z-index: 10;
 }
 
-
 #content {
   z-index: 1;
   width: 100%;
@@ -387,8 +393,12 @@ header {
   gap: 3em;
 }
 
-@media only screen and (min-width: 320px) and (max-width: 799px){
-  #cloud1, #cloud2, #cloud3, #cloud4, .rotatedCardBrain {
+@media only screen and (min-width: 320px) and (max-width: 799px) {
+  #cloud1,
+  #cloud2,
+  #cloud3,
+  #cloud4,
+  .rotatedCardBrain {
     display: none;
   }
 
@@ -414,7 +424,9 @@ header {
 }
 
 @media only screen and (min-width: 800px) and (max-width: 1000px) {
-  #cloud4, #cloud2, #cloud1 {
+  #cloud4,
+  #cloud2,
+  #cloud1 {
     display: none;
   }
 
