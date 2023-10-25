@@ -7,7 +7,7 @@ const nickNameStore = useNicknameStore();
 </script>
 
 <template>
-  <header><div id="logo_s">S</div>
+  <header><div class="logo_s">S</div>
   </header>
   <main>
     <section class="clouds">
@@ -16,7 +16,10 @@ const nickNameStore = useNicknameStore();
       <img id="cloud3" src="../assets/gultNyttNy3.png" alt="Bigger yellow cloud" />
       <img id="cloud4" src="../assets/gultNyttNy.png" alt="Small yellow cloud" />
     </section>
-    <img class="rotatedCardBrain" src="../assets/cardBrainYellow.png" alt="Brain holding a card">
+    <img class="rotatedCardBrain"
+         src="../assets/cardBrainYellow.png"
+         alt="Brain holding a card"
+    />
     <section id="settingsSection">
         <SettingsPanel id="settingsPanel" />
         <div id="nicknameField">Nickname: {{ nickNameStore.nickname }} </div>
@@ -28,23 +31,18 @@ const nickNameStore = useNicknameStore();
 </template>
 
 <style scoped>
-#logo_s {
-  background-color: var(--background-color);
-  font-family: var(--logo-font);
-  font-size: 6em;
-  margin-left: 0.25em;
-  color: var(--card-color);
-  text-shadow: -0.5px -1px 0 #000,
-  1px -1px 0 #000,
-  -0.5px 1px 0 #000,
-  1px 1px 0 #000;
+
+html,
+body {
+  height: 100%;
+  width: 100%;
 }
 
-* {
-  box-sizing: border-box;
-}
+
 #nicknameField {
   background: var(--background-color);
+  font-family: var(--button-font);
+  font-weight: bold;
   border-radius: 4px;
   padding: 0.25em 0.5em;
   font-size: 1.25em;
@@ -61,9 +59,6 @@ main {
   font-size: 24px;
 }
 
-#nicknameField {
-  z-index: 10;
-}
 
 #cloud1, #cloud4, #cloud2, #cloud3 {
   position: absolute;
@@ -73,18 +68,17 @@ main {
   width: 100%;
   height: 100%;
   position: absolute;
-  z-index: 0;
 }
 
 #cloud1 {
-  top: 52%;
+  top: 58%;
   left: 12%;
   transform: scale(0.7);
 }
 
 #cloud2 {
-  top: -18%;
-  left: 4%;
+  left: 6%;
+  top: 4%;
   transform: scale(0.7) rotate(-5deg);
 }
 
@@ -95,8 +89,8 @@ main {
 }
 
 #cloud4 {
-  top: -10%;
-  left: -5%;
+  top: 40%;
+  left: 65%;
   transform: scale(0.7) scaleX(1);
 }
 

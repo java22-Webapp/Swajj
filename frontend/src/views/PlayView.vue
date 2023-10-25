@@ -157,7 +157,7 @@ function showCorrectAnswer(){
 </script>
 
 <template>
-  <header><div id="logo_s">S</div>
+  <header><div class="logo_s">S</div>
   </header>
   <main>
     <section class="clouds">
@@ -204,19 +204,6 @@ function showCorrectAnswer(){
 </template>
 
 <style scoped>
-
-#logo_s {
-  background-color: var(--background-color);
-  font-family: var(--logo-font);
-  font-size: 6em;
-  margin-left: 0.25em;
-  color: var(--card-color);
-  text-shadow:
-    -0.5px -1px 0 #000,
-    1px -1px 0 #000,
-    -0.5px 1px 0 #000,
-    1px 1px 0 #000;
-}
 
 .hearts img {
   height: 2.5em;
@@ -309,18 +296,17 @@ function showCorrectAnswer(){
   width: 100%;
   height: 100%;
   position: absolute;
-  z-index: 0;
 }
 
 #cloud1 {
-  top: 52%;
+  top: 58%;
   left: 12%;
   transform: scale(0.7);
 }
 
 #cloud2 {
-  top: -18%;
-  left: 4%;
+  left: 6%;
+  top: 4%;
   transform: scale(0.7) rotate(-5deg);
 }
 
@@ -331,8 +317,8 @@ function showCorrectAnswer(){
 }
 
 #cloud4 {
-  top: -10%;
-  left: -5%;
+  top: 40%;
+  left: 65%;
   transform: scale(0.7) scaleX(1);
 }
 
@@ -343,23 +329,8 @@ function showCorrectAnswer(){
   transform: scale(0.7) rotate(40deg);
 }
 
-@media only screen and (min-width: 320px) and (max-width: 799px){
-  #cloud1, #cloud2, #cloud3, #cloud4, .rotatedCardBrain{
-    display: none;
-  }
-
-  main{
-    margin-top: 40px;
-  }
-  .deckQuestions{
-    font-size: 16px;
-  }
-
-
-}
-
 @media only screen and (min-width: 800px)  and (max-width: 1000px){
-  #cloud4, #cloud2, .rotatedCardBrain {
+  #cloud4, #cloud2 {
     display: none;
   }
 
@@ -367,20 +338,39 @@ function showCorrectAnswer(){
     margin-top: -10px;
   }
   #cloud1 {
-    top: 20%;
-    left: -11%;
-    transform: scale(0.7);
+    top: 10%;
+    left: -5%;
+    transform: scale(0.5);
   }
 
-
   #cloud3 {
-    top:  20%;
     left: 60%;
-    transform: scale(0.65) scaleX(-1);
+    transform: scale(0.5) scaleX(-1);
   }
 
   .deckQuestions{
     font-size: 20px;
+  }
+
+  .rotatedCardBrain {
+    transform: scale(0.5) rotate(40deg);
+  }
+}
+
+@media only screen and (min-width: 320px) and (max-width: 799px){
+  #cloud1, #cloud2, #cloud3, #cloud4{
+    display: none;
+  }
+  main{
+    margin-top: 40px;
+  }
+  .deckQuestions{
+    font-size: 16px;
+  }
+  .rotatedCardBrain {
+    top: 30%;
+    left: -40%;
+    transform: scale(0.3) rotate(40deg);
   }
 }
 

@@ -89,7 +89,7 @@ const shouldShowListOfPlayers = computed(() => {
 </script>
 
 <template>
-  <header><div id="logo_s">S</div>
+  <header><div class="logo_s">S</div>
     <button v-if="isMobile" class="button" id="iphoneIpadButton" @click="listOfPlayers">Players</button>
   </header>
 
@@ -109,7 +109,7 @@ const shouldShowListOfPlayers = computed(() => {
       <ListOfPlayers id="listOfPlayers" v-if="shouldShowListOfPlayers" />
       <section id="settingsSection">
         <SettingsPanel id="settingsPanel" />
-        <div id="nickname">Nickname: {{ nickNameStore.nickname }}</div>
+        <div id="nicknameField">Nickname: {{ nickNameStore.nickname }}</div>
         <button ref="copyButtonRef" @click="copyLink" class="button" id="copyLinkBtn">
           Copy link <span class="tooltip" >Link copied</span>
         </button>
@@ -120,19 +120,6 @@ const shouldShowListOfPlayers = computed(() => {
 </template>
 
 <style scoped>
-
-#logo_s {
-  background-color: var(--background-color);
-  font-family: var(--logo-font);
-  font-size: 6em;
-  margin-left: 0.25em;
-  color: var(--card-color);
-  text-shadow:
-    -0.5px -1px 0 #000,
-    1px -1px 0 #000,
-    -0.5px 1px 0 #000,
-    1px 1px 0 #000;
-}
 
 header {
   display: flex;
@@ -146,9 +133,13 @@ header {
   display: none;
 }
 
-#nickname {
-  margin-top: 1em;
-  z-index: 10;
+#nicknameField {
+  background: var(--background-color);
+  font-family: var(--button-font);
+  font-weight: bold;
+  border-radius: 4px;
+  padding: 0.25em 0.5em;
+  font-size: 1.25em;
 }
 
 #settingsPanel {
@@ -207,27 +198,27 @@ main {
 }
 
 #cloud1 {
-  top: 52%;
+  top: 58%;
   left: 12%;
   transform: scale(0.7);
 }
 
 #cloud2 {
-  top: -18%;
-  left: 4%;
+  left: 6%;
+  top: 4%;
   transform: scale(0.7) rotate(-5deg);
 }
 
 #cloud3 {
-  top: -8%;
-  left: 60%;
-  transform: scale(0.65) scaleX(-1);
+  top: -20%;
+  left: 55%;
+  transform: scale(0.6);
 }
 
 #cloud4 {
-  top: -10%;
-  left: -5%;
-  transform: scale(0.7) scaleX(1);
+  top: 60%;
+  left: 60%;
+  transform: scale(0.8);
 }
 
 #settingsSection {
@@ -240,43 +231,17 @@ main {
 
 .rotatedCardBrain {
   position: absolute;
-  top: 15em;
+  top: 20em;
   left: -8em;
   transform: scale(0.7) rotate(40deg);
 }
 
-@media only screen and (min-width: 320px) and (max-width: 799px){
-  #cloud1, #cloud2, #cloud3, #cloud4, .rotatedCardBrain {
-    display: none;
-  }
-
-  #iphoneIpadButton{
-    display: block;
-  }
-
-  main{
-    margin-top: -10px;
-  }
-
-  #settingsPanel{
-    transform: scale(0.7);
-    width: max-content;
-  }
-  #listOfPlayers {
-    position: absolute;
-    top: 20%;
-    left: 5%;
-    z-index: 10000;
-  }
-
-}
-
 @media only screen and (min-width: 800px)  and (max-width: 1000px){
-  #cloud4, #cloud2, #cloud1{
+  #cloud1{
     display: none;
   }
   #iphoneIpadButton{
-    display: block;
+    display: flex;
     transform: scale(1.4);
     left: -5%;
   }
@@ -289,20 +254,55 @@ main {
   main{
     margin-top: 40px;
   }
-  #cloud1 {
-    top: 60%;
-    left: -10%;
-    transform: scale(0.7);
+
+  #cloud3 {
+    left: 65%;
+    transform: scale(0.5);
+  }
+
+
+  #cloud2 {
+    top: -10%;
+    left: -8%;
+    transform: scale(0.5);
+  }
+
+  #cloud4 {
+    top:  45%;
+    left: 60%;
+    transform: scale(0.5);
   }
 
   .rotatedCardBrain{
     top: 50%;
   }
+}
 
-  #cloud3 {
-    top:  60%;
-    left: 60%;
-    transform: scale(0.65) scaleX(-1);
+@media only screen and (min-width: 320px) and (max-width: 799px){
+  #cloud1, #cloud2, #cloud3, #cloud4, .rotatedCardBrain {
+    display: none;
+  }
+
+  #iphoneIpadButton{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  main{
+    margin-top: -10px;
+  }
+
+  #settingsPanel{
+    margin-top: 10px;
+    transform: scale(0.9);
+    width: max-content;
+  }
+  #listOfPlayers {
+    position: absolute;
+    top: 20%;
+    left: 5%;
+    z-index: 10000;
   }
 }
 
