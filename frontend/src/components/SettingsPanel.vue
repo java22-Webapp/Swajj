@@ -126,6 +126,10 @@ watch(
 
 <style scoped>
 
+section {
+  font-family: var(--button-font);
+}
+
 #settingsPanel {
   background: var(--button-color);
   border: 1px solid black;
@@ -133,6 +137,7 @@ watch(
   width: fit-content;
   padding: 1rem 2rem;
   font-weight: bold;
+  font-size: 2em;
 }
 
 h2 {
@@ -142,6 +147,26 @@ h2 {
 .toggleInput {
   display: none;
 }
+
+#modeSettings,
+#languageSettings {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: left;
+
+  .text {
+    display: inline-block;
+    text-align: center;
+    width: 120px;
+  }
+}
+
+#languageSettings {
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
+
 
 .toggleButton {
   position: relative;
@@ -168,18 +193,6 @@ h2 {
 
 .toggleInput:checked + .slider {
   transform: translateX(1rem);
-}
-
-#modeSettings,
-#languageSettings {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  justify-items: center;
-}
-
-.text {
-  display: inline-block;
-  text-align: center;
 }
 
 input[type='radio'] {

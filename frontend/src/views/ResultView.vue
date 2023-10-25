@@ -42,7 +42,7 @@ function newGameSettings() {
 </script>
 
 <template>
-  <header><div id="logo_s">S</div>
+  <header><div class="logo_s">S</div>
   </header>
   <main>
     <section class="clouds">
@@ -105,19 +105,6 @@ function newGameSettings() {
 
 <style scoped>
 
-#logo_s {
-  background-color: var(--background-color);
-  font-family: var(--logo-font);
-  font-size: 6em;
-  margin-left: 0.25em;
-  color: var(--card-color);
-  text-shadow:
-    -0.5px -1px 0 #000,
-    1px -1px 0 #000,
-    -0.5px 1px 0 #000,
-    1px 1px 0 #000;
-}
-
 .result-card {
   display: flex;
   justify-content: space-around;
@@ -170,18 +157,17 @@ section {
   width: 100%;
   height: 100%;
   position: absolute;
-  z-index: 0;
 }
 
 #cloud1 {
-  top: 52%;
+  top: 58%;
   left: 12%;
   transform: scale(0.7);
 }
 
 #cloud2 {
-  top: -18%;
-  left: 4%;
+  left: 6%;
+  top: 4%;
   transform: scale(0.7) rotate(-5deg);
 }
 
@@ -192,8 +178,8 @@ section {
 }
 
 #cloud4 {
-  top: -10%;
-  left: -5%;
+  top: 40%;
+  left: 65%;
   transform: scale(0.7) scaleX(1);
 }
 

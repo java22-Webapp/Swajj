@@ -174,7 +174,7 @@ const shouldShowListOfPlayers = computed(() => {
 
 <template>
   <header>
-    <div id="logo_s">S</div>
+    <div class="logo_s">S</div>
     <button v-if="isMobile" class="button" id="iphoneIpadButton" @click="listOfPlayers">
       Players
     </button>
@@ -187,7 +187,6 @@ const shouldShowListOfPlayers = computed(() => {
       <img id="cloud4" src="../assets/gultNyttNy.png" alt="Small yellow cloud" />
     </section>
     <img class="rotatedCardBrain" src="../assets/cardBrainYellow.png" alt="Brain holding a card" />
-
     <section>
       <div class="showRound">
         <RoundCounter />
@@ -215,35 +214,13 @@ const shouldShowListOfPlayers = computed(() => {
         </div>
       </section>
     </section>
-    <section>
-      <img
-        class="rotatedCardBrain"
-        src="../assets/cardBrainYellow.png"
-        alt="Brain holding a card"
-      />
-    </section>
   </main>
 </template>
 
 <style scoped>
-#cloud1,
-#cloud4,
-#cloud2,
-#cloud3 {
-  position: absolute;
-}
 
-#logo_s {
-  background-color: var(--background-color);
-  font-family: var(--logo-font);
-  font-size: 6em;
-  margin-left: 0.25em;
-  color: var(--card-color);
-  text-shadow:
-    -0.5px -1px 0 #000,
-    1px -1px 0 #000,
-    -0.5px 1px 0 #000,
-    1px 1px 0 #000;
+body, html {
+  overflow: hidden;
 }
 
 header {
@@ -251,6 +228,10 @@ header {
   justify-content: space-between;
   align-items: center;
   padding: 0 1em;
+}
+
+#cloud1, #cloud4, #cloud2, #cloud3 {
+  position: absolute;
 }
 
 .clouds {
@@ -261,32 +242,32 @@ header {
 }
 
 #cloud1 {
-  top: 52%;
+  top: 58%;
   left: 12%;
   transform: scale(0.7);
 }
 
 #cloud2 {
-  top: -18%;
-  left: 4%;
+  left: 6%;
+  top: 4%;
   transform: scale(0.7) rotate(-5deg);
 }
 
 #cloud3 {
-  top: -8%;
-  left: 60%;
-  transform: scale(0.65) scaleX(-1);
+  top: -20%;
+  left: 55%;
+  transform: scale(0.6);
 }
 
 #cloud4 {
-  top: -10%;
-  left: -5%;
-  transform: scale(0.7) scaleX(1);
+  top: 60%;
+  left: 60%;
+  transform: scale(0.8);
 }
 
 .rotatedCardBrain {
   position: absolute;
-  top: 15em;
+  top: 20em;
   left: -8em;
   transform: scale(0.7) rotate(40deg);
 }
@@ -315,8 +296,8 @@ header {
 }
 
 #idleDeck {
-  width: 50%;
-  height: 100%;
+  width: 30%;
+  height: 50%;
   display: block;
 }
 
@@ -335,7 +316,9 @@ header {
   margin: 0 auto;
   font-family: var(--timer-round-font);
   z-index: 1;
-  background: #ffdcf4;
+  background: var(--background-color);
+  padding: 0 1em;
+  border-radius: 4px;
 }
 
 .QNA {
@@ -350,9 +333,10 @@ header {
   flex-wrap: wrap;
   flex-direction: row;
   justify-content: space-between;
-  gap: 0.5em;
+  gap: 0.25em;
   align-items: center;
   margin-top: 1em;
+  margin-right: 4em;
   z-index: 1;
 }
 
@@ -377,10 +361,12 @@ header {
 }
 
 #listOfPlayers {
-  margin-right: -20em;
-  min-width: 318px;
-  min-height: 500px;
-  z-index: 10;
+  position: absolute;
+  margin-right: -40em;
+  margin-top: -10%;
+  height: fit-content;
+  min-width: 300px;
+  z-index: 2;
 }
 
 #content {
@@ -391,36 +377,6 @@ header {
   justify-content: center;
   align-items: center;
   gap: 3em;
-}
-
-@media only screen and (min-width: 320px) and (max-width: 799px) {
-  #cloud1,
-  #cloud2,
-  #cloud3,
-  #cloud4,
-  .rotatedCardBrain {
-    display: none;
-  }
-
-  #iphoneIpadButton {
-    display: block;
-    transform: scale(0.7);
-  }
-
-  main {
-    margin-top: -10px;
-  }
-
-  #listOfPlayers {
-    position: absolute;
-    top: 20%;
-    left: 15%;
-    z-index: 100;
-  }
-
-  .deckQuestions {
-    font-size: 20px;
-  }
 }
 
 @media only screen and (min-width: 800px) and (max-width: 1000px) {
@@ -462,4 +418,45 @@ header {
     transform: scale(0.65) scaleX(-1);
   }
 }
+
+@media only screen and (min-width: 320px) and (max-width: 799px) {
+  #cloud1,
+  #cloud2,
+  #cloud3,
+  #cloud4 {
+    display: none;
+  }
+
+  #iphoneIpadButton {
+    display: block;
+    transform: scale(0.7);
+  }
+
+  main {
+    margin-top: -10px;
+  }
+
+  #listOfPlayers {
+    position: absolute;
+    top: 20%;
+    left: 15%;
+    z-index: 100;
+  }
+
+  .deckQuestions {
+    font-size: 20px;
+  }
+
+  .rotatedCardBrain {
+    top: 30%;
+    left: -40%;
+    transform: scale(0.3) rotate(40deg);
+  }
+
+  #answerBtns {
+    margin-top: 0;
+    margin-right: 0;
+  }
+}
+
 </style>
