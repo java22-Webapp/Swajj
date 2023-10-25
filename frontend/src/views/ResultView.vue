@@ -40,7 +40,7 @@ function newGameSettings() {
   maxRounds.settings.rounds = settings.settings.rounds;
   userScoreStore.lives = settings.settings.kidsMode ? 3 : 0
 }
-imagePath.value = userScoreStore.getImagePath(userScoreStore.userScore);
+imagePath.value = userScoreStore.getImagePath(userScoreStore.userScore, settings.settings.rounds);
 
 </script>
 
