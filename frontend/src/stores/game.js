@@ -28,6 +28,8 @@ export const useGameStore = defineStore('game', {
       }
     },
 
+
+
     async nextRound() {
       const settings = useSettingsStore();
 
@@ -57,6 +59,23 @@ export const useGameStore = defineStore('game', {
       if (this.timerInterval) {
         clearInterval(this.timerInterval);
       }
+    },
+
+    getImagePath(userScore) {
+      if (userScore >= 0 && userScore < 4 ) {
+        return "src/assets/newFGradeNoBG.png";
+      } else if (userScore >=4 && userScore < 6) {
+        return "src/assets/newDGradeNoBG.png";
+      } else if (userScore >=6 && userScore < 8) {
+        return "src/assets/newCGradeNoBG.png";
+      } else if (userScore === 8) {
+        return "src/assets/newBGradeNoBG.png";
+      } else if (userScore >=9 && userScore < 11) {
+        return "src/assets/newAGradeNoBG.png";
+      } else {
+        return "src/assets/newFGradeNoBG.png";
+      }
     }
+
   }
 });

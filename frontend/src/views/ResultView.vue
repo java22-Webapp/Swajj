@@ -3,6 +3,7 @@ import { useNicknameStore } from '@/stores/nickname';
 import { useGameStore } from '@/stores/game';
 import { router } from '@/router/index';
 import { useSettingsStore } from '@/stores/settings';
+import {ref} from "vue";
 
 const useRouter = router;
 const nickNameStore = useNicknameStore();
@@ -11,6 +12,8 @@ const newRounds = useGameStore();
 const roundTimer = useGameStore();
 const settings = useSettingsStore();
 const maxRounds = useSettingsStore();
+const imagePath = ref('');
+
 
 const redirectToPlay = async () => {
   try {
@@ -37,7 +40,7 @@ function newGameSettings() {
   maxRounds.settings.rounds = settings.settings.rounds;
   userScoreStore.lives = settings.settings.kidsMode ? 3 : 0
 }
-
+imagePath.value = userScoreStore.getImagePath(userScoreStore.userScore);
 
 </script>
 
@@ -69,7 +72,7 @@ function newGameSettings() {
           <g filter="url(#filter0_d_69_37)">
             <rect x="4" width="434" height="340" rx="10" fill="#FFF6C2" />
           </g>
-          <image x="120" y="100" width="200" height="200" xlink:href="../assets/newAGradeNoBG.png" />
+          <image x="120" y="100" width="200" height="200" :xlink:href="imagePath" />
           <defs>
             <filter
               id="filter0_d_69_37"
