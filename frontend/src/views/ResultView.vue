@@ -69,6 +69,7 @@ function newGameSettings() {
           <g filter="url(#filter0_d_69_37)">
             <rect x="4" width="434" height="340" rx="10" fill="#FFF6C2" />
           </g>
+          <image x="120" y="100" width="200" height="200" xlink:href="../assets/newAGradeNoBG.png" />
           <defs>
             <filter
               id="filter0_d_69_37"
