@@ -12,7 +12,7 @@ const askedQuestions = [];
 const askedQuestionsMultiplayer = [];
 const roomState = {};
 const roomAnswers = {};
-
+const gameResults = {};
 
 let gameState = {
   isStarted: false
@@ -95,7 +95,22 @@ io.on("connection", (socket) => {
     const clientsInRoom = io.sockets.adapter.rooms.get(roomId);
     const numberOfClients = clientsInRoom ? clientsInRoom.size : 0;
 
-    socket.emit("answer-result", {
+    if(!gameResults[roomId]) gameResults[roomId] = [];
+
+    let existingUserIndex = gameResults[roomId].findIndex(user => user.user_id === socket.id);
+
+    if (existingUserIndex === -1) {
+      gameResults[roomId].push({user_id: socket.id, score: 0});
+      console.log("GAMERESULTS::: ", gameResults);
+      existingUserIndex = gameResults[roomId].findIndex(user => user.user_id === socket.id);
+    }
+
+    if (isAnswerCorrect) {
+      gameResults[roomId][existingUserIndex].score = gameResults[roomId][existingUserIndex].score + 1;
+      console.log("GAMERESULTS SCORE::: ", gameResults);
+    }
+
+    socket.emit('answer-result', {
       correct: isAnswerCorrect,
       isCorrectArray: currentQuestion.isCorrect
     });

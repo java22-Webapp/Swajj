@@ -193,6 +193,7 @@ section {
   left: -8em;
   transform: scale(0.7) rotate(40deg);
 }
+
 @media only screen and (min-width: 320px) and (max-width: 799px){
   #cloud1, #cloud2, #cloud3, #cloud4, .rotatedCardBrain{
     display: none;
@@ -222,7 +223,6 @@ section {
   main{
     margin-top: -10px;
   }
-
 
   .rotatedCardBrain{
     top: 60%;
