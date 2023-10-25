@@ -5,6 +5,7 @@ import GameStart from "@/views/PlayView.vue";
 import ResultView from "@/views/ResultView.vue";
 import InviteeView from "@/views/InviteeView.vue";
 import playMultiplayer from "@/views/playMultiplayerView.vue";
+import ResultMultiplayerView from "@/views/ResultMultiplayerView.vue"
 
 export const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -43,6 +44,11 @@ export const router = createRouter({
             path: '/join',
             name: 'Invitee',
             component: InviteeView
+        },
+        {
+            path: '/resultMultiplayer',
+            name: 'ResultMultiplayer',
+            component: ResultMultiplayerView
         }
 
     ]
