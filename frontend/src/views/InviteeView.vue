@@ -5,7 +5,9 @@ import { useNicknameStore } from '@/stores/nickname';
 import ListOfPlayers from '@/components/ListOfPlayers.vue';
 import { useRouter } from 'vue-router';
 import { useSocketStore } from "@/stores/socket";
+import { useSettingsStore } from "@/stores/settings";
 
+const settingsStore = useSettingsStore();
 const nickNameStore = useNicknameStore();
 const buttonDisabled = ref(false);
 const router = useRouter();
@@ -26,7 +28,10 @@ function connectToSocket() {
   socket.emit('newPlayer', nickNameStore.nickname);
 
   // Listen for game start
-  socket.on('gameStarted', () => {
+  socket.on('gameStarted', (settings) => {
+
+    settingsStore.settings = settings;
+
     router.push({ name: 'PlayMultiplayer', params: { roomId: roomId }})
       .catch(err => console.log("Routing error from clients: ", err));
   });

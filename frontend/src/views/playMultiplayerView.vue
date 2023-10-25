@@ -7,12 +7,14 @@ import { useGameStore } from '@/stores/game';
 import ListOfPlayers from '@/components/ListOfPlayers.vue';
 import { useRouter } from 'vue-router';
 import { useSocketStore } from '@/stores/socket';
+import { useSettingsStore } from "@/stores/settings";
 
 const questions = ref('');
 const answers = ref([]);
 const isCorrect = ref([]);
 const answerID = ref([]);
 const userScoreHolder = useGameStore();
+const settingsStore = useSettingsStore();
 const timerInterval = ref(null);
 let selectedAnswerIndex = ref(null);
 const buttonDisabled = ref(false);
@@ -91,7 +93,8 @@ onUnmounted(() => {
 });
 
 function getNewQuestion() {
-  socket.emit('requestNewQuestion', roomId);
+  const queryString = `kidsMode=${settingsStore.settings.kidsMode}&english=${settingsStore.settings.english}`
+  socket.emit('requestNewQuestion', { roomId, queryString });
 }
 
 function userAnswer(e, index) {
