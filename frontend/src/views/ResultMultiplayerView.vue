@@ -3,6 +3,8 @@ import { useNicknameStore } from '@/stores/nickname';
 import { useGameStore } from '@/stores/game';
 import { router } from '@/router/index';
 import { useSettingsStore } from '@/stores/settings';
+import { onMounted } from "vue";
+import {useSocketStore} from "@/stores/socket";
 
 const useRouter = router;
 const nickNameStore = useNicknameStore();
@@ -11,6 +13,8 @@ const newRounds = useGameStore();
 const roundTimer = useGameStore();
 const settings = useSettingsStore();
 const maxRounds = useSettingsStore();
+const socket = useSocketStore();
+
 
 const redirectToPlay = async () => {
   try {
@@ -37,6 +41,10 @@ function newGameSettings() {
   maxRounds.settings.rounds = settings.settings.rounds;
   userScoreStore.lives = settings.settings.kidsMode ? 3 : 0
 }
+
+onMounted(() => {
+  socket.emit()
+})
 
 </script>
 

@@ -46,7 +46,7 @@ export const router = createRouter({
             component: InviteeView
         },
         {
-            path: '/resultMultiplayer',
+            path: '/resultMultiplayer/:roomId',
             name: 'ResultMultiplayer',
             component: ResultMultiplayerView
         }

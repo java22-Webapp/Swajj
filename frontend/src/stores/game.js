@@ -40,9 +40,12 @@ export const useGameStore = defineStore('game', {
         try {
           this.stopTimer();
           if (router.currentRoute.value.name === "Play") {
-            await router.push('/result');
+            await router.push('/result/');
           }
-          else await router.push("/resultMultiplayer");
+          else {
+            const roomId = router.currentRoute.value.fullPath.split("/")[2];
+            await router.push({ name: 'ResultMultiplayer', params: { roomId: roomId}});
+          }
         } catch (error) {
           if (error.name !== 'NavigationDuplicated') {
             console.error(error);
