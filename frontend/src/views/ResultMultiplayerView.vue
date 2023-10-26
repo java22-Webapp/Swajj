@@ -1,5 +1,4 @@
   <script setup>
-  import { useNicknameStore } from '@/stores/nickname';
   import { useGameStore } from '@/stores/game';
   import { router } from '@/router/index';
   import { useSettingsStore } from '@/stores/settings';
@@ -7,7 +6,6 @@
   import {useSocketStore} from "@/stores/socket";
 
   const useRouter = router;
-  const nickNameStore = useNicknameStore();
   const userScoreStore = useGameStore();
   const newRounds = useGameStore();
   const roundTimer = useGameStore();
@@ -74,11 +72,11 @@
     <img class="rotatedCardBrain" src="../assets/cardBrainYellow.png" alt="Brain holding a card" />
     <div class="result-card">
       <p class="result">Result</p>
-      <p class="nickname">
-        {{ nickNameStore.nickname }} | Score: {{ userScoreStore.userScore }}/{{
-          settings.settings.rounds
-        }} {{ results }}}
-      </p>
+      <div class="nickname">
+        <li v-for="res in results" :key="res">
+          {{ res.nickname }} || {{ res.score }}
+        </li>
+      </div>
       <svg
         width="442"
         height="350"
@@ -157,7 +155,7 @@
   font-size: large;
   position: absolute;
   z-index: 1;
-  top: 15%;
+  top: 30%;
   left: 50%;
   transform: translate(-50%, -50%);
 }

@@ -18,8 +18,6 @@ let gameState = {
   isStarted: false
 };
 
-let players = [];
-
 const corsOptions = {
   origin: "*",
   methods: ["GET", "POST", "PATCH", "DELETE", "PUT", "HEAD"],
@@ -41,23 +39,27 @@ app.use(cors(corsOptions));
 io.on("connection", (socket) => {
   console.log(`New connection with socket id: ${socket.id}`);
 
-  socket.on("set-host-nickname", (nickname) => {
-    socket.playerName = nickname;
-    players.push(nickname);
-    console.log("Host connected: ", socket.playerName);
-
+  socket.on("set-host-nickname", (data) => {
+    if(!gameResults[data.roomId]) gameResults[data.roomId] = [];
+    gameResults[data.roomId].push({user_id: socket.id, score: 0, nickname: data.nickname});
+    socket.roomId = data.roomId;
+    console.log("GAMERESULTS::: ", gameResults);
+    socket.to(data.roomId).emit("update-player-list", gameResults[data.roomId].map(user => user.nickname));
   });
 
-  io.emit("update-player-list", players);
+  socket.on("send-update", (data) => {
+    if (gameResults[data])
+      socket.to(data).emit("update-player-list", gameResults[data].map(user => user.nickname));
+  })
 
-  socket.on("newPlayer", (playerName) => {
-    if (!players.includes(playerName)) {
-      socket.playerName = playerName;
+ /* socket.on("newPlayer", (data) => {
+    if (!players.includes(data)) {
+      socket.playerName = data;
       players.push(playerName);
       console.log("A new player connected: ", socket.playerName);
       io.emit("update-player-list", players);
     }
-  });
+  });*/
 
   // Let clients/users the game room
   socket.on("joinRoom", (roomId) => {
@@ -105,7 +107,6 @@ io.on("connection", (socket) => {
     let existingUserIndex = gameResults[roomId].findIndex(user => user.user_id === socket.id);
 
     if (existingUserIndex === -1) {
-      gameResults[roomId].push({user_id: socket.id, score: 0});
       console.log("GAMERESULTS::: ", gameResults);
       existingUserIndex = gameResults[roomId].findIndex(user => user.user_id === socket.id);
     }

@@ -1,16 +1,10 @@
 <script setup>
 import NicknameInput from '@/components/NicknameInput.vue';
-import { io } from 'socket.io-client';
-import { useNicknameStore } from '@/stores/nickname';
 import { useRouter } from 'vue-router';
-
-const nicknameStore = useNicknameStore();
-const socket = io('http://localhost:3000');
 
 const router = useRouter();
 
 const handleMultiplayerClick = () => {
-  socket.emit('set-host-nickname', nicknameStore.nickname + ' (Host)');
   router.push('/Multiplayer');
 };
 </script>

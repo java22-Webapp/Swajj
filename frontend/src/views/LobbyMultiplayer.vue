@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from "vue";
+import { computed, onBeforeMount, ref } from "vue";
 import SettingsPanel from '@/components/SettingsPanel.vue';
 import { useNicknameStore } from '@/stores/nickname';
 import ListOfPlayers from "@/components/ListOfPlayers.vue";
@@ -13,6 +13,7 @@ const nickNameStore = useNicknameStore();
 const copyButtonRef = ref(null);
 const settingsStore = useSettingsStore();
 const socket = useSocketStore();
+const roomId = ref(null);
 socket.initializeSocket();
 
 function startMultiplayerGame() {
@@ -26,7 +27,7 @@ function startMultiplayerGame() {
     time: settingsStore.settings.time
   };
 
-  socket.emit('joinRoom', roomId.value);
+  socket.emit('joinRoom', roomId);
   socket.emit("startGame", { roomId, settings: currentSettings });
   router.push({ name: 'PlayMultiplayer', params: { roomId: roomId}})
 }
@@ -94,6 +95,23 @@ const shouldShowListOfPlayers = computed(() => {
   return true;
 });
 
+onBeforeMount(async () => {
+  try {
+    const response = await fetch('http://localhost:3000/generate-game-link');
+    const data = await response.json();
+    gameLink.value = data.gameLink;
+  } catch (error) {
+    console.error('Error generating game link: ', error);
+    copied.value = false;
+  }
+
+  const url = new URL(gameLink.value);
+  roomId.value = url.searchParams.get('roomId');
+  const nicknameStore = useNicknameStore();
+
+  socket.emit('set-host-nickname', { nickname: nicknameStore.nickname + ' (Host)', roomId: roomId.value});
+})
+
 </script>
 
 <template>
@@ -114,7 +132,7 @@ const shouldShowListOfPlayers = computed(() => {
       alt="Brain holding a card"
     />
     <section id="content">
-      <ListOfPlayers id="listOfPlayers" v-if="shouldShowListOfPlayers" />
+      <ListOfPlayers  id="listOfPlayers" v-if="shouldShowListOfPlayers" :roomId="roomId" />
       <section id="settingsSection">
         <SettingsPanel id="settingsPanel" />
         <div id="nicknameField">Nickname: {{ nickNameStore.nickname }}</div>

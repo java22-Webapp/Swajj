@@ -1,19 +1,16 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
-import { io } from "socket.io-client";
+import { ref, onMounted } from "vue";
+import { useSocketStore } from "@/stores/socket";
 
 const players = ref([]);
-const socket = io('http://localhost:3000');
+const socket = useSocketStore();
+socket.initializeSocket();
 
 onMounted(() => {
   socket.on('update-player-list', (updatedPlayers) => {
     players.value = updatedPlayers;
   });
 });
-
-onUnmounted(() => {
-  socket.disconnect();
-})
 
 </script>
 
