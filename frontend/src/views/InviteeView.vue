@@ -35,7 +35,6 @@ function connectToSocket() {
     router.push({ name: 'PlayMultiplayer', params: { roomId: roomId }})
       .catch(err => console.log("Routing error from clients: ", err));
   });
-
   socket.on('disconnect', () => {
     console.log('Disconnected from server');
   });

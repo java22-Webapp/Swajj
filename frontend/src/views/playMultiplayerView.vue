@@ -1,6 +1,6 @@
 <script setup>
 import RoundCounter from '@/components/RoundCounter.vue';
-import { ref, onMounted, onBeforeUnmount, computed, onUnmounted } from 'vue';
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
 import questionCardStack from '../assets/questionCardStack.png';
 import questionCardStackFlipped from '../assets/questionCardStackFlipped.png';
 import { useGameStore } from '@/stores/game';
@@ -88,9 +88,6 @@ onBeforeUnmount(() => {
   console.log('Component about to be destroyed');
 });
 
-onUnmounted(() => {
-  if (socket) socket.disconnect();
-});
 
 function getNewQuestion() {
   const queryString = `kidsMode=${settingsStore.settings.kidsMode}&english=${settingsStore.settings.english}`

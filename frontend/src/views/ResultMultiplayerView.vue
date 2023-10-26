@@ -1,52 +1,65 @@
-<script setup>
-import { useNicknameStore } from '@/stores/nickname';
-import { useGameStore } from '@/stores/game';
-import { router } from '@/router/index';
-import { useSettingsStore } from '@/stores/settings';
-import { onMounted } from "vue";
-import {useSocketStore} from "@/stores/socket";
+  <script setup>
+  import { useNicknameStore } from '@/stores/nickname';
+  import { useGameStore } from '@/stores/game';
+  import { router } from '@/router/index';
+  import { useSettingsStore } from '@/stores/settings';
+  import { onMounted, ref } from "vue";
+  import {useSocketStore} from "@/stores/socket";
 
-const useRouter = router;
-const nickNameStore = useNicknameStore();
-const userScoreStore = useGameStore();
-const newRounds = useGameStore();
-const roundTimer = useGameStore();
-const settings = useSettingsStore();
-const maxRounds = useSettingsStore();
-const socket = useSocketStore();
+  const useRouter = router;
+  const nickNameStore = useNicknameStore();
+  const userScoreStore = useGameStore();
+  const newRounds = useGameStore();
+  const roundTimer = useGameStore();
+  const settings = useSettingsStore();
+  const maxRounds = useSettingsStore();
+  const socket = useSocketStore();
+  const results = ref([]);
 
+  const redirectToPlay = async () => {
+    try {
+      await fetch('http://localhost:3000/play-again', {
+        method: 'GET',
+      });
+    } catch (error) {
+      console.error('Error clearing questions: ', error);
+    }
+    newGameSettings();
+    useRouter.push('/Play');
+  };
 
-const redirectToPlay = async () => {
-  try {
-    await fetch('http://localhost:3000/play-again', {
-      method: 'GET',
-    });
-  } catch (error) {
-    console.error('Error clearing questions: ', error);
+  const redirectToMenu = () => {
+    newGameSettings();
+    if (socket.socket) socket.disconnect();
+    useRouter.push('/');
+  };
+
+  function newGameSettings() {
+    userScoreStore.userScore = 0;
+    newRounds.currentRound = 1;
+    roundTimer.remainingTime = useGameStore().remainingTime;
+    maxRounds.settings.rounds = settings.settings.rounds;
+    userScoreStore.lives = settings.settings.kidsMode ? 3 : 0
   }
-  newGameSettings();
-  useRouter.push('/Play');
-};
 
-const redirectToMenu = () => {
-  newGameSettings();
+  onMounted(() => {
 
-  useRouter.push('/');
-};
+    const roomId = router.currentRoute.value.fullPath.split("/")[2];
+    console.log("ROOM IDDDDD::: ", roomId);
 
-function newGameSettings() {
-  userScoreStore.userScore = 0;
-  newRounds.currentRound = 1;
-  roundTimer.remainingTime = useGameStore().remainingTime;
-  maxRounds.settings.rounds = settings.settings.rounds;
-  userScoreStore.lives = settings.settings.kidsMode ? 3 : 0
-}
+    socket.emit("request-results", roomId);
+    console.log("sending request-results")
+    socket.on("results-for-room", (data) => {
+      console.log("DATA RECEIVED IN RES VIEW::", data)
+      results.value = data;
+    })
 
-onMounted(() => {
-  socket.emit()
-})
+  });
 
-</script>
+  socket.on('disconnect', () => {
+    console.log('Disconnected from server');
+  });
+  </script>
 
 <template>
   <header><div id="logo_s">S Result</div>
@@ -64,7 +77,7 @@ onMounted(() => {
       <p class="nickname">
         {{ nickNameStore.nickname }} | Score: {{ userScoreStore.userScore }}/{{
           settings.settings.rounds
-        }}
+        }} {{ results }}}
       </p>
       <svg
         width="442"

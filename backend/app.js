@@ -95,6 +95,11 @@ io.on("connection", (socket) => {
     const clientsInRoom = io.sockets.adapter.rooms.get(roomId);
     const numberOfClients = clientsInRoom ? clientsInRoom.size : 0;
 
+    socket.emit("answer-result", {
+      correct: isAnswerCorrect,
+      isCorrectArray: currentQuestion.isCorrect
+    });
+
     if(!gameResults[roomId]) gameResults[roomId] = [];
 
     let existingUserIndex = gameResults[roomId].findIndex(user => user.user_id === socket.id);
@@ -109,11 +114,6 @@ io.on("connection", (socket) => {
       gameResults[roomId][existingUserIndex].score = gameResults[roomId][existingUserIndex].score + 1;
       console.log("GAMERESULTS SCORE::: ", gameResults);
     }
-
-    socket.emit('answer-result', {
-      correct: isAnswerCorrect,
-      isCorrectArray: currentQuestion.isCorrect
-    });
 
     if (!roomAnswers[roomId]) {
       roomAnswers[roomId] = [];
@@ -131,7 +131,12 @@ io.on("connection", (socket) => {
     }
   });
 
+  console.log("Waiting for request-results");
 
+  socket.on("request-results", (roomId) => {
+    console.log("GAMERESULTS - ROOM ID::: ", gameResults[roomId]);
+    socket.emit("results-for-room", gameResults[roomId]);
+  })
 
   // Lobby leader is emitting(calling) this from LobbyMultiplayer.vue to start the game
   // Clients are listening (in InviteeView.vue) for the "gameStarted" emit with the corresponding roomId
