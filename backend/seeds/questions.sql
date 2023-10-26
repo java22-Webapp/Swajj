@@ -125,3 +125,46 @@ INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 1, 'Vart 
 INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 2, 'Buddha is claimed to have been born in what country?');
 INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 1, 'Vilken skala används när man mäter hetta?');
 INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 2, 'What scale is used to measure spiciness?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 1, 'Vilken Disney prinsessa har en tatuering?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 2, 'What Disney princess has a tattoo?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 1, 'Vilken uråldrig civilisation byggde Machu Picchu?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 2, 'What ancient civilization built the Machu Picchu?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 1, 'Vilken av dessa 4 är INTE en typ av sten?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 2, 'Which of these 4 is NOT a type of rock?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 1, 'Vilken av dessa namn har Istanbul aldrig varit kännt som?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 2, 'Which of these names have Istanbul not been known by?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 1, 'Vilken är den längsta floden i världen?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 2, 'Which is the longest river in the world?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 1, 'Vilket djur har dom största ögonen?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 2, 'Which animal has the largest eyes?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 1, 'Vilket är det mest talade språket i världen??');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 2, 'Which is the most spoken language?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 1, 'Vilken fågel har det längsta vingspannet?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 2, 'Which bird has the largest wingspan?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 1, 'Vilken stad är USAs huvudstad?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 2, 'Which city is the USAs capital?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 1, 'Vad heter Miley Cyrus egentligen?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 2, 'What is Miley Cyrus´s real name?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 1, 'Vilket är det största organet?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 2, 'Which is your bodys largest organ?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 1, 'Världens populäraste drink som inte är Alkohol?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 2, 'What’s the most popular drink in the world that is not alcohol?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 1, 'Vilket är det minsta landet i världen?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 2, 'Which is the smallest country in the world?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 1, 'Hur många magsäckar har en ko?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 2, 'How many compartments does a cow´s stomach have?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 1, 'Vad för färg är Isbjörnens päls?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 2, 'What color fur does a polar bear have?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 1, 'Vilket är det äldsta funna instrumentet?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 2, 'Which is the oldest found instrument?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 1, 'Vem var första personen att gå på månen?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 2, 'Who was the first person to walk on the Moon?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 1, 'Vilket skandinaviskt land är störst?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 2, 'What is the largest country in Scandinavia?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 1, 'Hur många ägg äter Gaston från "Skönheten och Odjuret"varje morgon?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 2, 'How many eggs does Gaston eat each morning in "Beauty and the Beast"?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 1, 'Vilka var Musse Piggs första ord?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 2, 'What were Mickey Mouse´s first words?');
+
+
+
