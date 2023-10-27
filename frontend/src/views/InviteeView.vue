@@ -12,9 +12,9 @@ const nickNameStore = useNicknameStore();
 const buttonDisabled = ref(false);
 const router = useRouter();
 const socket = useSocketStore();
+const roomId = router.currentRoute.value.query.roomId;
 
 function connectToSocket() {
-  const roomId = router.currentRoute.value.query.roomId;
   console.log('ROOM ID::: ', roomId);
   if (nickNameStore.nickname.trim() === '') {
     console.error('Nickname cannot be empty');
@@ -41,6 +41,7 @@ function connectToSocket() {
 
 onBeforeMount(() => {
   socket.initializeSocket();
+  socket.emit("send-update", roomId);
 })
 
 </script>

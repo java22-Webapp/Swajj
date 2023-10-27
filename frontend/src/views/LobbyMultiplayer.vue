@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onBeforeMount, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, onBeforeMount, onMounted, ref } from "vue";
 import SettingsPanel from '@/components/SettingsPanel.vue';
 import { useNicknameStore } from '@/stores/nickname';
 import ListOfPlayers from "@/components/ListOfPlayers.vue";
@@ -141,8 +141,7 @@ onMounted(async () => {
       alt="Brain holding a card"
     />
     <section id="content">
-      <li v-for="nick in playerNicknames" :key="nick + Math.random()">DIV ===== {{ nick }}</li>
-      <ListOfPlayers id="listOfPlayers" v-if="shouldShowListOfPlayers" :roomId="roomId" />
+      <ListOfPlayers id="listOfPlayers" v-if="shouldShowListOfPlayers" />
       <section id="settingsSection">
         <SettingsPanel id="settingsPanel" />
         <div id="nicknameField">Nickname: {{ nickNameStore.nickname }}</div>
