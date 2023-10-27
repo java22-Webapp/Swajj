@@ -1,10 +1,9 @@
 <script setup>
 import RoundCounter from '@/components/RoundCounter.vue';
-import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
+import { ref, onBeforeUnmount, computed, onBeforeMount } from "vue";
 import questionCardStack from '../assets/questionCardStack.png';
 import questionCardStackFlipped from '../assets/questionCardStackFlipped.png';
 import { useGameStore } from '@/stores/game';
-import ListOfPlayers from '@/components/ListOfPlayers.vue';
 import { useRouter } from 'vue-router';
 import { useSocketStore } from '@/stores/socket';
 import { useSettingsStore } from "@/stores/settings";
@@ -21,6 +20,7 @@ const buttonDisabled = ref(false);
 const router = useRouter();
 let roomId = ref('');
 const socket = useSocketStore();
+const results = ref([])
 
 const answersCombo = computed(() => {
   const result = [];
@@ -42,6 +42,7 @@ function resetGameState() {
 const startTimer = (() => {
   let firstTimeCalled = true;
   return () => {
+    socket.emit("request-results", roomId.value);
     clearInterval(timerInterval.value);
     if (!firstTimeCalled) {
       useGameStore().nextRound();
@@ -61,9 +62,15 @@ const startTimer = (() => {
   };
 })();
 
-onMounted(() => {
+onBeforeMount(() => {
   roomId.value = router.currentRoute.value.params.roomId;
   socket.emit('joinRoom', roomId.value);
+  socket.emit("request-results", roomId.value);
+  console.log("sending request-results")
+  socket.on("results-for-room", (data) => {
+    console.log("DATA RECEIVED IN RES VIEW::", data)
+    results.value = data;
+  })
   getNewQuestion();
   startTimer();
 
@@ -83,8 +90,8 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   clearInterval(timerInterval.value);
-  socket.off('new-question', roomId);
-  socket.off('round-completed', roomId);
+  socket.off('new-question', roomId.value);
+  socket.off('round-completed', roomId.value);
   console.log('Component about to be destroyed');
 });
 
@@ -193,7 +200,50 @@ const shouldShowListOfPlayers = computed(() => {
       </div>
     </section>
     <section id="content">
-      <ListOfPlayers id="listOfPlayers" v-if="shouldShowListOfPlayers" />
+      <div class="result-card" v-if="shouldShowListOfPlayers">
+        <p class="result">Result</p>
+        <div class="nickname">
+          <li v-for="res in results" :key="res">
+            {{ res.nickname }} || {{ res.score }}
+          </li>
+        </div>
+        <svg
+          width="442"
+          height="350"
+          viewBox="0 0 442 350"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <g filter="url(#filter0_d_69_37)">
+            <rect x="4" width="434" height="340" rx="10" fill="#FFF6C2" />
+          </g>
+          <defs>
+            <filter
+              id="filter0_d_69_37"
+              x="0"
+              y="0"
+              width="442"
+              height="559"
+              filterUnits="userSpaceOnUse"
+              color-interpolation-filters="sRGB"
+            >
+              <feFlood flood-opacity="0" result="BackgroundImageFix" />
+              <feColorMatrix
+                in="SourceAlpha"
+                type="matrix"
+                values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                result="hardAlpha"
+              />
+              <feOffset dy="4" />
+              <feGaussianBlur stdDeviation="2" />
+              <feComposite in2="hardAlpha" operator="out" />
+              <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0" />
+              <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_69_37" />
+              <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_69_37" result="shape" />
+            </filter>
+          </defs>
+        </svg>
+      </div>
       <section class="QNA">
         <div id="deckDiv">
           <div class="deckQuestions">{{ questions }}</div>
@@ -230,6 +280,26 @@ header {
   padding: 0 1em;
 }
 
+.nickname {
+  font-size: large;
+  position: absolute;
+  z-index: 1;
+  top: 57%;
+  left: 67%;
+  transform: translate(-50%, -50%);
+}
+
+.result {
+  font-size: x-large;
+  font-weight: bold;
+  text-decoration: underline;
+  position: absolute;
+  z-index: 1;
+  top: 40%;
+  left: 70%;
+  transform: translate(-50%, -50%);
+}
+
 #cloud1, #cloud4, #cloud2, #cloud3 {
   position: absolute;
 }
@@ -238,7 +308,7 @@ header {
   width: 100%;
   height: 100%;
   position: absolute;
-  z-index: 0;
+  z-index: -1;
 }
 
 #cloud1 {
