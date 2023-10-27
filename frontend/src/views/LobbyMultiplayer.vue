@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onBeforeMount, ref } from "vue";
+import { computed, onBeforeMount, onBeforeUnmount, onMounted, ref } from "vue";
 import SettingsPanel from '@/components/SettingsPanel.vue';
 import { useNicknameStore } from '@/stores/nickname';
 import ListOfPlayers from "@/components/ListOfPlayers.vue";
@@ -14,6 +14,7 @@ const copyButtonRef = ref(null);
 const settingsStore = useSettingsStore();
 const socket = useSocketStore();
 const roomId = ref(null);
+const playerNicknames = ref([]);
 socket.initializeSocket();
 
 function startMultiplayerGame() {
@@ -27,7 +28,6 @@ function startMultiplayerGame() {
     time: settingsStore.settings.time
   };
 
-  socket.emit('joinRoom', roomId);
   socket.emit("startGame", { roomId, settings: currentSettings });
   router.push({ name: 'PlayMultiplayer', params: { roomId: roomId}})
 }
@@ -95,7 +95,14 @@ const shouldShowListOfPlayers = computed(() => {
   return true;
 });
 
-onBeforeMount(async () => {
+onBeforeMount(() => {
+  socket.on("update-player-list", (data) => {
+    console.log("Data from update-player-list " + data)
+    playerNicknames.value = data;
+  })
+})
+
+onMounted(async () => {
   try {
     const response = await fetch('http://localhost:3000/generate-game-link');
     const data = await response.json();
@@ -108,9 +115,11 @@ onBeforeMount(async () => {
   const url = new URL(gameLink.value);
   roomId.value = url.searchParams.get('roomId');
   const nicknameStore = useNicknameStore();
-
+  console.log("PLAYERS IN THIS ARRAY 1::: ", playerNicknames.value);
   socket.emit('set-host-nickname', { nickname: nicknameStore.nickname + ' (Host)', roomId: roomId.value});
-})
+  socket.emit('joinRoom', roomId.value);
+  socket.emit("send-update", roomId.value);
+  })
 
 </script>
 
@@ -132,7 +141,8 @@ onBeforeMount(async () => {
       alt="Brain holding a card"
     />
     <section id="content">
-      <ListOfPlayers  id="listOfPlayers" v-if="shouldShowListOfPlayers" :roomId="roomId" />
+      <li v-for="nick in playerNicknames" :key="nick + Math.random()">DIV ===== {{ nick }}</li>
+      <ListOfPlayers id="listOfPlayers" v-if="shouldShowListOfPlayers" :roomId="roomId" />
       <section id="settingsSection">
         <SettingsPanel id="settingsPanel" />
         <div id="nicknameField">Nickname: {{ nickNameStore.nickname }}</div>

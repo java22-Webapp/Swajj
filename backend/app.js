@@ -43,13 +43,15 @@ io.on("connection", (socket) => {
     if(!gameResults[data.roomId]) gameResults[data.roomId] = [];
     gameResults[data.roomId].push({user_id: socket.id, score: 0, nickname: data.nickname});
     socket.roomId = data.roomId;
-    console.log("GAMERESULTS::: ", gameResults);
+    console.log("GAMERESULTS::: ", gameResults[data.roomId].map(user => user.nickname));
     socket.to(data.roomId).emit("update-player-list", gameResults[data.roomId].map(user => user.nickname));
+    socket.emit("update-player-list", gameResults[data.roomId].map(user => user.nickname))
   });
 
-  socket.on("send-update", (data) => {
-    if (gameResults[data])
-      socket.to(data).emit("update-player-list", gameResults[data].map(user => user.nickname));
+  socket.on("send-update", (roomId) => {
+    if (gameResults[roomId])
+      socket.to(roomId).emit("update-player-list", gameResults[roomId].map(user => user.nickname));
+      socket.emit("update-player-list", gameResults[roomId].map(user => user.nickname));
   })
 
  /* socket.on("newPlayer", (data) => {
