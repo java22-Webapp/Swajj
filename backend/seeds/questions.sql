@@ -165,6 +165,43 @@ INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 1, 'Hur m
 INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 2, 'How many eggs does Gaston eat each morning in "Beauty and the Beast"?');
 INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 1, 'Vilka var Musse Piggs första ord?');
 INSERT INTO questions (mode_id, language_id, question_text) VALUES (2, 2, 'What were Mickey Mouse´s first words?');
-
-
-
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 1, 'Vilken Disney prinsessa har minst skärmtid?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 2, 'Which Disney Princess has the least amount of screen time?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 1, 'Från April 2023, Vilken film är högst ratead på iMDB?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 2, 'As of April 2023, what´s the highest rated film on iMDB?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 1, 'Huvudstaden i Tanzania?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 2, 'What´s the capital city of Tanzania?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 1, 'Hur många tidszoner finns i Ryssland?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 2, 'How many time zones are there in Russia?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 1, 'Genom vilken huvudstad flödar inte Donau floden?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 2, 'In which of these capitals does the Danube river not flow through?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 1, 'Vad hette Genghis Khan innan han bytte sitt namn?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 2, 'What was Genghis Khans name before changing it?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 1, 'Vilken av dessa högtider pågår kortast tid?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 2, 'Which of these lasts for the shortest period of time?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 1, 'Vilken av dessa blev färdigställt först?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 2, 'Construction of which of these were completed first?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 1, 'Vilken föredetta Beatles medlem var berättare för Thomas the Tank Engine?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 2, 'Which former Beatle narrated the TV adventures of Thomas the Tank Engine?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 1, 'Pol Pot var ledare över vilket land på 1970-talet?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 2, 'Pol Pot was a leader of which country in the 1970s?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 1, 'Desdemona är fru till vilken Shakespeareansk karaktär?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 2, 'Desdemona Is The Wife Of Which Shakespearean Title Character?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 1, 'På vilket språk var Anne Franks dagbok först publicerad?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 2, 'In what language was Anne Frank´s original diary first published?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 1, 'Vad för insekt kortslöt en tidig dator och inspirerade termen "bugg"?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 2, 'What insect shorted out an early supercomputer and inspired the term "bug"?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 1, 'Vem är den enda Nobelpris vinnaren att tacka nej till priset?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 2, 'Who is the only winner of the Nobel Prize to decline it?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 1, 'I det periodiska systemet finns fyra element döpta efter vad?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 2, 'On the periodic table, there are four different elements named after what?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 1, 'Vem av följande har inte ett kemisk element namngett efter sig?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 2, 'Which of the following does not have a chemical element named after them?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 1, 'Vem av följande har vunnit flest Grammy priser?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 2, 'Who has won the most Grammy awards?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 1, 'Vilken Skådespelare har vunnit flest Oscars priser?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 2, 'Who has won the most Academy awards for acting?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 1, 'Vilket album har sålt flest kopior någonsin?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 2, 'Which is the best selling album of all time?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 1, 'Vilken Kinesisk dynasti höll längst?');
+INSERT INTO questions (mode_id, language_id, question_text) VALUES (1, 2, 'Which Chinese dynasty lasted the longest?');
