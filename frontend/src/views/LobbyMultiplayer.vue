@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from "vue";
+import { computed, onBeforeMount, onMounted, ref } from "vue";
 import SettingsPanel from '@/components/SettingsPanel.vue';
 import { useNicknameStore } from '@/stores/nickname';
 import ListOfPlayers from "@/components/ListOfPlayers.vue";
@@ -13,6 +13,8 @@ const nickNameStore = useNicknameStore();
 const copyButtonRef = ref(null);
 const settingsStore = useSettingsStore();
 const socket = useSocketStore();
+const roomId = ref(null);
+const playerNicknames = ref([]);
 socket.initializeSocket();
 
 function startMultiplayerGame() {
@@ -26,7 +28,6 @@ function startMultiplayerGame() {
     time: settingsStore.settings.time
   };
 
-  socket.emit('joinRoom', roomId.value);
   socket.emit("startGame", { roomId, settings: currentSettings });
   router.push({ name: 'PlayMultiplayer', params: { roomId: roomId}})
 }
@@ -93,6 +94,32 @@ const shouldShowListOfPlayers = computed(() => {
   }
   return true;
 });
+
+onBeforeMount(() => {
+  socket.on("update-player-list", (data) => {
+    console.log("Data from update-player-list " + data)
+    playerNicknames.value = data;
+  })
+})
+
+onMounted(async () => {
+  try {
+    const response = await fetch('http://localhost:3000/generate-game-link');
+    const data = await response.json();
+    gameLink.value = data.gameLink;
+  } catch (error) {
+    console.error('Error generating game link: ', error);
+    copied.value = false;
+  }
+
+  const url = new URL(gameLink.value);
+  roomId.value = url.searchParams.get('roomId');
+  const nicknameStore = useNicknameStore();
+  console.log("PLAYERS IN THIS ARRAY 1::: ", playerNicknames.value);
+  socket.emit('set-host-nickname', { nickname: nicknameStore.nickname + ' (Host)', roomId: roomId.value});
+  socket.emit('joinRoom', roomId.value);
+  socket.emit("send-update", roomId.value);
+  })
 
 </script>
 

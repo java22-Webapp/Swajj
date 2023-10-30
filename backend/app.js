@@ -12,13 +12,11 @@ const askedQuestions = [];
 const askedQuestionsMultiplayer = [];
 const roomState = {};
 const roomAnswers = {};
-
+const gameResults = {};
 
 let gameState = {
   isStarted: false
 };
-
-let players = [];
 
 const corsOptions = {
   origin: "*",
@@ -41,23 +39,29 @@ app.use(cors(corsOptions));
 io.on("connection", (socket) => {
   console.log(`New connection with socket id: ${socket.id}`);
 
-  socket.on("set-host-nickname", (nickname) => {
-    socket.playerName = nickname;
-    players.push(nickname);
-    console.log("Host connected: ", socket.playerName);
-
+  socket.on("set-host-nickname", (data) => {
+    if(!gameResults[data.roomId]) gameResults[data.roomId] = [];
+    gameResults[data.roomId].push({user_id: socket.id, score: 0, nickname: data.nickname});
+    socket.roomId = data.roomId;
+    console.log("GAMERESULTS::: ", gameResults[data.roomId].map(user => user.nickname));
+    socket.to(data.roomId).emit("update-player-list", gameResults[data.roomId].map(user => user.nickname));
+    socket.emit("update-player-list", gameResults[data.roomId].map(user => user.nickname))
   });
 
-  io.emit("update-player-list", players);
+  socket.on("send-update", (roomId) => {
+    if (gameResults[roomId])
+      socket.to(roomId).emit("update-player-list", gameResults[roomId].map(user => user.nickname));
+      socket.emit("update-player-list", gameResults[roomId].map(user => user.nickname));
+  })
 
-  socket.on("newPlayer", (playerName) => {
-    if (!players.includes(playerName)) {
-      socket.playerName = playerName;
+ /* socket.on("newPlayer", (data) => {
+    if (!players.includes(data)) {
+      socket.playerName = data;
       players.push(playerName);
       console.log("A new player connected: ", socket.playerName);
       io.emit("update-player-list", players);
     }
-  });
+  });*/
 
   // Let clients/users the game room
   socket.on("joinRoom", (roomId) => {
@@ -100,6 +104,20 @@ io.on("connection", (socket) => {
       isCorrectArray: currentQuestion.isCorrect
     });
 
+    if(!gameResults[roomId]) gameResults[roomId] = [];
+
+    let existingUserIndex = gameResults[roomId].findIndex(user => user.user_id === socket.id);
+
+    if (existingUserIndex === -1) {
+      console.log("GAMERESULTS::: ", gameResults);
+      existingUserIndex = gameResults[roomId].findIndex(user => user.user_id === socket.id);
+    }
+
+    if (isAnswerCorrect) {
+      gameResults[roomId][existingUserIndex].score = gameResults[roomId][existingUserIndex].score + 1;
+      console.log("GAMERESULTS SCORE::: ", gameResults);
+    }
+
     if (!roomAnswers[roomId]) {
       roomAnswers[roomId] = [];
     }
@@ -115,6 +133,13 @@ io.on("connection", (socket) => {
       handleRoundCompletion(roomId);
     }
   });
+
+  console.log("Waiting for request-results");
+
+  socket.on("request-results", (roomId) => {
+    console.log("GAMERESULTS - ROOM ID::: ", gameResults[roomId]);
+    socket.emit("results-for-room", gameResults[roomId]);
+  })
 
   // Lobby leader is emitting(calling) this from LobbyMultiplayer.vue to start the game
   // Clients are listening (in InviteeView.vue) for the "gameStarted" emit with the corresponding roomId
