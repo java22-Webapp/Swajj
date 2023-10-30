@@ -1,14 +1,14 @@
 <script setup>
-import RoundCounter from '@/components/RoundCounter.vue';
+import RoundCounter from "@/components/RoundCounter.vue";
 import { ref, onBeforeUnmount, computed, onBeforeMount } from "vue";
-import questionCardStack from '../assets/questionCardStack.png';
-import questionCardStackFlipped from '../assets/questionCardStackFlipped.png';
-import { useGameStore } from '@/stores/game';
-import { useRouter } from 'vue-router';
-import { useSocketStore } from '@/stores/socket';
+import questionCardStack from "../assets/questionCardStack.png";
+import questionCardStackFlipped from "../assets/questionCardStackFlipped.png";
+import { useGameStore } from "@/stores/game";
+import { useRouter } from "vue-router";
+import { useSocketStore } from "@/stores/socket";
 import { useSettingsStore } from "@/stores/settings";
 
-const questions = ref('');
+const questions = ref("");
 const answers = ref([]);
 const isCorrect = ref([]);
 const answerID = ref([]);
@@ -18,9 +18,10 @@ const timerInterval = ref(null);
 let selectedAnswerIndex = ref(null);
 const buttonDisabled = ref(false);
 const router = useRouter();
-let roomId = ref('');
+let roomId = ref("");
 const socket = useSocketStore();
-const results = ref([])
+const results = ref([]);
+const svgBoxShadow = ref('0px 4px 4px rgba(0, 0, 0, 0.25)');
 
 const answersCombo = computed(() => {
   const result = [];
@@ -32,6 +33,11 @@ const answersCombo = computed(() => {
 
 const imgSrc = ref(questionCardStack);
 const isFlipped = computed(() => imgSrc.value === questionCardStackFlipped);
+
+
+socket.on("update-answers-status", (updateResults) => {
+  results.value = updateResults;
+})
 
 function resetGameState() {
   resetBtnClasses();
@@ -52,8 +58,8 @@ const startTimer = (() => {
         useGameStore().remainingTime--;
       } else {
         showCorrectAnswer();
-        console.log('TIMER-EXPIRED EVENT');
-        socket.emit('timer-expired', roomId.value);
+        console.log("TIMER-EXPIRED EVENT");
+        socket.emit("timer-expired", roomId.value);
         clearInterval(timerInterval.value);
         setTimeout(resetGameState, 2000);
       }
@@ -64,17 +70,17 @@ const startTimer = (() => {
 
 onBeforeMount(() => {
   roomId.value = router.currentRoute.value.params.roomId;
-  socket.emit('joinRoom', roomId.value);
+  socket.emit("joinRoom", roomId.value);
   socket.emit("request-results", roomId.value);
-  console.log("sending request-results")
+  console.log("sending request-results");
   socket.on("results-for-room", (data) => {
-    console.log("DATA RECEIVED IN RES VIEW::", data)
+    console.log("DATA RECEIVED IN RES VIEW::", data);
     results.value = data;
-  })
+  });
   getNewQuestion();
   startTimer();
 
-  socket.on('new-question', (data) => {
+  socket.on("new-question", (data) => {
     questions.value = data.question;
     answers.value = data.answers;
     isCorrect.value = data.isCorrect;
@@ -82,7 +88,7 @@ onBeforeMount(() => {
     imgSrc.value = questionCardStackFlipped;
   });
 
-  socket.on('round-completed', () => {
+  socket.on("round-completed", () => {
     resetGameState();
     startTimer();
   });
@@ -90,15 +96,15 @@ onBeforeMount(() => {
 
 onBeforeUnmount(() => {
   clearInterval(timerInterval.value);
-  socket.off('new-question', roomId.value);
-  socket.off('round-completed', roomId.value);
-  console.log('Component about to be destroyed');
+  socket.off("new-question", roomId.value);
+  socket.off("round-completed", roomId.value);
+  console.log("Component about to be destroyed");
 });
 
 
 function getNewQuestion() {
-  const queryString = `kidsMode=${settingsStore.settings.kidsMode}&english=${settingsStore.settings.english}`
-  socket.emit('requestNewQuestion', { roomId, queryString });
+  const queryString = `kidsMode=${settingsStore.settings.kidsMode}&english=${settingsStore.settings.english}`;
+  socket.emit("requestNewQuestion", { roomId, queryString });
 }
 
 function userAnswer(e, index) {
@@ -107,14 +113,14 @@ function userAnswer(e, index) {
   if (buttonDisabled.value) return;
   buttonDisabled.value = true;
 
-  socket.emit('user-selected-answer', {
+  socket.emit("user-selected-answer", {
     roomId: roomId.value,
     answerIndex: index
   });
-  e.target.classList.add('selected-answer');
+  e.target.classList.add("selected-answer");
 }
 
-socket.on('answer-result', (data) => {
+socket.on("answer-result", (data) => {
   const { correct, isCorrectArray } = data;
   const correctAnswerIndex = isCorrectArray.findIndex((value) => value === 1);
   const correctButtonSelector = `#btnAnswer-${answerID.value[correctAnswerIndex]}`;
@@ -124,27 +130,27 @@ socket.on('answer-result', (data) => {
     clearInterval(timerInterval.value);
     if (correct) {
       userScoreHolder.userScore++;
-      correctButton.classList.add('correct-answer');
+      correctButton.classList.add("correct-answer");
     } else {
       showCorrectAnswer();
       const selectedButton = document.querySelector(
         `#btnAnswer-${answerID.value[selectedAnswerIndex.value]}`
       );
-      if (selectedButton) selectedButton.classList.add('incorrect-answer');
+      if (selectedButton) selectedButton.classList.add("incorrect-answer");
     }
   } else {
-    console.log('Could not find the button with the provided selector.');
+    console.log("Could not find the button with the provided selector.");
   }
   selectedAnswerIndex.value = null;
 });
 
 function resetBtnClasses() {
   buttonDisabled.value = false;
-  const buttons = document.getElementsByClassName('button');
+  const buttons = document.getElementsByClassName("button");
   for (let i = 0; i < buttons.length; i++) {
-    buttons[i].classList.remove('correct-answer');
-    buttons[i].classList.remove('incorrect-answer');
-    buttons[i].classList.remove('selected-answer');
+    buttons[i].classList.remove("correct-answer");
+    buttons[i].classList.remove("incorrect-answer");
+    buttons[i].classList.remove("selected-answer");
     clearInterval(timerInterval.value);
   }
 }
@@ -152,10 +158,10 @@ function resetBtnClasses() {
 function showCorrectAnswer() {
   const indexOfCorrectAnswer = isCorrect.value.findIndex((correctValue) => correctValue === 1);
 
-  const buttons = document.getElementsByClassName('button');
+  const buttons = document.getElementsByClassName("button");
   [...buttons].forEach((btn) => {
-    if (btn.dataset.key === indexOfCorrectAnswer + '') {
-      btn.classList.add('correct-answer');
+    if (btn.dataset.key === indexOfCorrectAnswer + "") {
+      btn.classList.add("correct-answer");
     }
   });
 }
@@ -167,7 +173,7 @@ const listOfPlayers = () => {
 };
 
 const isMobile = ref(window.innerWidth <= 1000);
-window.addEventListener('resize', () => {
+window.addEventListener("resize", () => {
   isMobile.value = window.innerWidth <= 1000;
 });
 
@@ -199,13 +205,16 @@ const shouldShowListOfPlayers = computed(() => {
         <RoundCounter />
       </div>
     </section>
-    <section id="content">
       <div class="result-card" v-if="shouldShowListOfPlayers">
-        <p class="result">Result</p>
-        <div class="nickname">
+        <div id="playerContainer">
+        <p class="result">Scoreboard</p>
+        <ul class="nickname">
           <li v-for="res in results" :key="res">
-            {{ res.nickname }} || {{ res.score }}
+            <div id="playerStats">
+              <img v-if="res.hasAnswered" src="@/assets/greenCheckmark.png" alt="Green checkmark" />{{ res.nickname }}: {{ res.score }}
+            </div>
           </li>
+        </ul>
         </div>
         <svg
           width="442"
@@ -214,18 +223,18 @@ const shouldShowListOfPlayers = computed(() => {
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <g filter="url(#filter0_d_69_37)">
+          <g :filter="`url(#filter0_d)`">
             <rect x="4" width="434" height="340" rx="10" fill="#FFF6C2" />
           </g>
           <defs>
             <filter
-              id="filter0_d_69_37"
+              :id="`filter0_d`"
               x="0"
               y="0"
               width="442"
-              height="559"
+              height="350"
               filterUnits="userSpaceOnUse"
-              color-interpolation-filters="sRGB"
+              :style="`color-interpolation-filters: sRGB;`"
             >
               <feFlood flood-opacity="0" result="BackgroundImageFix" />
               <feColorMatrix
@@ -234,12 +243,12 @@ const shouldShowListOfPlayers = computed(() => {
                 values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
                 result="hardAlpha"
               />
-              <feOffset dy="4" />
+              <feOffset :dy="svgBoxShadow" />
               <feGaussianBlur stdDeviation="2" />
               <feComposite in2="hardAlpha" operator="out" />
               <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0" />
-              <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_69_37" />
-              <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_69_37" result="shape" />
+              <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow" />
+              <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow" result="shape" />
             </filter>
           </defs>
         </svg>
@@ -262,7 +271,7 @@ const shouldShowListOfPlayers = computed(() => {
             {{ answer.answer_text }}
           </button>
         </div>
-      </section>
+
     </section>
   </main>
 </template>
@@ -273,6 +282,11 @@ body, html {
   overflow: hidden;
 }
 
+.result-card {
+  position: absolute;
+  margin-left: 70%;
+}
+
 header {
   display: flex;
   justify-content: space-between;
@@ -280,13 +294,40 @@ header {
   padding: 0 1em;
 }
 
+#playerStats {
+  display: flex;
+  height: 15px;
+  max-height: 15px;
+  align-items: center;
+  padding: 0;
+  left: 50%;
+}
+
+
 .nickname {
-  font-size: large;
+  list-style-type: none;
+  padding: 0;
   position: absolute;
   z-index: 1;
-  top: 57%;
-  left: 67%;
-  transform: translate(-50%, -50%);
+  top: 10%;
+  left: 10%;
+}
+
+.nickname li {
+  display: block;
+  padding: 0;
+  margin-top: 15px;
+  font-size: 24px;
+
+}
+
+.nickname img {
+  position: absolute;
+  vertical-align: middle;
+  padding: 0;
+  transform: scale(10%);
+  height: auto;
+  margin-left: -105%;
 }
 
 .result {
@@ -295,8 +336,8 @@ header {
   text-decoration: underline;
   position: absolute;
   z-index: 1;
-  top: 40%;
-  left: 70%;
+  top: 0;
+  left: 50%;
   transform: translate(-50%, -50%);
 }
 
@@ -308,7 +349,6 @@ header {
   width: 100%;
   height: 100%;
   position: absolute;
-  z-index: -1;
 }
 
 #cloud1 {
@@ -324,15 +364,15 @@ header {
 }
 
 #cloud3 {
-  top: -20%;
-  left: 55%;
-  transform: scale(0.6);
+  top: -8%;
+  left: 60%;
+  transform: scale(0.65) scaleX(-1);
 }
 
 #cloud4 {
-  top: 60%;
-  left: 60%;
-  transform: scale(0.8);
+  top: 40%;
+  left: 65%;
+  transform: scale(0.7) scaleX(1);
 }
 
 .rotatedCardBrain {
@@ -439,15 +479,7 @@ header {
   z-index: 2;
 }
 
-#content {
-  z-index: 1;
-  width: 100%;
-  display: flex;
-  flex-direction: row-reverse;
-  justify-content: center;
-  align-items: center;
-  gap: 3em;
-}
+
 
 @media only screen and (min-width: 800px) and (max-width: 1000px) {
   #cloud4,
@@ -528,5 +560,18 @@ header {
     margin-right: 0;
   }
 }
+
+#content {
+  z-index: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: center;
+  align-items: center;
+  gap: 3em;
+}
+
+
+
 
 </style>

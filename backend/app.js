@@ -72,6 +72,13 @@ io.on("connection", (socket) => {
 
   // Frontend uses this to get a newQuestion
   socket.on("requestNewQuestion", () => {
+    if (gameResults[socket.roomId]) {
+      const userIndex = gameResults[socket.roomId].findIndex(user => user.user_id === socket.id);
+      if (userIndex !== -1) {
+        gameResults[socket.roomId][userIndex].hasAnswered = false;
+      }
+    }
+    io.in(socket.roomId).emit("update-answers-status", gameResults[socket.roomId]);
     fetchNewQuestion(socket.roomId);
   });
 
@@ -99,10 +106,19 @@ io.on("connection", (socket) => {
     const clientsInRoom = io.sockets.adapter.rooms.get(roomId);
     const numberOfClients = clientsInRoom ? clientsInRoom.size : 0;
 
+
+    const userIndex = gameResults[roomId].findIndex(user => user.user_id === socket.id)
+    if (userIndex !== -1) {
+      gameResults[roomId][userIndex].hasAnswered = true;
+    }
+
+    io.in(roomId).emit("update-answers-status", gameResults[roomId]);
+
     socket.emit("answer-result", {
       correct: isAnswerCorrect,
       isCorrectArray: currentQuestion.isCorrect
     });
+
 
     if(!gameResults[roomId]) gameResults[roomId] = [];
 
