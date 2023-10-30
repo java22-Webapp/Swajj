@@ -13,17 +13,21 @@
   const maxRounds = useSettingsStore();
   const socket = useSocketStore();
   const results = ref([]);
+  const hostId = ref('')
+
+
+
 
   const redirectToPlay = async () => {
     try {
-      await fetch('http://localhost:3000/play-again', {
+      await fetch('http://localhost:3000/play-again-multiplayer', {
         method: 'GET',
       });
     } catch (error) {
       console.error('Error clearing questions: ', error);
     }
     newGameSettings();
-    useRouter.push('/Play');
+    useRouter.push('/multiplayer');
   };
 
   const redirectToMenu = () => {
@@ -52,6 +56,9 @@
       results.value = data;
     })
 
+    hostId.value = localStorage.getItem('Host-ID')
+    console.log("HOST ID:::: " , hostId)
+
   });
 
   socket.on('disconnect', () => {
@@ -74,8 +81,14 @@
       <p class="result">Result</p>
       <div class="nickname">
         <li v-for="res in results" :key="res">
-          {{ res.nickname }} || {{ res.score }}
+          {{res.nickname }} || {{ res.score }}  ||  {{ res.isHost }}
         </li>
+      </div>
+      <div v-if="results.length > 0">
+        {{ results[0].nickname }}
+      </div>
+      <div v-else>
+        Inga resultat tillgängliga.
       </div>
       <svg
         width="442"
@@ -115,13 +128,20 @@
       </svg>
     </div>
     <section>
-      <button class="button" id="playBtn" @click="redirectToPlay">PLAY AGAIN</button>
+      <button v-if="hostId != null" class="button" id="playBtn" @click="redirectToPlay">PLAY AGAIN</button>
+      <button v-else class="button" id="playBtn" disabled>PLAY AGAIN</button>
+
       <button class="button" id="playBtn" @click="redirectToMenu">MENU</button>
     </section>
   </main>
 </template>
 
 <style scoped>
+
+#playBtn[disabled] {
+  pointer-events: none;
+  opacity: 0;
+}
 
 #logo_s {
   background-color: var(--background-color);

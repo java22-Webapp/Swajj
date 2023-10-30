@@ -103,6 +103,8 @@ onBeforeMount(() => {
 })
 
 onMounted(async () => {
+  console.log("GameLink value::: ", gameLink.value)
+  if (!gameLink.value){
   try {
     const response = await fetch('http://localhost:3000/generate-game-link');
     const data = await response.json();
@@ -110,6 +112,7 @@ onMounted(async () => {
   } catch (error) {
     console.error('Error generating game link: ', error);
     copied.value = false;
+  }
   }
 
   const url = new URL(gameLink.value);
@@ -119,6 +122,8 @@ onMounted(async () => {
   socket.emit('set-host-nickname', { nickname: nicknameStore.nickname + ' (Host)', roomId: roomId.value});
   socket.emit('joinRoom', roomId.value);
   socket.emit("send-update", roomId.value);
+  const hostId = socket.socket.id;
+  localStorage.setItem('Host-ID', hostId);
   })
 
 </script>

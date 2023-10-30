@@ -41,7 +41,15 @@ io.on("connection", (socket) => {
 
   socket.on("set-host-nickname", (data) => {
     if(!gameResults[data.roomId]) gameResults[data.roomId] = [];
-    gameResults[data.roomId].push({user_id: socket.id, score: 0, nickname: data.nickname});
+    const isHost = gameResults[data.roomId].length === 0; // true om det är den första användaren i rummet
+    const newUser = {
+      user_id: socket.id,
+      score: 0,
+      nickname: data.nickname,
+      isHost
+    };
+
+    gameResults[data.roomId].push(newUser);
     socket.roomId = data.roomId;
     console.log("GAMERESULTS::: ", gameResults[data.roomId].map(user => user.nickname));
     socket.to(data.roomId).emit("update-player-list", gameResults[data.roomId].map(user => user.nickname));
@@ -291,6 +299,13 @@ app.get("/play-again", (req, res) => {
   askedQuestions.length = 0;
   res.status(200).end();
 });
+
+app.get("/play-again-multiplayer", (req, res) =>{
+  console.log("RESCIVED fom ::: play-again-multiplayer")
+  askedQuestions.length = 0;
+  res.status(200).end();
+
+})
 
 
 // For single player only
