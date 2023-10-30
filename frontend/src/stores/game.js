@@ -71,15 +71,15 @@ export const useGameStore = defineStore('game', {
       const userScoreResult = (userScore / totalRounds)  * 100;
 
         if (userScoreResult >= 90) {
-            return "src/assets/newAGradeNoBG.png";
+            return "/src/assets/newAGradeNoBG.png";
         } else if (userScoreResult >= 75 ) {
-            return "src/assets/newBGradeNoBG.png";
+            return "/src/assets/newBGradeNoBG.png";
         } else if (userScoreResult >= 55) {
-            return "src/assets/newCGradeNoBG.png";
+            return "/src/assets/newCGradeNoBG.png";
         } else if (userScoreResult >= 45) {
-            return "src/assets/newDGradeNoBG.png";
+            return "/src/assets/newDGradeNoBG.png";
         } else {
-            return "src/assets/newFGradeNoBG.png";
+            return "/src/assets/newFGradeNoBG.png";
         }
     }
   }
