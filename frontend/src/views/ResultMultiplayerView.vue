@@ -1,125 +1,107 @@
-  <script setup>
-  import { useGameStore } from '@/stores/game';
-  import { router } from '@/router/index';
-  import { useSettingsStore } from '@/stores/settings';
-  import { onMounted, ref } from "vue";
-  import {useSocketStore} from "@/stores/socket";
+<script setup>
+import { useGameStore } from '@/stores/game';
+import { router } from '@/router';
+import { useSettingsStore } from '@/stores/settings';
+import { onMounted, ref } from 'vue';
+import { useSocketStore } from '@/stores/socket';
 
-  const useRouter = router;
-  const userScoreStore = useGameStore();
-  const newRounds = useGameStore();
-  const roundTimer = useGameStore();
-  const settings = useSettingsStore();
-  const maxRounds = useSettingsStore();
-  const socket = useSocketStore();
-  const results = ref([]);
-  const hostId = ref('')
-  const gameLink = ref('')
-  // const gameLink2 = gameLink.value
-  let newId;
+const useRouter = router;
+const userScoreStore = useGameStore();
+const newRounds = useGameStore();
+const roundTimer = useGameStore();
+const settings = useSettingsStore();
+const maxRounds = useSettingsStore();
+const socketStore = useSocketStore();
+const results = ref([]);
+const gameLink = ref('');
+const isHost = ref(false);
 
-  socket.on('roomIdFromRedirect', (roomId) => {
-    newId = roomId;
+const playAgain = async () => {
+  try {
+    await fetch('http://localhost:3000/play-again-multiplayer', {
+      method: 'GET'
+    });
 
-    console.log('Received roomId:', roomId);
-  });
+    const response = await fetch('http://localhost:3000/generate-game-link');
+    const data = await response.json();
+    gameLink.value = data.gameLink;
+    console.log('NEW GAME LINK::: ', gameLink.value);
+    const roomId = extractRoomId(gameLink.value);
+    console.log('Extracted room ID:: ');
 
-  const redirectToPlay = async () => {
-    try {
-      await fetch('http://localhost:3000/play-again-multiplayer', {
-        method: 'GET',
-      });
-    } catch (error) {
-      console.error('Error clearing questions: ', error);
+    console.log('isHost value: ', isHost.value);
+
+    if (isHost.value) {
+      console.log('NEW GAME CREATED WITH ROOM ID:: ', roomId);
+      socketStore.emit('new-game-created', { newGameLink: roomId });
     }
-
-    const url = gameLink.value;
-    const roomId = url.split('/?roomId=')[1]; // Get everything after "/join"
-    console.log('queryString:: ' , roomId);
-
-    socket.emit('roomIdFromRedirect', roomId);
-
-    newGameSettings();
-    router.push('/multiplayer/' + roomId);
-
-    //window.location.href = `${gameLink.value}`;
-    // useRouter.push('/multiplayer');
-
+  } catch (error) {
+    console.log('Error in playAgain function: ', error);
   }
+};
 
-    const redirectToJoin = async () => {
-      try {
-        await fetch('http://localhost:3000/play-again-multiplayer', {
-          method: 'GET',
-        });
-      } catch (error) {
-        console.error('Error clearing questions: ', error);
-      }
-      newGameSettings();
-      router.push('/join/' + newId);
+//
+const redirectToMenu = () => {
+  newGameSettings();
+  if (socketStore.socket) socketStore.disconnect();
+  useRouter.push('/');
+};
 
-      }
+function extractRoomId(gameLink) {
+  const url = new URL(gameLink);
+  return url.searchParams.get('roomId');
+}
 
-      // const url = gameLink.value;
-      // const roomId = url.split('/?roomId=')[1]; // Get everything after "/join"
-      // console.log('queryString:: ' , roomId);
-      //
-      // newGameSettings();
-      // router.push('/join/' + roomId);
-      // router.push({ name: 'join', params: { roomId }});
-      // window.location.href = `${gameLink.value}`;
-      //window.location.go(`${gameLink.value}`);
+function newGameSettings() {
+  userScoreStore.userScore = 0;
+  newRounds.currentRound = 1;
+  roundTimer.remainingTime = useGameStore().remainingTime;
+  maxRounds.settings.rounds = settings.settings.rounds;
+  userScoreStore.lives = settings.settings.kidsMode ? 3 : 0;
+}
 
+onMounted(async () => {
+  socketStore.initializeSocket();
 
-
-  const redirectToMenu = () => {
-    newGameSettings();
-    if (socket.socket) socket.disconnect();
-    useRouter.push('/');
-  };
-
-  function newGameSettings() {
-    userScoreStore.userScore = 0;
-    newRounds.currentRound = 1;
-    roundTimer.remainingTime = useGameStore().remainingTime;
-    maxRounds.settings.rounds = settings.settings.rounds;
-    userScoreStore.lives = settings.settings.kidsMode ? 3 : 0
-  }
-
-  onMounted( async () => {
-
-    const roomId = router.currentRoute.value.fullPath.split("/")[2];
-    console.log("ROOM IDDDDD::: ", roomId);
-
-    socket.emit("request-results", roomId);
-    console.log("sending request-results")
-    socket.on("results-for-room", (data) => {
-      console.log("DATA RECEIVED IN RES VIEW::", data)
-      results.value = data;
-    })
-
-    hostId.value = localStorage.getItem('Host-ID')
-    console.log("HOST ID:::: " , hostId)
-     if (hostId.value != null) {
-      try {
-        const response = await fetch('http://localhost:3000/generate-game-link');
-        const data = await response.json();
-        gameLink.value = data.gameLink;
-        console.log("GAMELINK FROM HOSTID:: ", gameLink.value)
-      } catch (error) {
-        console.error('Error generating game link: ', error)
-      }
-     }
-
+  socketStore.on('new-game-created-clients', (data) => {
+    console.log(data.id);
+    router.push(`/join/?roomId=${data.newGameLink}`);
   });
 
-  socket.on('disconnect', () => {
-    console.log('Disconnected from server');
+  socketStore.on('new-game-created-host', (data) => {
+    console.log(data.id);
+    console.log(`PUSHING CLIENTS WITH roomId: `, data);
+    console.log(`PUSHING CLIENTS WITH roomId: `, data.newGameLink);
+    router.push(`/multiplayer/${data.newGameLink}`);
   });
-  </script>
+
+  const roomId = router.currentRoute.value.fullPath.split('/')[2];
+  console.log('ROOM IDDDDD::: ', roomId);
+
+  socketStore.emit('request-results', roomId);
+  console.log('sending request-results');
+  socketStore.on('results-for-room', (data) => {
+    results.value = data;
+
+    const host = data.find((user) => user.isHost);
+    console.log('Identified host: ', host);
+    console.log('HOST usr_id:: ', host.user_id, ' - socket:: ', socketStore.socket);
+    console.log('HOST usr_id:: ', host.user_id, ' - socket.id:: ', socketStore.socket.id);
+    if (host) {
+      isHost.value = host.user_id === socketStore.socket.id;
+      console.log('Is this socket host? >> ', isHost.value);
+    }
+  });
+});
+
+socketStore.on('disconnect', () => {
+  console.log('Disconnected from server');
+});
+</script>
 
 <template>
-  <header><div id="logo_s">S Result</div>
+  <header>
+    <div id="logo_s">S Result</div>
   </header>
   <main>
     <section class="clouds">
@@ -133,15 +115,13 @@
       <p class="result">Result</p>
       <div class="nickname">
         <li v-for="res in results" :key="res">
-          {{res.nickname }} || {{ res.score }}  ||  {{ res.isHost }}
+          {{ res.nickname }} || {{ res.score }} || {{ res.isHost }}
         </li>
       </div>
       <div v-if="results.length > 0">
         {{ results[0].nickname }}
       </div>
-      <div v-else>
-        Inga resultat tillgängliga.
-      </div>
+      <div v-else>Inga resultat tillgängliga.</div>
       <svg
         width="442"
         height="350"
@@ -174,14 +154,20 @@
             <feComposite in2="hardAlpha" operator="out" />
             <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0" />
             <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_69_37" />
-            <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_69_37" result="shape" />
+            <feBlend
+              mode="normal"
+              in="SourceGraphic"
+              in2="effect1_dropShadow_69_37"
+              result="shape"
+            />
           </filter>
         </defs>
       </svg>
     </div>
     <section>
-      <button v-if="hostId != null" class="button" id="playBtn" @click="redirectToPlay">PLAY AGAIN</button>
-      <button v-else class="button" id="playBtn" @click="redirectToJoin">PLAY AGAIN?</button>
+      <button class="button" id="playBtn" @click="playAgain">PLAY AGAIN</button>
+      <div v-if="isHost">THIS IS THE HOST OF THE GAME</div>
+      <!--      <button v-else class="button" id="playBtn" @click="redirectToJoin">PLAY AGAIN?</button>-->
 
       <button class="button" id="playBtn" @click="redirectToMenu">MENU</button>
     </section>
@@ -189,7 +175,6 @@
 </template>
 
 <style scoped>
-
 #playBtn[disabled] {
   pointer-events: none;
   opacity: 0;
@@ -252,7 +237,10 @@ section {
   z-index: 0;
 }
 
-#cloud1, #cloud4, #cloud2, #cloud3 {
+#cloud1,
+#cloud4,
+#cloud2,
+#cloud3 {
   position: absolute;
 }
 
@@ -293,47 +281,52 @@ section {
   left: -8em;
   transform: scale(0.7) rotate(40deg);
 }
-@media only screen and (min-width: 320px) and (max-width: 799px){
-  #cloud1, #cloud2, #cloud3, #cloud4, .rotatedCardBrain{
+
+@media only screen and (min-width: 320px) and (max-width: 799px) {
+  #cloud1,
+  #cloud2,
+  #cloud3,
+  #cloud4,
+  .rotatedCardBrain {
     display: none;
   }
 
-  main{
+  main {
     margin-top: -10px;
   }
 
-  .nickname{
+  .nickname {
     top: 25%;
   }
-  .result{
+
+  .result {
     top: 15%;
   }
 
-  .result-card{
+  .result-card {
     padding: 0;
   }
 }
 
-@media only screen and (min-width: 800px)  and (max-width: 1000px){
-  #cloud4, #cloud2,  #cloud1{
+@media only screen and (min-width: 800px) and (max-width: 1000px) {
+  #cloud4,
+  #cloud2,
+  #cloud1 {
     display: none;
   }
 
-  main{
+  main {
     margin-top: -10px;
   }
 
-
-  .rotatedCardBrain{
+  .rotatedCardBrain {
     top: 60%;
   }
 
   #cloud3 {
-    top:  60%;
+    top: 60%;
     left: 60%;
     transform: scale(0.65) scaleX(-1);
   }
-
 }
-
 </style>

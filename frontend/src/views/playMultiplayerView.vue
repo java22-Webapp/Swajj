@@ -1,6 +1,6 @@
 <script setup>
 import RoundCounter from "@/components/RoundCounter.vue";
-import { ref, onBeforeUnmount, computed, onBeforeMount } from "vue";
+import { ref, onBeforeUnmount, computed, onBeforeMount, onMounted } from "vue";
 import questionCardStack from "../assets/questionCardStack.png";
 import questionCardStackFlipped from "../assets/questionCardStackFlipped.png";
 import { useGameStore } from "@/stores/game";
@@ -69,12 +69,13 @@ const startTimer = (() => {
 })();
 
 onBeforeMount(() => {
+  socket.initializeSocket();
   roomId.value = router.currentRoute.value.params.roomId;
   socket.emit("joinRoom", roomId.value);
   socket.emit("request-results", roomId.value);
   console.log("sending request-results");
   socket.on("results-for-room", (data) => {
-    console.log("DATA RECEIVED IN RES VIEW::", data);
+    //console.log("DATA RECEIVED IN RES VIEW::", data);
     results.value = data;
   });
   getNewQuestion();
@@ -98,7 +99,6 @@ onBeforeUnmount(() => {
   clearInterval(timerInterval.value);
   socket.off("new-question", roomId.value);
   socket.off("round-completed", roomId.value);
-  console.log("Component about to be destroyed");
 });
 
 

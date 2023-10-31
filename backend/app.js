@@ -92,7 +92,6 @@ io.on("connection", (socket) => {
   });
 
   socket.on("timer-expired", (roomId) => {
-    console.log("IN TIMER-EXPIRED BACKEND");
 
     if (!roomAnswers[roomId]) {
       roomAnswers[roomId] = [];
@@ -106,7 +105,6 @@ io.on("connection", (socket) => {
   });
 
   socket.on("user-selected-answer", (data) => {
-    console.log("CALLING 'user-selected-answer' BACKEND");
     const { roomId, answerIndex } = data;
 
     const currentQuestion = roomState[roomId].currentQuestion;
@@ -140,7 +138,6 @@ io.on("connection", (socket) => {
 
     if (isAnswerCorrect) {
       gameResults[roomId][existingUserIndex].score = gameResults[roomId][existingUserIndex].score + 1;
-      console.log("GAMERESULTS SCORE::: ", gameResults);
     }
 
     if (!roomAnswers[roomId]) {
@@ -162,7 +159,6 @@ io.on("connection", (socket) => {
   console.log("Waiting for request-results");
 
   socket.on("request-results", (roomId) => {
-    console.log("GAMERESULTS - ROOM ID::: ", gameResults[roomId]);
     socket.emit("results-for-room", gameResults[roomId]);
   })
 
@@ -191,6 +187,11 @@ io.on("connection", (socket) => {
       io.to(data.roomId).emit("gameStarted", data.settings);
       roomState[roomId].isStarted = true;
     }
+  });
+
+  socket.on('new-game-created', (data) => {
+    socket.emit('new-game-created-host', data);
+    socket.broadcast.emit('new-game-created-clients', data);
   });
 
   socket.on("disconnect", () => {
@@ -226,10 +227,10 @@ function fetchNewQuestion(roomId) {
     return;
   }
 
-  console.log("MODE: ", roomSettings.kidsMode);
+  /*console.log("MODE: ", roomSettings.kidsMode);
   console.log("LANGUAGE: ", roomSettings.english)
   console.log("ROUNDS: ", roomSettings.rounds)
-  console.log("TIME: ", roomSettings.time)
+  console.log("TIME: ", roomSettings.time)*/
 
   const query = `SELECT id, question_text
                  FROM questions
@@ -301,8 +302,9 @@ app.get("/play-again", (req, res) => {
   res.status(200).end();
 });
 
+ // Todo: probably refactor this into an event listener
 app.get("/play-again-multiplayer", (req, res) =>{
-  console.log("RESCIVED fom ::: play-again-multiplayer")
+  console.log("RECEIVED FROM ::: play-again-multiplayer")
   askedQuestionsMultiplayer = [];
   res.status(200).end();
 
