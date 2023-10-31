@@ -8,8 +8,8 @@ const { v4: uuidv4 } = require("uuid");
 const http = require("http");
 const socketIo = require("socket.io");
 const server = http.createServer(app);
-const askedQuestions = [];
-const askedQuestionsMultiplayer = [];
+let askedQuestions = [];
+let askedQuestionsMultiplayer = [];
 const roomState = {};
 const roomAnswers = {};
 const gameResults = {};
@@ -57,9 +57,10 @@ io.on("connection", (socket) => {
   });
 
   socket.on("send-update", (roomId) => {
-    if (gameResults[roomId])
+    if (gameResults[roomId]) {
       socket.to(roomId).emit("update-player-list", gameResults[roomId].map(user => user.nickname));
       socket.emit("update-player-list", gameResults[roomId].map(user => user.nickname));
+    }
   })
 
  /* socket.on("newPlayer", (data) => {
@@ -296,13 +297,13 @@ function populateDatabase() {
 
 app.get("/play-again", (req, res) => {
   console.log("Received req to /play-again");
-  askedQuestions.length = 0;
+  askedQuestions = [];
   res.status(200).end();
 });
 
 app.get("/play-again-multiplayer", (req, res) =>{
   console.log("RESCIVED fom ::: play-again-multiplayer")
-  askedQuestions.length = 0;
+  askedQuestionsMultiplayer = [];
   res.status(200).end();
 
 })

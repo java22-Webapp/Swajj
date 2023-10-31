@@ -103,6 +103,8 @@ onBeforeMount(() => {
 })
 
 onMounted(async () => {
+  //roomId.value = router.currentRoute.value.params.roomId;
+
   console.log("GameLink value::: ", gameLink.value)
   if (!gameLink.value){
   try {

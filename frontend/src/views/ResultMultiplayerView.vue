@@ -14,9 +14,15 @@
   const socket = useSocketStore();
   const results = ref([]);
   const hostId = ref('')
+  const gameLink = ref('')
+  // const gameLink2 = gameLink.value
+  let newId;
 
+  socket.on('roomIdFromRedirect', (roomId) => {
+    newId = roomId;
 
-
+    console.log('Received roomId:', roomId);
+  });
 
   const redirectToPlay = async () => {
     try {
@@ -26,9 +32,45 @@
     } catch (error) {
       console.error('Error clearing questions: ', error);
     }
+
+    const url = gameLink.value;
+    const roomId = url.split('/?roomId=')[1]; // Get everything after "/join"
+    console.log('queryString:: ' , roomId);
+
+    socket.emit('roomIdFromRedirect', roomId);
+
     newGameSettings();
-    useRouter.push('/multiplayer');
-  };
+    router.push('/multiplayer/' + roomId);
+
+    //window.location.href = `${gameLink.value}`;
+    // useRouter.push('/multiplayer');
+
+  }
+
+    const redirectToJoin = async () => {
+      try {
+        await fetch('http://localhost:3000/play-again-multiplayer', {
+          method: 'GET',
+        });
+      } catch (error) {
+        console.error('Error clearing questions: ', error);
+      }
+      newGameSettings();
+      router.push('/join/' + newId);
+
+      }
+
+      // const url = gameLink.value;
+      // const roomId = url.split('/?roomId=')[1]; // Get everything after "/join"
+      // console.log('queryString:: ' , roomId);
+      //
+      // newGameSettings();
+      // router.push('/join/' + roomId);
+      // router.push({ name: 'join', params: { roomId }});
+      // window.location.href = `${gameLink.value}`;
+      //window.location.go(`${gameLink.value}`);
+
+
 
   const redirectToMenu = () => {
     newGameSettings();
@@ -44,7 +86,7 @@
     userScoreStore.lives = settings.settings.kidsMode ? 3 : 0
   }
 
-  onMounted(() => {
+  onMounted( async () => {
 
     const roomId = router.currentRoute.value.fullPath.split("/")[2];
     console.log("ROOM IDDDDD::: ", roomId);
@@ -58,6 +100,16 @@
 
     hostId.value = localStorage.getItem('Host-ID')
     console.log("HOST ID:::: " , hostId)
+     if (hostId.value != null) {
+      try {
+        const response = await fetch('http://localhost:3000/generate-game-link');
+        const data = await response.json();
+        gameLink.value = data.gameLink;
+        console.log("GAMELINK FROM HOSTID:: ", gameLink.value)
+      } catch (error) {
+        console.error('Error generating game link: ', error)
+      }
+     }
 
   });
 
@@ -129,7 +181,7 @@
     </div>
     <section>
       <button v-if="hostId != null" class="button" id="playBtn" @click="redirectToPlay">PLAY AGAIN</button>
-      <button v-else class="button" id="playBtn" disabled>PLAY AGAIN</button>
+      <button v-else class="button" id="playBtn" @click="redirectToJoin">PLAY AGAIN?</button>
 
       <button class="button" id="playBtn" @click="redirectToMenu">MENU</button>
     </section>

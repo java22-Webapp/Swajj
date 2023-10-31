@@ -327,7 +327,7 @@ header {
   padding: 0;
   transform: scale(10%);
   height: auto;
-  margin-left: -105%;
+  margin-left: -65%;
 }
 
 .result {
