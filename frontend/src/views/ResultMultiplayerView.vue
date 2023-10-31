@@ -2,7 +2,7 @@
   import { useGameStore } from '@/stores/game';
   import { router } from '@/router/index';
   import { useSettingsStore } from '@/stores/settings';
-  import { onMounted, ref } from "vue";
+  import { onMounted, ref, computed } from "vue";
   import {useSocketStore} from "@/stores/socket";
 
   const useRouter = router;
@@ -13,6 +13,9 @@
   const maxRounds = useSettingsStore();
   const socket = useSocketStore();
   const results = ref([]);
+  const sortedResults = computed(() => {
+    return [...results.value].sort((a, b) => b.score - a.score);
+  })
 
   const redirectToPlay = async () => {
     try {
@@ -73,7 +76,7 @@
     <div class="result-card">
       <p class="result">Result</p>
       <div class="nickname">
-        <li v-for="res in results" :key="res">
+        <li v-for="res in sortedResults" :key="res">
           {{ res.nickname }} || {{ res.score }}
         </li>
       </div>
