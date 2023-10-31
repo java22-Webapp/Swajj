@@ -116,7 +116,7 @@ onMounted(async () => {
   roomId.value = url.searchParams.get('roomId');
   const nicknameStore = useNicknameStore();
   console.log("PLAYERS IN THIS ARRAY 1::: ", playerNicknames.value);
-  socket.emit('set-host-nickname', { nickname: nicknameStore.nickname + ' (Host)', roomId: roomId.value});
+  socket.emit('player-enters-game', { nickname: nicknameStore.nickname + ' (Host)', roomId: roomId.value});
   socket.emit('joinRoom', roomId.value);
   socket.emit("send-update", roomId.value);
   })

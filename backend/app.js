@@ -39,7 +39,7 @@ app.use(cors(corsOptions));
 io.on("connection", (socket) => {
   console.log(`New connection with socket id: ${socket.id}`);
 
-  socket.on("set-host-nickname", (data) => {
+  socket.on("player-enters-game", (data) => {
     if(!gameResults[data.roomId]) gameResults[data.roomId] = [];
     gameResults[data.roomId].push({user_id: socket.id, score: 0, nickname: data.nickname});
     socket.roomId = data.roomId;
