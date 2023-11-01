@@ -21,7 +21,6 @@ const router = useRouter();
 let roomId = ref('');
 const socket = useSocketStore();
 const results = ref([]);
-const svgBoxShadow = ref('0px 4px 4px rgba(0, 0, 0, 0.25)');
 
 const answersCombo = computed(() => {
   const result = [];
@@ -198,7 +197,7 @@ const shouldShowListOfPlayers = computed(() => {
   <header>
     <div class="logo_s">S</div>
     <button v-if="isMobile" class="button" id="iphoneIpadButton" @click="listOfPlayers">
-      Players
+      Scoreboard
     </button>
   </header>
   <main>
@@ -215,57 +214,21 @@ const shouldShowListOfPlayers = computed(() => {
       </div>
     </section>
     <div class="result-card" v-if="shouldShowListOfPlayers">
-      <div id="playerContainer">
+      <div class="scorecard">
         <p class="result">Scoreboard</p>
-        <ul class="nickname">
-          <li v-for="res in results" :key="res">
-            <div id="playerStats">
-              <img
-                v-if="res.hasAnswered"
-                src="@/assets/greenCheckmark.png"
-                alt="Green checkmark"
-              />{{ res.nickname }}:
-              {{ res.score }}
-            </div>
+        <ul class="nickname-and-score">
+          <li v-for="res in results" :key="res" class="player-stats">
+                <img
+                  v-if="res.hasAnswered"
+                  src="@/assets/greenCheckmark.png"
+                  alt="Green checkmark"
+                  class="checkmark"
+                />
+              <span class="nickname">{{ res.nickname }} - Score: {{ res.score }} </span>
+
           </li>
         </ul>
       </div>
-      <svg
-        width="442"
-        height="350"
-        viewBox="0 0 442 350"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <g :filter="`url(#filter0_d)`">
-          <rect x="4" width="434" height="340" rx="10" fill="#FFF6C2" />
-        </g>
-        <defs>
-          <filter
-            :id="`filter0_d`"
-            x="0"
-            y="0"
-            width="442"
-            height="350"
-            filterUnits="userSpaceOnUse"
-            :style="`color-interpolation-filters: sRGB;`"
-          >
-            <feFlood flood-opacity="0" result="BackgroundImageFix" />
-            <feColorMatrix
-              in="SourceAlpha"
-              type="matrix"
-              values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-              result="hardAlpha"
-            />
-            <feOffset :dy="svgBoxShadow" />
-            <feGaussianBlur stdDeviation="2" />
-            <feComposite in2="hardAlpha" operator="out" />
-            <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0" />
-            <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow" />
-            <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow" result="shape" />
-          </filter>
-        </defs>
-      </svg>
     </div>
     <section class="QNA">
       <div id="deckDiv">
@@ -290,6 +253,7 @@ const shouldShowListOfPlayers = computed(() => {
 </template>
 
 <style scoped>
+
 body,
 html {
   overflow: hidden;
@@ -298,6 +262,11 @@ html {
 .result-card {
   position: absolute;
   margin-left: 70%;
+  background-color: #fff6c2;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 header {
@@ -307,16 +276,31 @@ header {
   padding: 0 1em;
 }
 
-#playerStats {
+.player-stats {
   display: flex;
-  height: 15px;
-  max-height: 15px;
-  align-items: center;
-  padding: 0;
-  left: 50%;
+  margin-top: 15px;
+  margin-left: -20px;
+  width: 100%;
+  font-family: var(--question-font);
+  font-size: 20px;
 }
 
-.nickname {
+.checkmark {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+  margin-top: 2px;
+}
+
+.scorecard {
+  width: 400px;
+  height: 350px;
+  background-color: #fff6c2;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+}
+
+.nickname-and-score {
   list-style-type: none;
   padding: 0;
   position: absolute;
@@ -484,16 +468,18 @@ header {
   background-color: #91b2b3;
 }
 
-#listOfPlayers {
-  position: absolute;
-  margin-right: -40em;
-  margin-top: -10%;
-  height: fit-content;
-  min-width: 300px;
-  z-index: 2;
-}
 
 @media only screen and (min-width: 800px) and (max-width: 1000px) {
+
+  .result-card {
+    position: absolute;
+    margin-left: 25%;
+    background-color: #fff6c2;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+    z-index: 2;
+  }
+
   #cloud4,
   #cloud2,
   #cloud1 {
@@ -501,15 +487,10 @@ header {
   }
 
   #iphoneIpadButton {
-    display: block;
-    left: -5%;
-  }
-
-  #listOfPlayers {
-    position: absolute;
-    top: 20%;
-    left: 30%;
-    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
   }
 
   main {
@@ -542,20 +523,34 @@ header {
   }
 
   #iphoneIpadButton {
-    display: block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
     transform: scale(0.7);
+  }
+
+  .scorecard {
+    width: 300px;
+    height: 450px;
+    background-color: #fff6c2;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+  }
+
+  .result-card {
+    position: absolute;
+    margin-left: 10%;
+    background-color: #fff6c2;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+    z-index: 2;
   }
 
   main {
     margin-top: -10px;
   }
 
-  #listOfPlayers {
-    position: absolute;
-    top: 20%;
-    left: 15%;
-    z-index: 100;
-  }
 
   .deckQuestions {
     font-size: 20px;
@@ -573,13 +568,5 @@ header {
   }
 }
 
-#content {
-  z-index: 1;
-  width: 100%;
-  display: flex;
-  flex-direction: row-reverse;
-  justify-content: center;
-  align-items: center;
-  gap: 3em;
-}
 </style>
+
