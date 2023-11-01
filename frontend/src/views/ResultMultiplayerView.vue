@@ -11,6 +11,10 @@ const results = ref([]);
 const gameLink = ref('');
 const isHost = ref(false);
 let oldRoomId = ref("");
+  const results = ref([]);
+  const sortedResults = computed(() => {
+    return [...results.value].sort((a, b) => b.score - a.score);
+  })
 
 const playAgain = async () => {
   try {
@@ -39,7 +43,6 @@ const playAgain = async () => {
   }
 };
 
-//
 const redirectToMenu = () => {
     resetUserScore();
   if (socketStore.socket) socketStore.disconnect();
@@ -115,8 +118,8 @@ socketStore.on('disconnect', () => {
     <div class="result-card">
       <p class="result">Result</p>
       <div class="nickname">
-        <li v-for="res in results" :key="res">
-          {{ res.nickname }} || {{ res.score }} || {{ res.isHost }}
+        <li v-for="res in sortedResults" :key="res">
+          {{ res.nickname }} || {{ res.score }}
         </li>
       </div>
       <div v-if="results.length > 0">

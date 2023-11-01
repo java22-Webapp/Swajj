@@ -24,7 +24,7 @@ function connectToSocket() {
   buttonDisabled.value = true;
 
   socket.emit('joinRoom', roomId);
-  socket.emit('set-host-nickname', {nickname: nickNameStore.nickname, roomId});
+  socket.emit('player-enters-game', {nickname: nickNameStore.nickname, roomId});
 
   // Listen for game start
   socket.on('gameStarted', (settings) => {
