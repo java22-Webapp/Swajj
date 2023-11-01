@@ -1,6 +1,6 @@
 <script setup>
 import NicknameInput from '@/components/NicknameInput.vue';
-import { onBeforeMount, ref } from "vue";
+import { onBeforeMount, onBeforeUnmount, ref } from "vue";
 import { useNicknameStore } from '@/stores/nickname';
 import ListOfPlayers from '@/components/ListOfPlayers.vue';
 import { useRouter } from 'vue-router';
@@ -24,7 +24,7 @@ function connectToSocket() {
   buttonDisabled.value = true;
 
   socket.emit('joinRoom', roomId);
-  socket.emit('set-host-nickname', {nickname: nickNameStore.nickname, roomId});
+  socket.emit('player-enters-game', {nickname: nickNameStore.nickname, roomId});
 
   // Listen for game start
   socket.on('gameStarted', (settings) => {
@@ -43,6 +43,10 @@ onBeforeMount(() => {
   socket.initializeSocket();
   socket.emit("send-update", roomId);
 })
+
+onBeforeUnmount(() => {
+  socket.off('gameStarted');
+});
 
 </script>
 <template>
