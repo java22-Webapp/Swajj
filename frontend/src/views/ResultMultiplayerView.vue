@@ -1,16 +1,11 @@
 <script setup>
 import {useGameStore} from '@/stores/game';
 import {router} from '@/router';
-//import {useSettingsStore} from '@/stores/settings';
 import { onMounted, ref} from 'vue';
 import {useSocketStore} from '@/stores/socket';
 
 const useRouter = router;
 const userScoreStore = useGameStore();
-//const newRounds = useGameStore();
-//const roundTimer = useGameStore();
-//const settings = useSettingsStore();
-//const maxRounds = useSettingsStore();
 const socketStore = useSocketStore();
 const results = ref([]);
 const gameLink = ref('');
