@@ -1,16 +1,16 @@
 <script setup>
 import {useGameStore} from '@/stores/game';
 import {router} from '@/router';
-import {useSettingsStore} from '@/stores/settings';
-import {onBeforeMount, onBeforeUnmount, onMounted, ref} from 'vue';
+//import {useSettingsStore} from '@/stores/settings';
+import { onMounted, ref} from 'vue';
 import {useSocketStore} from '@/stores/socket';
 
 const useRouter = router;
 const userScoreStore = useGameStore();
-const newRounds = useGameStore();
-const roundTimer = useGameStore();
-const settings = useSettingsStore();
-const maxRounds = useSettingsStore();
+//const newRounds = useGameStore();
+//const roundTimer = useGameStore();
+//const settings = useSettingsStore();
+//const maxRounds = useSettingsStore();
 const socketStore = useSocketStore();
 const results = ref([]);
 const gameLink = ref('');
@@ -30,6 +30,7 @@ const playAgain = async () => {
     const roomId = extractRoomId(gameLink.value);
     console.log('Extracted room ID:: ');
 
+    resetUserScore();
 
     console.log('isHost value: ', isHost.value);
 
@@ -45,7 +46,7 @@ const playAgain = async () => {
 
 //
 const redirectToMenu = () => {
-  // newGameSettings();
+    resetUserScore();
   if (socketStore.socket) socketStore.disconnect();
   useRouter.push('/');
 };
@@ -55,39 +56,29 @@ function extractRoomId(gameLink) {
   return url.searchParams.get('roomId');
 }
 
-function newGameSettings() {
+function resetUserScore() {
   userScoreStore.userScore = 0;
-  newRounds.currentRound = 1;
-  // roundTimer.remainingTime = useGameStore().remainingTime;
-  // maxRounds.settings.rounds = settings.settings.rounds;
-  // userScoreStore.lives = settings.settings.kidsMode ? 3 : 0;
 }
-
-onBeforeUnmount(() => {
-
-})
 
 onMounted(async () => {
   socketStore.initializeSocket();
 
   socketStore.on('new-game-created-clients', (data) => {
-    socketStore.emit('leave-room', { roomId: oldRoomId })
+    //socketStore.emit('leave-room', { roomId: oldRoomId.value })
     router.push(`/join/?roomId=${data.newGameLink}`);
-    newGameSettings()
   });
 
   socketStore.on('new-game-created-host', (data) => {
     console.log(data.id);
     console.log(`PUSHING CLIENTS WITH roomId: `, data);
     console.log(`PUSHING CLIENTS WITH roomId: `, data.newGameLink);
-    socketStore.emit('leave-room', { roomId: oldRoomId })
+    //socketStore.emit('leave-room', { roomId: oldRoomId.value })
     router.push(`/multiplayer/${data.newGameLink}`);
-    newGameSettings()
   });
 
 
   const roomId = router.currentRoute.value.fullPath.split('/')[2];
-  oldRoomId = roomId;
+  oldRoomId.value = roomId;
   console.log('ROOM ID :: ', roomId);
   console.log('OLD ROOM ID: ', oldRoomId);
 

@@ -1,6 +1,6 @@
 <script setup>
 import RoundCounter from "@/components/RoundCounter.vue";
-import {ref, onBeforeUnmount, computed, onBeforeMount, onMounted, onUnmounted} from "vue";
+import {ref, onBeforeUnmount, computed, onBeforeMount } from "vue";
 import questionCardStack from "../assets/questionCardStack.png";
 import questionCardStackFlipped from "../assets/questionCardStackFlipped.png";
 import { useGameStore } from "@/stores/game";
@@ -39,13 +39,19 @@ socket.on("update-answers-status", (updateResults) => {
   results.value = updateResults;
 })
 
-function resetGameState() {
+function resetRoundState() {
   resetBtnClasses();
   clearInterval(timerInterval.value);
   getNewQuestion();
 }
 
+function resetGameState() {
+  clearInterval(timerInterval.value);
+  userScoreHolder.currentRound = 1;
+}
+
 const startTimer = (() => {
+  console.log("CALLING START-TIMER")
   let firstTimeCalled = true;
   return () => {
     socket.emit("request-results", roomId.value);
@@ -61,7 +67,7 @@ const startTimer = (() => {
         console.log("TIMER-EXPIRED EVENT for room: ", roomId.value);
         socket.emit("timer-expired", roomId.value);
         clearInterval(timerInterval.value);
-        setTimeout(resetGameState, 2000);
+        setTimeout(resetRoundState, 2000);
       }
     }, 1000);
     firstTimeCalled = false;
@@ -69,15 +75,18 @@ const startTimer = (() => {
 })();
 
 onBeforeMount(() => {
+
+
   socket.initializeSocket();
   roomId.value = router.currentRoute.value.params.roomId;
   socket.emit("joinRoom", roomId.value);
   socket.emit("request-results", roomId.value);
   console.log("sending request-results");
   socket.on("results-for-room", (data) => {
-    //console.log("DATA RECEIVED IN RES VIEW::", data);
     results.value = data;
+    console.log(data.time)
   });
+
   getNewQuestion();
   startTimer();
 
@@ -91,15 +100,18 @@ onBeforeMount(() => {
 
   socket.on("round-completed", () => {
     console.log("round-completed event fired")
-    resetGameState();
+    resetRoundState();
     startTimer();
   });
 });
 
 onBeforeUnmount(() => {
-  clearInterval(timerInterval.value);
-  socket.off("new-question", roomId.value);
-  socket.off("round-completed", roomId.value);
+  resetGameState();
+  socket.off('new-question');
+  socket.off('round-completed');
+  socket.off('update-answers-status');
+  socket.off('results-for-room');
+  socket.off('answer-result');
 });
 
 

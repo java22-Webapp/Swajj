@@ -63,19 +63,8 @@ io.on("connection", (socket) => {
     }
   })
 
- /* socket.on("newPlayer", (data) => {
-    if (!players.includes(data)) {
-      socket.playerName = data;
-      players.push(playerName);
-      console.log("A new player connected: ", socket.playerName);
-      io.emit("update-player-list", players);
-    }
-  });*/
-
   socket.on('leave-room', (data) => {
-    //const roomId = data.roomId;
     socket.leave(data.roomId);
-    //io.on(roomId).socketsLeave(roomId);
     console.log("Socket: ", data.socket, " left roomId: ", data.roomId)
   })
 
@@ -186,6 +175,8 @@ io.on("connection", (socket) => {
 
     roomState[roomId].settings = settings;
 
+    console.log("ROOM SETTINGS:: ", roomState[roomId].settings);
+
     const clientsInRoom = io.sockets.adapter.rooms.get(roomId);
     const numberOfClients = clientsInRoom ? clientsInRoom.size : 0;
 
@@ -193,17 +184,19 @@ io.on("connection", (socket) => {
 
     if (!roomState[roomId].isStarted) {
       io.to(data.roomId).emit("gameStarted", data.settings);
+      console.log(data.settings)
       roomState[roomId].isStarted = true;
     }
   });
 
   socket.on('new-game-created', (data) => {
-    console.log("roomId: ", data.gameLink)
+    console.log("Socket roomID:: ", socket.roomId)
+    console.log("roomId: ", data.newGameLink)
     console.log("oldRoom" +
         "Id: ", data.oldRoomId)
+    socket.to(socket.roomId).emit('new-game-created-clients', data);
     socket.emit('new-game-created-host', data);
-    //socket.broadcast.emit('new-game-created-clients', data);
-    socket.to(data.oldRoomId).emit('new-game-created-clients', data);
+    socket.leave(socket.roomId);
   });
 
   socket.on("disconnect", () => {
@@ -225,7 +218,7 @@ function handleRoundCompletion(roomId) {
     io.in(roomId).emit("round-completed");
     console.log("Firing round-completed event")
     roomAnswers[roomId] = [];
-  }, 2000);
+  }); // , 2000
 }
 
 // Get a single question per request. The idea is that we call this function each time we go to a new game round

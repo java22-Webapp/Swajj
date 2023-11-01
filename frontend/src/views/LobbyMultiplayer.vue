@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onBeforeMount, onMounted, ref } from 'vue';
+import { computed, onBeforeMount, onBeforeUnmount, onMounted, ref } from "vue";
 import SettingsPanel from '@/components/SettingsPanel.vue';
 import { useNicknameStore } from '@/stores/nickname';
 import ListOfPlayers from '@/components/ListOfPlayers.vue';
@@ -101,6 +101,10 @@ const shouldShowListOfPlayers = computed(() => {
   return true;
 });
 
+onBeforeUnmount(() => {
+  socket.off('update-player-list');
+});
+
 onBeforeMount(() => {
   socket.on('update-player-list', (data) => {
     console.log('Data from update-player-list ' + data);
@@ -137,6 +141,8 @@ onMounted(async () => {
   // const hostId = socket.socket.id;
   // localStorage.setItem('Host-ID', hostId);
 });
+
+
 
 console.log('LOBBY ROOM ID:: ', roomId);
 </script>
