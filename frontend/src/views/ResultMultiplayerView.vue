@@ -1,7 +1,7 @@
 <script setup>
 import {useGameStore} from '@/stores/game';
 import {router} from '@/router';
-import { onMounted, ref} from 'vue';
+import { computed, onMounted, ref } from "vue";
 import {useSocketStore} from '@/stores/socket';
 
 const useRouter = router;
@@ -11,10 +11,6 @@ const results = ref([]);
 const gameLink = ref('');
 const isHost = ref(false);
 let oldRoomId = ref("");
-  const results = ref([]);
-  const sortedResults = computed(() => {
-    return [...results.value].sort((a, b) => b.score - a.score);
-  })
 
 const playAgain = async () => {
   try {
@@ -25,17 +21,11 @@ const playAgain = async () => {
     const response = await fetch('http://localhost:3000/generate-game-link');
     const data = await response.json();
     gameLink.value = data.gameLink;
-    console.log('NEW GAME LINK::: ', gameLink.value);
     const roomId = extractRoomId(gameLink.value);
-    console.log('Extracted room ID:: ');
 
     resetUserScore();
 
-    console.log('isHost value: ', isHost.value);
-
     if (isHost.value) {
-      console.log('NEW GAME CREATED WITH ROOM ID:: ', roomId);
-      console.log("PLAYAGAIN roomID: ", roomId, "| oldRoomId: ", oldRoomId)
       socketStore.emit('new-game-created', {newGameLink: roomId, oldRoomId: oldRoomId});
     }
   } catch (error) {
@@ -48,6 +38,10 @@ const redirectToMenu = () => {
   if (socketStore.socket) socketStore.disconnect();
   useRouter.push('/');
 };
+
+const sortedResults = computed(() => {
+  return [...results.value].sort((a, b) => b.score - a.score);
+})
 
 function extractRoomId(gameLink) {
   const url = new URL(gameLink);
@@ -62,38 +56,24 @@ onMounted(async () => {
   socketStore.initializeSocket();
 
   socketStore.on('new-game-created-clients', (data) => {
-    //socketStore.emit('leave-room', { roomId: oldRoomId.value })
     router.push(`/join/?roomId=${data.newGameLink}`);
   });
 
   socketStore.on('new-game-created-host', (data) => {
-    console.log(data.id);
-    console.log(`PUSHING CLIENTS WITH roomId: `, data);
-    console.log(`PUSHING CLIENTS WITH roomId: `, data.newGameLink);
-    //socketStore.emit('leave-room', { roomId: oldRoomId.value })
     router.push(`/multiplayer/${data.newGameLink}`);
   });
 
 
   const roomId = router.currentRoute.value.fullPath.split('/')[2];
   oldRoomId.value = roomId;
-  console.log('ROOM ID :: ', roomId);
-  console.log('OLD ROOM ID: ', oldRoomId);
-
-
 
   socketStore.emit('request-results', roomId);
-  console.log('sending request-results');
   socketStore.on('results-for-room', (data) => {
     results.value = data;
 
     const host = data.find((user) => user.isHost);
-    console.log('Identified host: ', host);
-    console.log('HOST usr_id:: ', host.user_id, ' - socket:: ', socketStore.socket);
-    console.log('HOST usr_id:: ', host.user_id, ' - socket.id:: ', socketStore.socket.id);
     if (host) {
       isHost.value = host.user_id === socketStore.socket.id;
-      console.log('Is this socket host? >> ', isHost.value);
     }
   });
 });
