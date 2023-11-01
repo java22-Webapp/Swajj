@@ -6,6 +6,7 @@ import ResultView from "@/views/ResultView.vue";
 import InviteeView from "@/views/InviteeView.vue";
 import playMultiplayer from "@/views/playMultiplayerView.vue";
 import ResultMultiplayerView from "@/views/ResultMultiplayerView.vue"
+import LobbyMultiplayer from "@/views/LobbyMultiplayer.vue";
 
 export const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -26,6 +27,11 @@ export const router = createRouter({
             component: () => import('../views/LobbyMultiplayer.vue')
         },
         {
+            path: '/multiplayer/:roomId',
+            name: 'MultiplayerTwo',
+            component: LobbyMultiplayer
+        },
+        {
             path: '/play',
             name: 'Play',
             component: GameStart
@@ -43,6 +49,11 @@ export const router = createRouter({
         {
             path: '/join',
             name: 'Invitee',
+            component: InviteeView
+        },
+        {
+            path: '/join/:roomId',
+            name: 'InviteeTwo',
             component: InviteeView
         },
         {

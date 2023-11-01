@@ -1,6 +1,6 @@
 <script setup>
 import NicknameInput from '@/components/NicknameInput.vue';
-import { onBeforeMount, ref } from "vue";
+import { onBeforeMount, onBeforeUnmount, ref } from "vue";
 import { useNicknameStore } from '@/stores/nickname';
 import ListOfPlayers from '@/components/ListOfPlayers.vue';
 import { useRouter } from 'vue-router';
@@ -43,6 +43,10 @@ onBeforeMount(() => {
   socket.initializeSocket();
   socket.emit("send-update", roomId);
 })
+
+onBeforeUnmount(() => {
+  socket.off('gameStarted');
+});
 
 </script>
 <template>

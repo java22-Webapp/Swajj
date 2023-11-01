@@ -8,8 +8,8 @@ const { v4: uuidv4 } = require("uuid");
 const http = require("http");
 const socketIo = require("socket.io");
 const server = http.createServer(app);
-const askedQuestions = [];
-const askedQuestionsMultiplayer = [];
+let askedQuestions = [];
+let askedQuestionsMultiplayer = [];
 const roomState = {};
 const roomAnswers = {};
 const gameResults = {};
@@ -41,7 +41,15 @@ io.on("connection", (socket) => {
 
   socket.on("player-enters-game", (data) => {
     if(!gameResults[data.roomId]) gameResults[data.roomId] = [];
-    gameResults[data.roomId].push({user_id: socket.id, score: 0, nickname: data.nickname});
+    const isHost = gameResults[data.roomId].length === 0; // true om det är den första användaren i rummet
+    const newUser = {
+      user_id: socket.id,
+      score: 0,
+      nickname: data.nickname,
+      isHost
+    };
+
+    gameResults[data.roomId].push(newUser);
     socket.roomId = data.roomId;
     console.log("GAMERESULTS::: ", gameResults[data.roomId].map(user => user.nickname));
     socket.to(data.roomId).emit("update-player-list", gameResults[data.roomId].map(user => user.nickname));
@@ -49,19 +57,16 @@ io.on("connection", (socket) => {
   });
 
   socket.on("send-update", (roomId) => {
-    if (gameResults[roomId])
+    if (gameResults[roomId]) {
       socket.to(roomId).emit("update-player-list", gameResults[roomId].map(user => user.nickname));
       socket.emit("update-player-list", gameResults[roomId].map(user => user.nickname));
+    }
   })
 
- /* socket.on("newPlayer", (data) => {
-    if (!players.includes(data)) {
-      socket.playerName = data;
-      players.push(playerName);
-      console.log("A new player connected: ", socket.playerName);
-      io.emit("update-player-list", players);
-    }
-  });*/
+  socket.on('leave-room', (data) => {
+    socket.leave(data.roomId);
+    console.log("Socket: ", data.socket, " left roomId: ", data.roomId)
+  })
 
   // Let clients/users the game room
   socket.on("joinRoom", (roomId) => {
@@ -83,7 +88,6 @@ io.on("connection", (socket) => {
   });
 
   socket.on("timer-expired", (roomId) => {
-    console.log("IN TIMER-EXPIRED BACKEND");
 
     if (!roomAnswers[roomId]) {
       roomAnswers[roomId] = [];
@@ -97,7 +101,6 @@ io.on("connection", (socket) => {
   });
 
   socket.on("user-selected-answer", (data) => {
-    console.log("CALLING 'user-selected-answer' BACKEND");
     const { roomId, answerIndex } = data;
 
     const currentQuestion = roomState[roomId].currentQuestion;
@@ -131,12 +134,12 @@ io.on("connection", (socket) => {
 
     if (isAnswerCorrect) {
       gameResults[roomId][existingUserIndex].score = gameResults[roomId][existingUserIndex].score + 1;
-      console.log("GAMERESULTS SCORE::: ", gameResults);
     }
 
     if (!roomAnswers[roomId]) {
       roomAnswers[roomId] = [];
     }
+
 
     if (roomAnswers[roomId].some(answer => answer.clientId === socket.id)) {
       console.log(`Client ${socket.id} has already answered this round.`);
@@ -153,7 +156,6 @@ io.on("connection", (socket) => {
   console.log("Waiting for request-results");
 
   socket.on("request-results", (roomId) => {
-    console.log("GAMERESULTS - ROOM ID::: ", gameResults[roomId]);
     socket.emit("results-for-room", gameResults[roomId]);
   })
 
@@ -173,6 +175,8 @@ io.on("connection", (socket) => {
 
     roomState[roomId].settings = settings;
 
+    console.log("ROOM SETTINGS:: ", roomState[roomId].settings);
+
     const clientsInRoom = io.sockets.adapter.rooms.get(roomId);
     const numberOfClients = clientsInRoom ? clientsInRoom.size : 0;
 
@@ -180,8 +184,19 @@ io.on("connection", (socket) => {
 
     if (!roomState[roomId].isStarted) {
       io.to(data.roomId).emit("gameStarted", data.settings);
+      console.log(data.settings)
       roomState[roomId].isStarted = true;
     }
+  });
+
+  socket.on('new-game-created', (data) => {
+    console.log("Socket roomID:: ", socket.roomId)
+    console.log("roomId: ", data.newGameLink)
+    console.log("oldRoom" +
+        "Id: ", data.oldRoomId)
+    socket.to(socket.roomId).emit('new-game-created-clients', data);
+    socket.emit('new-game-created-host', data);
+    socket.leave(socket.roomId);
   });
 
   socket.on("disconnect", () => {
@@ -195,12 +210,15 @@ io.on("connection", (socket) => {
   });
 });
 
+
 function handleRoundCompletion(roomId) {
   console.log("All clients have answered or the timer has run out!");
+
   setTimeout(() => {
     io.in(roomId).emit("round-completed");
+    console.log("Firing round-completed event")
     roomAnswers[roomId] = [];
-  }, 2000);
+  }); // , 2000
 }
 
 // Get a single question per request. The idea is that we call this function each time we go to a new game round
@@ -217,10 +235,10 @@ function fetchNewQuestion(roomId) {
     return;
   }
 
-  console.log("MODE: ", roomSettings.kidsMode);
+  /*console.log("MODE: ", roomSettings.kidsMode);
   console.log("LANGUAGE: ", roomSettings.english)
   console.log("ROUNDS: ", roomSettings.rounds)
-  console.log("TIME: ", roomSettings.time)
+  console.log("TIME: ", roomSettings.time)*/
 
   const query = `SELECT id, question_text
                  FROM questions
@@ -288,9 +306,17 @@ function populateDatabase() {
 
 app.get("/play-again", (req, res) => {
   console.log("Received req to /play-again");
-  askedQuestions.length = 0;
+  askedQuestions = [];
   res.status(200).end();
 });
+
+ // Todo: probably refactor this into an event listener
+app.get("/play-again-multiplayer", (req, res) =>{
+  console.log("RECEIVED FROM ::: play-again-multiplayer")
+  askedQuestionsMultiplayer = [];
+  res.status(200).end();
+
+})
 
 
 // For single player only

@@ -1,11 +1,11 @@
 <script setup>
-import { computed, onBeforeMount, onMounted, ref } from "vue";
+import { computed, onBeforeMount, onBeforeUnmount, onMounted, ref } from "vue";
 import SettingsPanel from '@/components/SettingsPanel.vue';
 import { useNicknameStore } from '@/stores/nickname';
-import ListOfPlayers from "@/components/ListOfPlayers.vue";
-import router from "@/router";
-import { useSocketStore } from "@/stores/socket";
-import { useSettingsStore } from "@/stores/settings";
+import ListOfPlayers from '@/components/ListOfPlayers.vue';
+import router from '@/router';
+import { useSocketStore } from '@/stores/socket';
+import { useSettingsStore } from '@/stores/settings';
 
 const gameLink = ref('');
 const copied = ref(false);
@@ -18,8 +18,12 @@ const playerNicknames = ref([]);
 socket.initializeSocket();
 
 function startMultiplayerGame() {
-  const url = new URL(gameLink.value);
-  const roomId = url.searchParams.get('roomId');
+  let roomId = router.currentRoute.value.params.roomId;
+
+  if (!roomId) {
+    const url = new URL(gameLink.value);
+    roomId = url.searchParams.get('roomId');
+  }
 
   const currentSettings = {
     kidsMode: settingsStore.settings.kidsMode,
@@ -28,8 +32,8 @@ function startMultiplayerGame() {
     time: settingsStore.settings.time
   };
 
-  socket.emit("startGame", { roomId, settings: currentSettings });
-  router.push({ name: 'PlayMultiplayer', params: { roomId: roomId}})
+  socket.emit('startGame', { roomId, settings: currentSettings });
+  router.push({ name: 'PlayMultiplayer', params: { roomId: roomId } });
 }
 
 async function copyLink(event) {
@@ -42,15 +46,19 @@ async function copyLink(event) {
       console.error('Error generating game link: ', error);
       copied.value = false;
     }
+  } else {
+    const url = new URL(gameLink.value);
+    roomId.value = url.searchParams.get('roomId');
   }
   navigator.clipboard
     .writeText(gameLink.value)
     .then(() => {
       copied.value = true;
-    }).catch((err) => {
-    console.error('Failed to copy link:', err);
-    copied.value = false;
-  });
+    })
+    .catch((err) => {
+      console.error('Failed to copy link:', err);
+      copied.value = false;
+    });
 
   const tooltip = document.querySelector('.tooltip');
   const top = event.clientY + 10;
@@ -65,7 +73,7 @@ async function copyLink(event) {
     const left = e.clientX + 10;
     tooltip.style.top = `${top}px`;
     tooltip.style.left = `${left}px`;
-  }
+  };
 
   document.addEventListener('mousemove', updateTooltipPosition);
 
@@ -73,11 +81,9 @@ async function copyLink(event) {
     tooltip.style.display = 'none';
     document.removeEventListener('mousemove', updateTooltipPosition);
   }, 1000);
-
-
 }
 
-const showListOfPlayers = ref(false)
+const showListOfPlayers = ref(false);
 
 const listOfPlayers = () => {
   showListOfPlayers.value = !showListOfPlayers.value;
@@ -95,37 +101,58 @@ const shouldShowListOfPlayers = computed(() => {
   return true;
 });
 
+onBeforeUnmount(() => {
+  socket.off('update-player-list');
+});
+
 onBeforeMount(() => {
-  socket.on("update-player-list", (data) => {
-    console.log("Data from update-player-list " + data)
+  socket.on('update-player-list', (data) => {
+    console.log('Data from update-player-list ' + data);
     playerNicknames.value = data;
-  })
-})
+  });
+});
 
 onMounted(async () => {
-  try {
-    const response = await fetch('http://localhost:3000/generate-game-link');
-    const data = await response.json();
-    gameLink.value = data.gameLink;
-  } catch (error) {
-    console.error('Error generating game link: ', error);
-    copied.value = false;
+  let newRoomId = router.currentRoute.value.params.roomId;
+  console.log("NEW ROOMS",newRoomId)
+  if (newRoomId) {
+    roomId.value = newRoomId;
+  } else {
+    try {
+      const response = await fetch('http://localhost:3000/generate-game-link');
+      const data = await response.json();
+      gameLink.value = data.gameLink;
+    } catch (error) {
+      console.error('Error generating game link: ', error);
+      copied.value = false;
+    }
+    const url = new URL(gameLink.value);
+    roomId.value = url.searchParams.get('roomId');
   }
 
-  const url = new URL(gameLink.value);
-  roomId.value = url.searchParams.get('roomId');
   const nicknameStore = useNicknameStore();
-  console.log("PLAYERS IN THIS ARRAY 1::: ", playerNicknames.value);
-  socket.emit('player-enters-game', { nickname: nicknameStore.nickname + ' (Host)', roomId: roomId.value});
+  console.log('PLAYERS IN THIS ARRAY 1::: ', playerNicknames.value);
+  socket.emit('set-host-nickname', {
+    nickname: nicknameStore.nickname + ' (Host)',
+    roomId: roomId.value
+  });
   socket.emit('joinRoom', roomId.value);
-  socket.emit("send-update", roomId.value);
-  })
+  socket.emit('send-update', roomId.value);
+  // const hostId = socket.socket.id;
+  // localStorage.setItem('Host-ID', hostId);
+});
 
+
+
+console.log('LOBBY ROOM ID:: ', roomId);
 </script>
 
 <template>
-  <header><div class="logo_s">S</div>
-    <button v-if="isMobile" class="button" id="iphoneIpadButton" @click="listOfPlayers">Players</button>
+  <header>
+    <div class="logo_s">S</div>
+    <button v-if="isMobile" class="button" id="iphoneIpadButton" @click="listOfPlayers">
+      Players
+    </button>
   </header>
 
   <main>
@@ -135,18 +162,14 @@ onMounted(async () => {
       <img id="cloud3" src="../assets/gultNyttNy3.png" alt="Bigger yellow cloud" />
       <img id="cloud4" src="../assets/gultNyttNy.png" alt="Small yellow cloud" />
     </section>
-    <img
-      class="rotatedCardBrain"
-      src="../assets/cardBrainYellow.png"
-      alt="Brain holding a card"
-    />
+    <img class="rotatedCardBrain" src="../assets/cardBrainYellow.png" alt="Brain holding a card" />
     <section id="content">
       <ListOfPlayers id="listOfPlayers" v-if="shouldShowListOfPlayers" />
       <section id="settingsSection">
         <SettingsPanel id="settingsPanel" />
         <div id="nicknameField">Nickname: {{ nickNameStore.nickname }}</div>
         <button ref="copyButtonRef" @click="copyLink" class="button" id="copyLinkBtn">
-          Copy link <span class="tooltip" >Link copied</span>
+          Copy link <span class="tooltip">Link copied</span>
         </button>
         <button class="button" id="playBtn" @click="startMultiplayerGame">Play</button>
       </section>
@@ -155,7 +178,6 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-
 header {
   display: flex;
   justify-content: space-between;
@@ -221,7 +243,10 @@ main {
   z-index: 1;
 }
 
-#cloud1, #cloud4, #cloud2, #cloud3 {
+#cloud1,
+#cloud4,
+#cloud2,
+#cloud3 {
   position: absolute;
 }
 
@@ -271,22 +296,25 @@ main {
   transform: scale(0.7) rotate(40deg);
 }
 
-@media only screen and (min-width: 800px)  and (max-width: 1000px){
-  #cloud1{
+@media only screen and (min-width: 800px) and (max-width: 1000px) {
+  #cloud1 {
     display: none;
   }
-  #iphoneIpadButton{
+
+  #iphoneIpadButton {
     display: flex;
     transform: scale(1.4);
     left: -5%;
   }
+
   #listOfPlayers {
     position: absolute;
     top: 20%;
     left: 30%;
     z-index: 100;
   }
-  main{
+
+  main {
     margin-top: 40px;
   }
 
@@ -295,7 +323,6 @@ main {
     transform: scale(0.5);
   }
 
-
   #cloud2 {
     top: -10%;
     left: -8%;
@@ -303,36 +330,41 @@ main {
   }
 
   #cloud4 {
-    top:  45%;
+    top: 45%;
     left: 60%;
     transform: scale(0.5);
   }
 
-  .rotatedCardBrain{
+  .rotatedCardBrain {
     top: 50%;
   }
 }
 
-@media only screen and (min-width: 320px) and (max-width: 799px){
-  #cloud1, #cloud2, #cloud3, #cloud4, .rotatedCardBrain {
+@media only screen and (min-width: 320px) and (max-width: 799px) {
+  #cloud1,
+  #cloud2,
+  #cloud3,
+  #cloud4,
+  .rotatedCardBrain {
     display: none;
   }
 
-  #iphoneIpadButton{
+  #iphoneIpadButton {
     display: flex;
     justify-content: center;
     align-items: center;
   }
 
-  main{
+  main {
     margin-top: -10px;
   }
 
-  #settingsPanel{
+  #settingsPanel {
     margin-top: 10px;
     transform: scale(0.9);
     width: max-content;
   }
+
   #listOfPlayers {
     position: absolute;
     top: 20%;
@@ -340,5 +372,4 @@ main {
     z-index: 10000;
   }
 }
-
 </style>

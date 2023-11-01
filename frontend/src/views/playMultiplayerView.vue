@@ -1,14 +1,14 @@
 <script setup>
-import RoundCounter from "@/components/RoundCounter.vue";
-import { ref, onBeforeUnmount, computed, onBeforeMount } from "vue";
-import questionCardStack from "../assets/questionCardStack.png";
-import questionCardStackFlipped from "../assets/questionCardStackFlipped.png";
-import { useGameStore } from "@/stores/game";
-import { useRouter } from "vue-router";
-import { useSocketStore } from "@/stores/socket";
-import { useSettingsStore } from "@/stores/settings";
+import RoundCounter from '@/components/RoundCounter.vue';
+import { ref, onBeforeUnmount, computed, onBeforeMount } from 'vue';
+import questionCardStack from '../assets/questionCardStack.png';
+import questionCardStackFlipped from '../assets/questionCardStackFlipped.png';
+import { useGameStore } from '@/stores/game';
+import { useRouter } from 'vue-router';
+import { useSocketStore } from '@/stores/socket';
+import { useSettingsStore } from '@/stores/settings';
 
-const questions = ref("");
+const questions = ref('');
 const answers = ref([]);
 const isCorrect = ref([]);
 const answerID = ref([]);
@@ -18,7 +18,7 @@ const timerInterval = ref(null);
 let selectedAnswerIndex = ref(null);
 const buttonDisabled = ref(false);
 const router = useRouter();
-let roomId = ref("");
+let roomId = ref('');
 const socket = useSocketStore();
 const results = ref([]);
 const svgBoxShadow = ref('0px 4px 4px rgba(0, 0, 0, 0.25)');
@@ -34,21 +34,26 @@ const answersCombo = computed(() => {
 const imgSrc = ref(questionCardStack);
 const isFlipped = computed(() => imgSrc.value === questionCardStackFlipped);
 
-
-socket.on("update-answers-status", (updateResults) => {
+socket.on('update-answers-status', (updateResults) => {
   results.value = updateResults;
-})
+});
 
-function resetGameState() {
+function resetRoundState() {
   resetBtnClasses();
   clearInterval(timerInterval.value);
   getNewQuestion();
 }
 
+function resetGameState() {
+  clearInterval(timerInterval.value);
+  userScoreHolder.currentRound = 1;
+}
+
 const startTimer = (() => {
+  console.log('CALLING START-TIMER');
   let firstTimeCalled = true;
   return () => {
-    socket.emit("request-results", roomId.value);
+    socket.emit('request-results', roomId.value);
     clearInterval(timerInterval.value);
     if (!firstTimeCalled) {
       useGameStore().nextRound();
@@ -58,10 +63,10 @@ const startTimer = (() => {
         useGameStore().remainingTime--;
       } else {
         showCorrectAnswer();
-        console.log("TIMER-EXPIRED EVENT");
-        socket.emit("timer-expired", roomId.value);
+        console.log('TIMER-EXPIRED EVENT for room: ', roomId.value);
+        socket.emit('timer-expired', roomId.value);
         clearInterval(timerInterval.value);
-        setTimeout(resetGameState, 2000);
+        setTimeout(resetRoundState, 2000);
       }
     }, 1000);
     firstTimeCalled = false;
@@ -69,18 +74,20 @@ const startTimer = (() => {
 })();
 
 onBeforeMount(() => {
+  socket.initializeSocket();
   roomId.value = router.currentRoute.value.params.roomId;
-  socket.emit("joinRoom", roomId.value);
-  socket.emit("request-results", roomId.value);
-  console.log("sending request-results");
-  socket.on("results-for-room", (data) => {
-    console.log("DATA RECEIVED IN RES VIEW::", data);
+  socket.emit('joinRoom', roomId.value);
+  socket.emit('request-results', roomId.value);
+  console.log('sending request-results');
+  socket.on('results-for-room', (data) => {
     results.value = data;
+    console.log(data.time);
   });
+
   getNewQuestion();
   startTimer();
 
-  socket.on("new-question", (data) => {
+  socket.on('new-question', (data) => {
     questions.value = data.question;
     answers.value = data.answers;
     isCorrect.value = data.isCorrect;
@@ -88,23 +95,25 @@ onBeforeMount(() => {
     imgSrc.value = questionCardStackFlipped;
   });
 
-  socket.on("round-completed", () => {
-    resetGameState();
+  socket.on('round-completed', () => {
+    console.log('round-completed event fired');
+    resetRoundState();
     startTimer();
   });
 });
 
 onBeforeUnmount(() => {
-  clearInterval(timerInterval.value);
-  socket.off("new-question", roomId.value);
-  socket.off("round-completed", roomId.value);
-  console.log("Component about to be destroyed");
+  resetGameState();
+  socket.off('new-question');
+  socket.off('round-completed');
+  socket.off('update-answers-status');
+  socket.off('results-for-room');
+  socket.off('answer-result');
 });
-
 
 function getNewQuestion() {
   const queryString = `kidsMode=${settingsStore.settings.kidsMode}&english=${settingsStore.settings.english}`;
-  socket.emit("requestNewQuestion", { roomId, queryString });
+  socket.emit('requestNewQuestion', { roomId, queryString });
 }
 
 function userAnswer(e, index) {
@@ -113,14 +122,14 @@ function userAnswer(e, index) {
   if (buttonDisabled.value) return;
   buttonDisabled.value = true;
 
-  socket.emit("user-selected-answer", {
+  socket.emit('user-selected-answer', {
     roomId: roomId.value,
     answerIndex: index
   });
-  e.target.classList.add("selected-answer");
+  e.target.classList.add('selected-answer');
 }
 
-socket.on("answer-result", (data) => {
+socket.on('answer-result', (data) => {
   const { correct, isCorrectArray } = data;
   const correctAnswerIndex = isCorrectArray.findIndex((value) => value === 1);
   const correctButtonSelector = `#btnAnswer-${answerID.value[correctAnswerIndex]}`;
@@ -130,27 +139,27 @@ socket.on("answer-result", (data) => {
     clearInterval(timerInterval.value);
     if (correct) {
       userScoreHolder.userScore++;
-      correctButton.classList.add("correct-answer");
+      correctButton.classList.add('correct-answer');
     } else {
       showCorrectAnswer();
       const selectedButton = document.querySelector(
         `#btnAnswer-${answerID.value[selectedAnswerIndex.value]}`
       );
-      if (selectedButton) selectedButton.classList.add("incorrect-answer");
+      if (selectedButton) selectedButton.classList.add('incorrect-answer');
     }
   } else {
-    console.log("Could not find the button with the provided selector.");
+    console.log('Could not find the button with the provided selector.');
   }
   selectedAnswerIndex.value = null;
 });
 
 function resetBtnClasses() {
   buttonDisabled.value = false;
-  const buttons = document.getElementsByClassName("button");
+  const buttons = document.getElementsByClassName('button');
   for (let i = 0; i < buttons.length; i++) {
-    buttons[i].classList.remove("correct-answer");
-    buttons[i].classList.remove("incorrect-answer");
-    buttons[i].classList.remove("selected-answer");
+    buttons[i].classList.remove('correct-answer');
+    buttons[i].classList.remove('incorrect-answer');
+    buttons[i].classList.remove('selected-answer');
     clearInterval(timerInterval.value);
   }
 }
@@ -158,10 +167,10 @@ function resetBtnClasses() {
 function showCorrectAnswer() {
   const indexOfCorrectAnswer = isCorrect.value.findIndex((correctValue) => correctValue === 1);
 
-  const buttons = document.getElementsByClassName("button");
+  const buttons = document.getElementsByClassName('button');
   [...buttons].forEach((btn) => {
-    if (btn.dataset.key === indexOfCorrectAnswer + "") {
-      btn.classList.add("correct-answer");
+    if (btn.dataset.key === indexOfCorrectAnswer + '') {
+      btn.classList.add('correct-answer');
     }
   });
 }
@@ -173,7 +182,7 @@ const listOfPlayers = () => {
 };
 
 const isMobile = ref(window.innerWidth <= 1000);
-window.addEventListener("resize", () => {
+window.addEventListener('resize', () => {
   isMobile.value = window.innerWidth <= 1000;
 });
 
@@ -205,80 +214,84 @@ const shouldShowListOfPlayers = computed(() => {
         <RoundCounter />
       </div>
     </section>
-      <div class="result-card" v-if="shouldShowListOfPlayers">
-        <div id="playerContainer">
+    <div class="result-card" v-if="shouldShowListOfPlayers">
+      <div id="playerContainer">
         <p class="result">Scoreboard</p>
         <ul class="nickname">
           <li v-for="res in results" :key="res">
             <div id="playerStats">
-              <img v-if="res.hasAnswered" src="@/assets/greenCheckmark.png" alt="Green checkmark" />{{ res.nickname }}: {{ res.score }}
+              <img
+                v-if="res.hasAnswered"
+                src="@/assets/greenCheckmark.png"
+                alt="Green checkmark"
+              />{{ res.nickname }}:
+              {{ res.score }}
             </div>
           </li>
         </ul>
-        </div>
-        <svg
-          width="442"
-          height="350"
-          viewBox="0 0 442 350"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <g :filter="`url(#filter0_d)`">
-            <rect x="4" width="434" height="340" rx="10" fill="#FFF6C2" />
-          </g>
-          <defs>
-            <filter
-              :id="`filter0_d`"
-              x="0"
-              y="0"
-              width="442"
-              height="350"
-              filterUnits="userSpaceOnUse"
-              :style="`color-interpolation-filters: sRGB;`"
-            >
-              <feFlood flood-opacity="0" result="BackgroundImageFix" />
-              <feColorMatrix
-                in="SourceAlpha"
-                type="matrix"
-                values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-                result="hardAlpha"
-              />
-              <feOffset :dy="svgBoxShadow" />
-              <feGaussianBlur stdDeviation="2" />
-              <feComposite in2="hardAlpha" operator="out" />
-              <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0" />
-              <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow" />
-              <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow" result="shape" />
-            </filter>
-          </defs>
-        </svg>
       </div>
-      <section class="QNA">
-        <div id="deckDiv">
-          <div class="deckQuestions">{{ questions }}</div>
-          <img id="idleDeck" :src="imgSrc" :class="{ flipped: isFlipped }" alt="Card deck" />
-        </div>
-        <div id="answerBtns">
-          <button
-            class="button"
-            v-for="(answer, index) in answersCombo"
-            :id="'btnAnswer-' + answer.id"
-            :key="answer.id"
-            @click="(e) => userAnswer(e, index)"
-            :data-key="index"
-            :disabled="buttonDisabled"
+      <svg
+        width="442"
+        height="350"
+        viewBox="0 0 442 350"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <g :filter="`url(#filter0_d)`">
+          <rect x="4" width="434" height="340" rx="10" fill="#FFF6C2" />
+        </g>
+        <defs>
+          <filter
+            :id="`filter0_d`"
+            x="0"
+            y="0"
+            width="442"
+            height="350"
+            filterUnits="userSpaceOnUse"
+            :style="`color-interpolation-filters: sRGB;`"
           >
-            {{ answer.answer_text }}
-          </button>
-        </div>
-
+            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+            <feColorMatrix
+              in="SourceAlpha"
+              type="matrix"
+              values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+              result="hardAlpha"
+            />
+            <feOffset :dy="svgBoxShadow" />
+            <feGaussianBlur stdDeviation="2" />
+            <feComposite in2="hardAlpha" operator="out" />
+            <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0" />
+            <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow" />
+            <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow" result="shape" />
+          </filter>
+        </defs>
+      </svg>
+    </div>
+    <section class="QNA">
+      <div id="deckDiv">
+        <div class="deckQuestions">{{ questions }}</div>
+        <img id="idleDeck" :src="imgSrc" :class="{ flipped: isFlipped }" alt="Card deck" />
+      </div>
+      <div id="answerBtns">
+        <button
+          class="button"
+          v-for="(answer, index) in answersCombo"
+          :id="'btnAnswer-' + answer.id"
+          :key="answer.id"
+          @click="(e) => userAnswer(e, index)"
+          :data-key="index"
+          :disabled="buttonDisabled"
+        >
+          {{ answer.answer_text }}
+        </button>
+      </div>
     </section>
   </main>
 </template>
 
 <style scoped>
-
-body, html {
+body,
+html {
   overflow: hidden;
 }
 
@@ -303,7 +316,6 @@ header {
   left: 50%;
 }
 
-
 .nickname {
   list-style-type: none;
   padding: 0;
@@ -318,7 +330,6 @@ header {
   padding: 0;
   margin-top: 15px;
   font-size: 24px;
-
 }
 
 .nickname img {
@@ -327,7 +338,7 @@ header {
   padding: 0;
   transform: scale(10%);
   height: auto;
-  margin-left: -105%;
+  margin-left: -65%;
 }
 
 .result {
@@ -341,7 +352,10 @@ header {
   transform: translate(-50%, -50%);
 }
 
-#cloud1, #cloud4, #cloud2, #cloud3 {
+#cloud1,
+#cloud4,
+#cloud2,
+#cloud3 {
   position: absolute;
 }
 
@@ -479,8 +493,6 @@ header {
   z-index: 2;
 }
 
-
-
 @media only screen and (min-width: 800px) and (max-width: 1000px) {
   #cloud4,
   #cloud2,
@@ -570,8 +582,4 @@ header {
   align-items: center;
   gap: 3em;
 }
-
-
-
-
 </style>
