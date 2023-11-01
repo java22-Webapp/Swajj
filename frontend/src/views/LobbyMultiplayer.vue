@@ -107,14 +107,12 @@ onBeforeUnmount(() => {
 
 onBeforeMount(() => {
   socket.on('update-player-list', (data) => {
-    console.log('Data from update-player-list ' + data);
     playerNicknames.value = data;
   });
 });
 
 onMounted(async () => {
   let newRoomId = router.currentRoute.value.params.roomId;
-  console.log("NEW ROOMS",newRoomId)
   if (newRoomId) {
     roomId.value = newRoomId;
   } else {
@@ -131,20 +129,14 @@ onMounted(async () => {
   }
 
   const nicknameStore = useNicknameStore();
-  console.log('PLAYERS IN THIS ARRAY 1::: ', playerNicknames.value);
-  socket.emit('set-host-nickname', {
+  socket.emit('player-enters-game', {
     nickname: nicknameStore.nickname + ' (Host)',
     roomId: roomId.value
   });
   socket.emit('joinRoom', roomId.value);
   socket.emit('send-update', roomId.value);
-  // const hostId = socket.socket.id;
-  // localStorage.setItem('Host-ID', hostId);
 });
 
-
-
-console.log('LOBBY ROOM ID:: ', roomId);
 </script>
 
 <template>
