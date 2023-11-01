@@ -72,6 +72,13 @@ io.on("connection", (socket) => {
     }
   });*/
 
+  socket.on('leave-room', (data) => {
+    //const roomId = data.roomId;
+    socket.leave(data.roomId);
+    //io.on(roomId).socketsLeave(roomId);
+    console.log("Socket: ", data.socket, " left roomId: ", data.roomId)
+  })
+
   // Let clients/users the game room
   socket.on("joinRoom", (roomId) => {
     socket.join(roomId);
@@ -144,6 +151,7 @@ io.on("connection", (socket) => {
       roomAnswers[roomId] = [];
     }
 
+
     if (roomAnswers[roomId].some(answer => answer.clientId === socket.id)) {
       console.log(`Client ${socket.id} has already answered this round.`);
       return;
@@ -190,8 +198,12 @@ io.on("connection", (socket) => {
   });
 
   socket.on('new-game-created', (data) => {
+    console.log("roomId: ", data.gameLink)
+    console.log("oldRoom" +
+        "Id: ", data.oldRoomId)
     socket.emit('new-game-created-host', data);
-    socket.broadcast.emit('new-game-created-clients', data);
+    //socket.broadcast.emit('new-game-created-clients', data);
+    socket.to(data.oldRoomId).emit('new-game-created-clients', data);
   });
 
   socket.on("disconnect", () => {
@@ -205,10 +217,13 @@ io.on("connection", (socket) => {
   });
 });
 
+
 function handleRoundCompletion(roomId) {
   console.log("All clients have answered or the timer has run out!");
+
   setTimeout(() => {
     io.in(roomId).emit("round-completed");
+    console.log("Firing round-completed event")
     roomAnswers[roomId] = [];
   }, 2000);
 }

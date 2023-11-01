@@ -1,9 +1,9 @@
 <script setup>
-import { useGameStore } from '@/stores/game';
-import { router } from '@/router';
-import { useSettingsStore } from '@/stores/settings';
-import { onMounted, ref } from 'vue';
-import { useSocketStore } from '@/stores/socket';
+import {useGameStore} from '@/stores/game';
+import {router} from '@/router';
+import {useSettingsStore} from '@/stores/settings';
+import {onBeforeMount, onBeforeUnmount, onMounted, ref} from 'vue';
+import {useSocketStore} from '@/stores/socket';
 
 const useRouter = router;
 const userScoreStore = useGameStore();
@@ -15,6 +15,7 @@ const socketStore = useSocketStore();
 const results = ref([]);
 const gameLink = ref('');
 const isHost = ref(false);
+let oldRoomId = ref("");
 
 const playAgain = async () => {
   try {
@@ -29,11 +30,13 @@ const playAgain = async () => {
     const roomId = extractRoomId(gameLink.value);
     console.log('Extracted room ID:: ');
 
+
     console.log('isHost value: ', isHost.value);
 
     if (isHost.value) {
       console.log('NEW GAME CREATED WITH ROOM ID:: ', roomId);
-      socketStore.emit('new-game-created', { newGameLink: roomId });
+      console.log("PLAYAGAIN roomID: ", roomId, "| oldRoomId: ", oldRoomId)
+      socketStore.emit('new-game-created', {newGameLink: roomId, oldRoomId: oldRoomId});
     }
   } catch (error) {
     console.log('Error in playAgain function: ', error);
@@ -42,7 +45,7 @@ const playAgain = async () => {
 
 //
 const redirectToMenu = () => {
-  newGameSettings();
+  // newGameSettings();
   if (socketStore.socket) socketStore.disconnect();
   useRouter.push('/');
 };
@@ -55,28 +58,40 @@ function extractRoomId(gameLink) {
 function newGameSettings() {
   userScoreStore.userScore = 0;
   newRounds.currentRound = 1;
-  roundTimer.remainingTime = useGameStore().remainingTime;
-  maxRounds.settings.rounds = settings.settings.rounds;
-  userScoreStore.lives = settings.settings.kidsMode ? 3 : 0;
+  // roundTimer.remainingTime = useGameStore().remainingTime;
+  // maxRounds.settings.rounds = settings.settings.rounds;
+  // userScoreStore.lives = settings.settings.kidsMode ? 3 : 0;
 }
+
+onBeforeUnmount(() => {
+
+})
 
 onMounted(async () => {
   socketStore.initializeSocket();
 
   socketStore.on('new-game-created-clients', (data) => {
-    console.log(data.id);
+    socketStore.emit('leave-room', { roomId: oldRoomId })
     router.push(`/join/?roomId=${data.newGameLink}`);
+    newGameSettings()
   });
 
   socketStore.on('new-game-created-host', (data) => {
     console.log(data.id);
     console.log(`PUSHING CLIENTS WITH roomId: `, data);
     console.log(`PUSHING CLIENTS WITH roomId: `, data.newGameLink);
+    socketStore.emit('leave-room', { roomId: oldRoomId })
     router.push(`/multiplayer/${data.newGameLink}`);
+    newGameSettings()
   });
 
+
   const roomId = router.currentRoute.value.fullPath.split('/')[2];
-  console.log('ROOM IDDDDD::: ', roomId);
+  oldRoomId = roomId;
+  console.log('ROOM ID :: ', roomId);
+  console.log('OLD ROOM ID: ', oldRoomId);
+
+
 
   socketStore.emit('request-results', roomId);
   console.log('sending request-results');
@@ -105,12 +120,12 @@ socketStore.on('disconnect', () => {
   </header>
   <main>
     <section class="clouds">
-      <img id="cloud1" src="../assets/gultNyttNy1.png" alt="Medium yellow cloud" />
-      <img id="cloud2" src="../assets/gultNyttNy2.png" alt="Big yellow cloud" />
-      <img id="cloud3" src="../assets/gultNyttNy3.png" alt="Bigger yellow cloud" />
-      <img id="cloud4" src="../assets/gultNyttNy.png" alt="Small yellow cloud" />
+      <img id="cloud1" src="../assets/gultNyttNy1.png" alt="Medium yellow cloud"/>
+      <img id="cloud2" src="../assets/gultNyttNy2.png" alt="Big yellow cloud"/>
+      <img id="cloud3" src="../assets/gultNyttNy3.png" alt="Bigger yellow cloud"/>
+      <img id="cloud4" src="../assets/gultNyttNy.png" alt="Small yellow cloud"/>
     </section>
-    <img class="rotatedCardBrain" src="../assets/cardBrainYellow.png" alt="Brain holding a card" />
+    <img class="rotatedCardBrain" src="../assets/cardBrainYellow.png" alt="Brain holding a card"/>
     <div class="result-card">
       <p class="result">Result</p>
       <div class="nickname">
@@ -123,42 +138,42 @@ socketStore.on('disconnect', () => {
       </div>
       <div v-else>Inga resultat tillgängliga.</div>
       <svg
-        width="442"
-        height="350"
-        viewBox="0 0 442 350"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
+          width="442"
+          height="350"
+          viewBox="0 0 442 350"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
       >
         <g filter="url(#filter0_d_69_37)">
-          <rect x="4" width="434" height="340" rx="10" fill="#FFF6C2" />
+          <rect x="4" width="434" height="340" rx="10" fill="#FFF6C2"/>
         </g>
         <defs>
           <filter
-            id="filter0_d_69_37"
-            x="0"
-            y="0"
-            width="442"
-            height="559"
-            filterUnits="userSpaceOnUse"
-            color-interpolation-filters="sRGB"
+              id="filter0_d_69_37"
+              x="0"
+              y="0"
+              width="442"
+              height="559"
+              filterUnits="userSpaceOnUse"
+              color-interpolation-filters="sRGB"
           >
-            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+            <feFlood flood-opacity="0" result="BackgroundImageFix"/>
             <feColorMatrix
-              in="SourceAlpha"
-              type="matrix"
-              values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-              result="hardAlpha"
+                in="SourceAlpha"
+                type="matrix"
+                values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                result="hardAlpha"
             />
-            <feOffset dy="4" />
-            <feGaussianBlur stdDeviation="2" />
-            <feComposite in2="hardAlpha" operator="out" />
-            <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0" />
-            <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_69_37" />
+            <feOffset dy="4"/>
+            <feGaussianBlur stdDeviation="2"/>
+            <feComposite in2="hardAlpha" operator="out"/>
+            <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+            <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_69_37"/>
             <feBlend
-              mode="normal"
-              in="SourceGraphic"
-              in2="effect1_dropShadow_69_37"
-              result="shape"
+                mode="normal"
+                in="SourceGraphic"
+                in2="effect1_dropShadow_69_37"
+                result="shape"
             />
           </filter>
         </defs>
@@ -186,11 +201,10 @@ socketStore.on('disconnect', () => {
   font-size: 6em;
   margin-left: 0.25em;
   color: var(--card-color);
-  text-shadow:
-    -0.5px -1px 0 #000,
-    1px -1px 0 #000,
-    -0.5px 1px 0 #000,
-    1px 1px 0 #000;
+  text-shadow: -0.5px -1px 0 #000,
+  1px -1px 0 #000,
+  -0.5px 1px 0 #000,
+  1px 1px 0 #000;
 }
 
 .result-card {

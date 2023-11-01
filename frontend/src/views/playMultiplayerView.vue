@@ -1,6 +1,6 @@
 <script setup>
 import RoundCounter from "@/components/RoundCounter.vue";
-import { ref, onBeforeUnmount, computed, onBeforeMount, onMounted } from "vue";
+import {ref, onBeforeUnmount, computed, onBeforeMount, onMounted, onUnmounted} from "vue";
 import questionCardStack from "../assets/questionCardStack.png";
 import questionCardStackFlipped from "../assets/questionCardStackFlipped.png";
 import { useGameStore } from "@/stores/game";
@@ -58,7 +58,7 @@ const startTimer = (() => {
         useGameStore().remainingTime--;
       } else {
         showCorrectAnswer();
-        console.log("TIMER-EXPIRED EVENT");
+        console.log("TIMER-EXPIRED EVENT for room: ", roomId.value);
         socket.emit("timer-expired", roomId.value);
         clearInterval(timerInterval.value);
         setTimeout(resetGameState, 2000);
@@ -90,6 +90,7 @@ onBeforeMount(() => {
   });
 
   socket.on("round-completed", () => {
+    console.log("round-completed event fired")
     resetGameState();
     startTimer();
   });

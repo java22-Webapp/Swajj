@@ -109,17 +109,23 @@ onBeforeMount(() => {
 });
 
 onMounted(async () => {
-  try {
-    const response = await fetch('http://localhost:3000/generate-game-link');
-    const data = await response.json();
-    gameLink.value = data.gameLink;
-  } catch (error) {
-    console.error('Error generating game link: ', error);
-    copied.value = false;
+  let newRoomId = router.currentRoute.value.params.roomId;
+  console.log("NEW ROOMS",newRoomId)
+  if (newRoomId) {
+    roomId.value = newRoomId;
+  } else {
+    try {
+      const response = await fetch('http://localhost:3000/generate-game-link');
+      const data = await response.json();
+      gameLink.value = data.gameLink;
+    } catch (error) {
+      console.error('Error generating game link: ', error);
+      copied.value = false;
+    }
+    const url = new URL(gameLink.value);
+    roomId.value = url.searchParams.get('roomId');
   }
 
-  const url = new URL(gameLink.value);
-  roomId.value = url.searchParams.get('roomId');
   const nicknameStore = useNicknameStore();
   console.log('PLAYERS IN THIS ARRAY 1::: ', playerNicknames.value);
   socket.emit('set-host-nickname', {
