@@ -15,9 +15,9 @@ const settingsStore = useSettingsStore();
 const socket = useSocketStore();
 const roomId = ref(null);
 const playerNicknames = ref([]);
-socket.initializeSocket();
 
 function startMultiplayerGame() {
+  sessionStorage.setItem('hasJoined', 'true');
   let roomId = router.currentRoute.value.params.roomId;
 
   if (!roomId) {
@@ -102,12 +102,21 @@ const shouldShowListOfPlayers = computed(() => {
 });
 
 onBeforeUnmount(() => {
+
   socket.off('update-player-list');
 });
 
 onBeforeMount(() => {
+  socket.initializeSocket();
+
   socket.on('update-player-list', (data) => {
     playerNicknames.value = data;
+  });
+
+  socket.on('disconnect', () => {
+    console.log('Disconnected from server');
+    sessionStorage.setItem('hasJoined', 'false');
+    router.push('/');
   });
 });
 
