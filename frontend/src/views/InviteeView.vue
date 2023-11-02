@@ -15,7 +15,6 @@ const socket = useSocketStore();
 const roomId = router.currentRoute.value.query.roomId;
 
 function connectToSocket() {
-  console.log('ROOM ID::: ', roomId);
   sessionStorage.setItem('hasJoined', 'true');
 
   if (nickNameStore.nickname.trim() === '') {
