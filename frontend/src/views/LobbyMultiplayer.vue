@@ -172,7 +172,7 @@ onMounted(async () => {
         <button ref="copyButtonRef" @click="copyLink" class="button" id="copyLinkBtn">
           Copy link <span class="tooltip">Link copied</span>
         </button>
-        <button class="button" id="playBtn" @click="startMultiplayerGame">Play</button>
+        <button class="button" id="playBtn" @click="startMultiplayerGame">Start</button>
       </section>
     </section>
   </main>
