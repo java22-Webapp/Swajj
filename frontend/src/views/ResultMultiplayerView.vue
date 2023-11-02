@@ -1,8 +1,8 @@
 <script setup>
-import {useGameStore} from '@/stores/game';
-import {router} from '@/router';
-import { computed, onMounted, ref } from "vue";
-import {useSocketStore} from '@/stores/socket';
+import { useGameStore } from '@/stores/game';
+import { router } from '@/router';
+import { computed, onMounted, ref } from 'vue';
+import { useSocketStore } from '@/stores/socket';
 
 const useRouter = router;
 const userScoreStore = useGameStore();
@@ -26,7 +26,7 @@ const playAgain = async () => {
     resetUserScore();
 
     if (isHost.value) {
-      socketStore.emit('new-game-created', {newGameLink: roomId, oldRoomId: oldRoomId});
+      socketStore.emit('new-game-created', { newGameLink: roomId, oldRoomId: oldRoomId });
     }
   } catch (error) {
     console.log('Error in playAgain function: ', error);
@@ -34,14 +34,14 @@ const playAgain = async () => {
 };
 
 const redirectToMenu = () => {
-    resetUserScore();
+  resetUserScore();
   if (socketStore.socket) socketStore.disconnect();
   useRouter.push('/');
 };
 
 const sortedResults = computed(() => {
   return [...results.value].sort((a, b) => b.score - a.score);
-})
+});
 
 function extractRoomId(gameLink) {
   const url = new URL(gameLink);
@@ -64,7 +64,6 @@ onMounted(async () => {
     router.push(`/multiplayer/${data.newGameLink}`);
   });
 
-
   const roomId = router.currentRoute.value.fullPath.split('/')[2];
   oldRoomId.value = roomId;
 
@@ -86,80 +85,68 @@ socketStore.on('disconnect', () => {
 
 <template>
   <header>
-    <div id="logo_s">S Result</div>
+    <div id="logo_s">S</div>
   </header>
   <main>
     <section class="clouds">
-      <img id="cloud1" src="../assets/gultNyttNy1.png" alt="Medium yellow cloud"/>
-      <img id="cloud2" src="../assets/gultNyttNy2.png" alt="Big yellow cloud"/>
-      <img id="cloud3" src="../assets/gultNyttNy3.png" alt="Bigger yellow cloud"/>
-      <img id="cloud4" src="../assets/gultNyttNy.png" alt="Small yellow cloud"/>
+      <img id="cloud1" src="../assets/gultNyttNy1.png" alt="Medium yellow cloud" />
+      <img id="cloud2" src="../assets/gultNyttNy2.png" alt="Big yellow cloud" />
+      <img id="cloud3" src="../assets/gultNyttNy3.png" alt="Bigger yellow cloud" />
+      <img id="cloud4" src="../assets/gultNyttNy.png" alt="Small yellow cloud" />
     </section>
-    <img class="rotatedCardBrain" src="../assets/cardBrainYellow.png" alt="Brain holding a card"/>
-    <div class="result-card">
-      <p class="result">Result</p>
-      <div class="nickname">
-        <li v-for="res in sortedResults" :key="res">
-          {{ res.nickname }} || {{ res.score }}
-        </li>
-      </div>
-      <div v-if="results.length > 0">
-        {{ results[0].nickname }}
-      </div>
-      <div v-else>Inga resultat tillgängliga.</div>
-      <svg
-          width="442"
-          height="350"
-          viewBox="0 0 442 350"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-      >
-        <g filter="url(#filter0_d_69_37)">
-          <rect x="4" width="434" height="340" rx="10" fill="#FFF6C2"/>
-        </g>
-        <defs>
-          <filter
-              id="filter0_d_69_37"
-              x="0"
-              y="0"
-              width="442"
-              height="559"
-              filterUnits="userSpaceOnUse"
-              color-interpolation-filters="sRGB"
-          >
-            <feFlood flood-opacity="0" result="BackgroundImageFix"/>
-            <feColorMatrix
-                in="SourceAlpha"
-                type="matrix"
-                values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-                result="hardAlpha"
-            />
-            <feOffset dy="4"/>
-            <feGaussianBlur stdDeviation="2"/>
-            <feComposite in2="hardAlpha" operator="out"/>
-            <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
-            <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_69_37"/>
-            <feBlend
-                mode="normal"
-                in="SourceGraphic"
-                in2="effect1_dropShadow_69_37"
-                result="shape"
-            />
-          </filter>
-        </defs>
-      </svg>
-    </div>
+    <img class="rotatedCardBrain" src="../assets/cardBrainYellow.png" alt="Brain holding a card" />
     <section>
-      <button class="button" id="playBtn" @click="playAgain">PLAY AGAIN</button>
-      <div v-if="isHost">THIS IS THE HOST OF THE GAME</div>
-      <!--      <button v-else class="button" id="playBtn" @click="redirectToJoin">PLAY AGAIN?</button>-->
-
-      <button class="button" id="playBtn" @click="redirectToMenu">MENU</button>
+      <div class="wrapper">
+        <div class="scorecard">
+          <ul class="nickname-and-score">
+            <p class="result">Scoreboard</p>
+            <li v-for="res in sortedResults" :key="res" class="player-stats">
+              <img
+                v-if="res.hasAnswered"
+                src="@/assets/greenCheckmark.png"
+                alt="Green checkmark"
+                class="checkmark"
+              />
+              <span class="nickname">{{ res.nickname }}</span> <span class="score"> {{ res.score }}p </span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="info-text" v-if="!isHost">Waiting for host to play again...</div>
+      <button v-if="isHost" class="button" id="playBtn" @click="playAgain">Play again</button>
+      <button class="button" id="playBtn" @click="redirectToMenu">Leave</button>
     </section>
   </main>
 </template>
 
 <style scoped>
+body,
+html {
+  overflow: hidden;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+}
+
+.info-text {
+  font-size: 24px;
+  font-family: var(--button-font);
+  font-style: italic;
+  z-index: 1;
+}
+
+
+.info-text-host {
+  font-size: 24px;
+  font-family: var(--button-font);
+  z-index: 1;
+}
+
 #playBtn[disabled] {
   pointer-events: none;
   opacity: 0;
@@ -171,19 +158,49 @@ socketStore.on('disconnect', () => {
   font-size: 6em;
   margin-left: 0.25em;
   color: var(--card-color);
-  text-shadow: -0.5px -1px 0 #000,
-  1px -1px 0 #000,
-  -0.5px 1px 0 #000,
-  1px 1px 0 #000;
+  text-shadow:
+    -0.5px -1px 0 #000,
+    1px -1px 0 #000,
+    -0.5px 1px 0 #000,
+    1px 1px 0 #000;
 }
 
-.result-card {
+.scorecard {
   display: flex;
-  justify-content: space-around;
-  padding: 1em;
-  position: relative;
+  justify-content: center;
+  width: 400px;
+  height: 350px;
+  background-color: #fff6c2;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+  z-index: 1;
 }
 
+.nickname-and-score {
+  display: block;
+  justify-content: center;
+  align-items: center;
+  list-style-type: none;
+  width: 100%;
+  padding: 0;
+  z-index: 1;
+
+}
+
+.nickname {
+  font-size: 24px;
+  font-family: var(--question-font);
+  margin-bottom: 5px;
+  margin-left: 10%;
+}
+
+.score {
+  font-size: 24px;
+  font-family: var(--question-font);
+  margin-bottom: 5px;
+  margin-right: 10%;
+
+}
 #playBtn {
   display: block;
   position: relative;
@@ -192,24 +209,26 @@ socketStore.on('disconnect', () => {
   height: initial;
 }
 
-.nickname {
-  font-size: large;
-  position: absolute;
-  z-index: 1;
-  top: 30%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+.player-stats {
+  display: flex;
+  margin-top: 10px;
+  justify-content: space-between;
+  border-bottom: 1px dotted black;
+  width: 100%;
+  font-family: var(--button-font);
+  font-size: 20px;
 }
 
 .result {
-  font-size: x-large;
+  display: flex;
+  font-size: 28px;
   font-weight: bold;
-  text-decoration: underline;
-  position: absolute;
+  border-bottom: 3px dotted black;
+  justify-content: center;
+  align-items: center;
+  margin-top: 0;
   z-index: 1;
-  top: 7%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+
 }
 
 section {
@@ -232,18 +251,17 @@ section {
   width: 100%;
   height: 100%;
   position: absolute;
-  z-index: 0;
 }
 
 #cloud1 {
-  top: 52%;
+  top: 58%;
   left: 12%;
   transform: scale(0.7);
 }
 
 #cloud2 {
-  top: -18%;
-  left: 4%;
+  left: 6%;
+  top: 4%;
   transform: scale(0.7) rotate(-5deg);
 }
 
@@ -254,8 +272,8 @@ section {
 }
 
 #cloud4 {
-  top: -10%;
-  left: -5%;
+  top: 40%;
+  left: 65%;
   transform: scale(0.7) scaleX(1);
 }
 
@@ -267,6 +285,17 @@ section {
 }
 
 @media only screen and (min-width: 320px) and (max-width: 799px) {
+  .scorecard {
+    display: flex;
+    margin-top: 20px;
+    justify-content: center;
+    width: 250px;
+    height: 380px;
+    background-color: #fff6c2;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+  }
+
   #cloud1,
   #cloud2,
   #cloud3,
@@ -277,18 +306,6 @@ section {
 
   main {
     margin-top: -10px;
-  }
-
-  .nickname {
-    top: 25%;
-  }
-
-  .result {
-    top: 15%;
-  }
-
-  .result-card {
-    padding: 0;
   }
 }
 
