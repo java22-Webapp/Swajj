@@ -56,6 +56,8 @@ const startTimer = (() => {
     clearInterval(timerInterval.value);
     if (!firstTimeCalled) {
       useGameStore().nextRound();
+    } else {
+      useGameStore().updateState();
     }
     timerInterval.value = setInterval(() => {
       if (useGameStore().remainingTime > 0) {
