@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const db = require('./database/sqlite');
 
-function runSeed(seedName, callback) {
+function runSeed(seedName) {
   const seedPath = path.join(__dirname, 'seeds', seedName);
   const seedContent = fs.readFileSync(seedPath, 'utf-8');
 
@@ -14,8 +14,6 @@ function runSeed(seedName, callback) {
       database.run(command);
     });
   });
-
-  callback();
 }
 
 module.exports = runSeed;

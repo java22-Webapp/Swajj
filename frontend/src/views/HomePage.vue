@@ -1,12 +1,23 @@
 <script setup>
 import NicknameInput from '@/components/NicknameInput.vue';
 import { useRouter } from 'vue-router';
+import { useSocketStore } from "@/stores/socket";
+import { onMounted } from "vue";
+const socket = useSocketStore();
 
 const router = useRouter();
 
 const handleMultiplayerClick = () => {
   router.push('/Multiplayer');
 };
+
+onMounted(() => {
+  if (socket && socket.connected) {
+    socket.disconnect()
+    console.log("Socket disconnected in homePage")
+  }
+})
+
 </script>
 
 <template>

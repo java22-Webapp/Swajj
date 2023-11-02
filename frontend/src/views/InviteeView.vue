@@ -16,6 +16,8 @@ const roomId = router.currentRoute.value.query.roomId;
 
 function connectToSocket() {
   console.log('ROOM ID::: ', roomId);
+  sessionStorage.setItem('hasJoined', 'true');
+
   if (nickNameStore.nickname.trim() === '') {
     console.error('Nickname cannot be empty');
     return;
@@ -36,13 +38,21 @@ function connectToSocket() {
   });
   socket.on('disconnect', () => {
     console.log('Disconnected from server');
+    sessionStorage.setItem('hasJoined', 'false');
+    router.push('/');
   });
 }
 
 onBeforeMount(() => {
-  socket.initializeSocket();
-  socket.emit("send-update", roomId);
-})
+  const hasJoined = sessionStorage.getItem('hasJoined') === 'true';
+
+  if (hasJoined) {
+    router.push('/');
+  } else {
+    socket.initializeSocket();
+    socket.emit("send-update", roomId);
+  }
+});
 
 onBeforeUnmount(() => {
   socket.off('gameStarted');

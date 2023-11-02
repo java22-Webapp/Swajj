@@ -54,6 +54,7 @@ function resetUserScore() {
 
 onMounted(async () => {
   socketStore.initializeSocket();
+  sessionStorage.setItem('hasJoined', 'false');
 
   socketStore.on('new-game-created-clients', (data) => {
     router.push(`/join/?roomId=${data.newGameLink}`);

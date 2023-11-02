@@ -73,32 +73,38 @@ const startTimer = (() => {
 })();
 
 onBeforeMount(() => {
-  socket.initializeSocket();
-  roomId.value = router.currentRoute.value.params.roomId;
-  socket.emit('joinRoom', roomId.value);
-  socket.emit('request-results', roomId.value);
-  console.log('sending request-results');
-  socket.on('results-for-room', (data) => {
-    results.value = data;
-    console.log(data.time);
-  });
 
-  getNewQuestion();
-  startTimer();
+  const hasJoined = sessionStorage.getItem('hasJoined') === 'true';
 
-  socket.on('new-question', (data) => {
-    questions.value = data.question;
-    answers.value = data.answers;
-    isCorrect.value = data.isCorrect;
-    answerID.value = data.answerId;
-    imgSrc.value = questionCardStackFlipped;
-  });
+  if (!hasJoined) {
+    router.push('/');
+  } else {
+    socket.initializeSocket();
+    roomId.value = router.currentRoute.value.params.roomId;
+    socket.emit('joinRoom', roomId.value);
+    socket.emit('request-results', roomId.value);
+    console.log('sending request-results');
+    socket.on('results-for-room', (data) => {
+      results.value = data;
+    });
 
-  socket.on('round-completed', () => {
-    console.log('round-completed event fired');
-    resetRoundState();
+    getNewQuestion();
     startTimer();
-  });
+
+    socket.on('new-question', (data) => {
+      questions.value = data.question;
+      answers.value = data.answers;
+      isCorrect.value = data.isCorrect;
+      answerID.value = data.answerId;
+      imgSrc.value = questionCardStackFlipped;
+    });
+
+    socket.on('round-completed', () => {
+      console.log('round-completed event fired');
+      resetRoundState();
+      startTimer();
+    });
+  }
 });
 
 onBeforeUnmount(() => {
@@ -218,14 +224,13 @@ const shouldShowListOfPlayers = computed(() => {
         <p class="result">Scoreboard</p>
         <ul class="nickname-and-score">
           <li v-for="res in results" :key="res" class="player-stats">
-                <img
-                  v-if="res.hasAnswered"
-                  src="@/assets/greenCheckmark.png"
-                  alt="Green checkmark"
-                  class="checkmark"
-                />
-              <span class="nickname">{{ res.nickname }} - Score: {{ res.score }} </span>
-
+            <img
+              v-if="res.hasAnswered"
+              src="@/assets/greenCheckmark.png"
+              alt="Green checkmark"
+              class="checkmark"
+            />
+            <span class="nickname">{{ res.nickname }} - Score: {{ res.score }} </span>
           </li>
         </ul>
       </div>
@@ -253,7 +258,6 @@ const shouldShowListOfPlayers = computed(() => {
 </template>
 
 <style scoped>
-
 body,
 html {
   overflow: hidden;
@@ -468,9 +472,7 @@ header {
   background-color: #91b2b3;
 }
 
-
 @media only screen and (min-width: 800px) and (max-width: 1000px) {
-
   .result-card {
     position: absolute;
     margin-left: 25%;
@@ -551,7 +553,6 @@ header {
     margin-top: -10px;
   }
 
-
   .deckQuestions {
     font-size: 20px;
   }
@@ -567,6 +568,4 @@ header {
     margin-right: 0;
   }
 }
-
 </style>
-

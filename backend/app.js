@@ -140,7 +140,6 @@ io.on("connection", (socket) => {
       roomAnswers[roomId] = [];
     }
 
-
     if (roomAnswers[roomId].some(answer => answer.clientId === socket.id)) {
       console.log(`Client ${socket.id} has already answered this round.`);
       return;
@@ -201,15 +200,28 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     if (socket.roomId) {
+      const userIndex = gameResults[socket.roomId]?.findIndex(user => user.user_id === socket.id);
+      if (userIndex !== -1) {
+        gameResults[socket.roomId][userIndex].disconnected = true;
+        gameResults[socket.roomId][userIndex].nickname += " (Disconnected)";  // Append the text to the nickname
+      }
+
+      io.in(socket.roomId).emit('update-player-list', gameResults[socket.roomId].map(user => {
+        return {
+          nickname: user.disconnected ? `${user.nickname} (Disconnected)` : user.nickname,
+          score: user.score
+        }
+      }))
+
       console.log(`Socket ${socket.id} left room ${socket.roomId}`);
       if (roomAnswers[socket.roomId]) {
         roomAnswers[socket.roomId] = roomAnswers[socket.roomId].filter(answer => answer.clientId !== socket.id);
       }
+      socket.emit('redirect-to-home')
       socket.leave(socket.roomId);
     }
   });
 });
-
 
 function handleRoundCompletion(roomId) {
   console.log("All clients have answered or the timer has run out!");
@@ -234,11 +246,6 @@ function fetchNewQuestion(roomId) {
     console.log(`No settings found for room ID: ${roomId}`);
     return;
   }
-
-  /*console.log("MODE: ", roomSettings.kidsMode);
-  console.log("LANGUAGE: ", roomSettings.english)
-  console.log("ROUNDS: ", roomSettings.rounds)
-  console.log("TIME: ", roomSettings.time)*/
 
   const query = `SELECT id, question_text
                  FROM questions
@@ -292,16 +299,11 @@ app.get("/", (req, res) => {
 });
 
 
-// we can remove the callbacks here
 function populateDatabase() {
-  runSeed("modes.sql", () => {
-  });
-  runSeed("languages.sql", () => {
-  });
-  runSeed("questions.sql", () => {
-  });
-  runSeed("answers.sql", () => {
-  });
+  runSeed("modes.sql");
+  runSeed("languages.sql");
+  runSeed("questions.sql")
+  runSeed("answers.sql");
 }
 
 app.get("/play-again", (req, res) => {
@@ -310,7 +312,6 @@ app.get("/play-again", (req, res) => {
   res.status(200).end();
 });
 
- // Todo: probably refactor this into an event listener
 app.get("/play-again-multiplayer", (req, res) =>{
   console.log("RECEIVED FROM ::: play-again-multiplayer")
   askedQuestionsMultiplayer = [];
