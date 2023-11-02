@@ -77,6 +77,9 @@ io.on("connection", (socket) => {
 
   // Frontend uses this to get a newQuestion
   socket.on("requestNewQuestion", () => {
+
+    const user = gameResults[socket.roomId].find(user => user.user_id === socket.id);
+
     if (gameResults[socket.roomId]) {
       const userIndex = gameResults[socket.roomId].findIndex(user => user.user_id === socket.id);
       if (userIndex !== -1) {
@@ -84,7 +87,9 @@ io.on("connection", (socket) => {
       }
     }
     io.in(socket.roomId).emit("update-answers-status", gameResults[socket.roomId]);
+    if (user.isHost) {
     fetchNewQuestion(socket.roomId);
+    }
   });
 
   socket.on("timer-expired", (roomId) => {
@@ -230,7 +235,7 @@ function handleRoundCompletion(roomId) {
     io.in(roomId).emit("round-completed");
     console.log("Firing round-completed event")
     roomAnswers[roomId] = [];
-  }); // , 2000
+  }, 2000)
 }
 
 // Get a single question per request. The idea is that we call this function each time we go to a new game round

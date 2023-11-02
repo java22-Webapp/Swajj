@@ -39,7 +39,6 @@ socket.on('update-answers-status', (updateResults) => {
 
 function resetRoundState() {
   resetBtnClasses();
-  clearInterval(timerInterval.value);
   getNewQuestion();
 }
 
@@ -67,7 +66,6 @@ const startTimer = (() => {
         console.log('TIMER-EXPIRED EVENT for room: ', roomId.value);
         socket.emit('timer-expired', roomId.value);
         clearInterval(timerInterval.value);
-        setTimeout(resetRoundState, 2000);
       }
     }, 1000);
     firstTimeCalled = false;
