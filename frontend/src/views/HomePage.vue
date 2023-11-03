@@ -3,11 +3,18 @@ import NicknameInput from '@/components/NicknameInput.vue';
 import { useRouter } from 'vue-router';
 import { useSocketStore } from "@/stores/socket";
 import { onMounted } from "vue";
+import { useNicknameStore } from "@/stores/nickname";
 const socket = useSocketStore();
-
+const nickNameStore = useNicknameStore();
 const router = useRouter();
 
 const handleMultiplayerClick = () => {
+
+  if (nickNameStore.nickname.trim() === '') {
+    alert('Please enter a nickname');
+    return;
+  }
+
   router.push('/Multiplayer');
 };
 

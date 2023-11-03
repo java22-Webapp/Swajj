@@ -54,11 +54,13 @@ const fetchQuestionAndAnswers = async () => {
 };
 
 const startTimer = () => {
+  buttonDisabled.value = false;
   useGameStore().updateState();
   timerInterval.value = setInterval(() => {
     if (useGameStore().remainingTime > 0) {
       useGameStore().remainingTime--;
     } else {
+      buttonDisabled.value = true;
       showCorrectAnswer();
       clearInterval(timerInterval.value);
       setTimeout(()=> {
@@ -97,11 +99,10 @@ function userAnswer(e, index) {
     e.target.classList.add("correct-answer")
     goToNextRound = true;
   } else {
+    clearInterval(timerInterval.value);
     e.target.classList.add("incorrect-answer")
     if (settingsStore.settings.kidsMode === 2) {
       useGameStore().loseOneLife();
-      console.log("EXTRA LIVES LEFT::: ", useGameStore().lives)
-
       if (useGameStore().lives < 0) {
         showCorrectAnswer();
         goToNextRound = true;
@@ -110,7 +111,6 @@ function userAnswer(e, index) {
       } else {
         e.target.classList.add("incorrect-answer")
         e.target.disabled = true;
-
       }
     } else {
       showCorrectAnswer();
@@ -128,7 +128,7 @@ function userAnswer(e, index) {
       fetchQuestionAndAnswers();
       buttonDisabled.value = false;
       startTimer();
-    }, 3000)
+    }, 1500)
   } else {
     buttonDisabled.value = false;
   }

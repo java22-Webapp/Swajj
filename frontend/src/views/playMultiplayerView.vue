@@ -48,7 +48,7 @@ function resetGameState() {
 }
 
 const startTimer = (() => {
-  console.log('CALLING START-TIMER');
+  buttonDisabled.value = false;
   let firstTimeCalled = true;
   return () => {
     socket.emit('request-results', roomId.value);
@@ -62,13 +62,14 @@ const startTimer = (() => {
       if (useGameStore().remainingTime > 0) {
         useGameStore().remainingTime--;
       } else {
+        buttonDisabled.value = true;
         showCorrectAnswer();
-        console.log('TIMER-EXPIRED EVENT for room: ', roomId.value);
         socket.emit('timer-expired', roomId.value);
         clearInterval(timerInterval.value);
       }
     }, 1000);
     firstTimeCalled = false;
+
   };
 })();
 
@@ -83,7 +84,6 @@ onBeforeMount(() => {
     roomId.value = router.currentRoute.value.params.roomId;
     socket.emit('joinRoom', roomId.value);
     socket.emit('request-results', roomId.value);
-    console.log('sending request-results');
     socket.on('results-for-room', (data) => {
       results.value = data;
     });
@@ -100,7 +100,6 @@ onBeforeMount(() => {
     });
 
     socket.on('round-completed', () => {
-      console.log('round-completed event fired');
       resetRoundState();
       startTimer();
     });
@@ -141,7 +140,6 @@ socket.on('answer-result', (data) => {
   const correctButton = document.querySelector(correctButtonSelector);
 
   if (correctButton) {
-    clearInterval(timerInterval.value);
     if (correct) {
       userScoreHolder.userScore++;
       correctButton.classList.add('correct-answer');
@@ -269,8 +267,10 @@ html {
   background-color: #fff6c2;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
-  overflow: hidden;
+  overflow: auto;
   text-overflow: ellipsis;
+  overflow-x: hidden;
+
 }
 
 header {
@@ -301,7 +301,6 @@ header {
   height: 350px;
   background-color: #fff6c2;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
 }
 
 .nickname-and-score {

@@ -18,9 +18,10 @@ function connectToSocket() {
   sessionStorage.setItem('hasJoined', 'true');
 
   if (nickNameStore.nickname.trim() === '') {
-    console.error('Nickname cannot be empty');
+    alert('Please enter a nickname');
     return;
   }
+
   if (buttonDisabled.value) return;
   buttonDisabled.value = true;
 
@@ -77,7 +78,7 @@ onBeforeUnmount(() => {
         <ListOfPlayers id="listOfPlayers" />
         <NicknameInput v-model="nickNameStore.nickname" v-if="!buttonDisabled"/>
         <button class="button" id="readyBtn" @click="connectToSocket" v-if="!buttonDisabled">Ready</button>
-        <h2 v-if="buttonDisabled">Waiting for the game to start...</h2>
+        <div class="info-text" v-if="buttonDisabled">Waiting for the game to start...</div>
       </section>
   </main>
 </template>
@@ -100,6 +101,12 @@ main {
   height: 100%;
   width: 100%;
   background-color: var(--background-color);
+}
+.info-text {
+  font-size: 24px;
+  font-family: var(--button-font);
+  font-style: italic;
+  z-index: 1;
 }
 
 #listOfPlayers {

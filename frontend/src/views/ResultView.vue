@@ -1,7 +1,7 @@
 <script setup>
 import { useNicknameStore } from '@/stores/nickname';
 import { useGameStore } from '@/stores/game';
-import { router } from '@/router/index';
+import { router } from "@/router";
 import { useSettingsStore } from '@/stores/settings';
 import {ref} from "vue";
 
