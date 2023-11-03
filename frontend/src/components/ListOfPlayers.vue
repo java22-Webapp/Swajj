@@ -34,11 +34,20 @@ onMounted(() => {
   border-radius: 10px;
   background-color: var(--card-color);
   overflow: auto;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
 }
 
 li {
   list-style-type: none;
   margin-top: 0.4em;
+}
+
+p {
+  font-size: x-large;
+  font-weight: bold;
+  text-decoration: underline;
+  margin-left: 12%;
 }
 
 </style>

@@ -40,8 +40,9 @@ io.on("connection", (socket) => {
   console.log(`New connection with socket id: ${socket.id}`);
 
   socket.on("player-enters-game", (data) => {
+    console.log("gameResults: ", gameResults[data.roomId])
     if(!gameResults[data.roomId]) gameResults[data.roomId] = [];
-    const isHost = gameResults[data.roomId].length === 0; // true om det är den första användaren i rummet
+    const isHost = gameResults[data.roomId].length === 0;
     const newUser = {
       user_id: socket.id,
       score: 0,
@@ -222,7 +223,6 @@ io.on("connection", (socket) => {
       if (roomAnswers[socket.roomId]) {
         roomAnswers[socket.roomId] = roomAnswers[socket.roomId].filter(answer => answer.clientId !== socket.id);
       }
-      socket.emit('redirect-to-home')
       socket.leave(socket.roomId);
     }
   });

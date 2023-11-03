@@ -15,6 +15,7 @@ const settingsStore = useSettingsStore();
 const socket = useSocketStore();
 const roomId = ref(null);
 const playerNicknames = ref([]);
+const newRoomId = ref("");
 
 function startMultiplayerGame() {
   sessionStorage.setItem('hasJoined', 'true');
@@ -36,6 +37,9 @@ function startMultiplayerGame() {
   router.push({ name: 'PlayMultiplayer', params: { roomId: roomId } });
 }
 
+async function leaveGame() {
+  socket.disconnect();
+}
 async function copyLink(event) {
   if (!gameLink.value) {
     try {
@@ -102,11 +106,11 @@ const shouldShowListOfPlayers = computed(() => {
 });
 
 onBeforeUnmount(() => {
-
   socket.off('update-player-list');
 });
 
 onBeforeMount(() => {
+
   socket.initializeSocket();
 
   socket.on('update-player-list', (data) => {
@@ -121,9 +125,10 @@ onBeforeMount(() => {
 });
 
 onMounted(async () => {
-  let newRoomId = router.currentRoute.value.params.roomId;
-  if (newRoomId) {
-    roomId.value = newRoomId;
+  newRoomId.value = router.currentRoute.value.params.roomId;
+
+  if (newRoomId.value) {
+    roomId.value = newRoomId.value;
   } else {
     try {
       const response = await fetch('http://localhost:3000/generate-game-link');
@@ -138,12 +143,18 @@ onMounted(async () => {
   }
 
   const nicknameStore = useNicknameStore();
-  socket.emit('player-enters-game', {
-    nickname: nicknameStore.nickname + ' (Host)',
-    roomId: roomId.value
-  });
-  socket.emit('joinRoom', roomId.value);
-  socket.emit('send-update', roomId.value);
+
+  if (!nicknameStore.nickname) {
+    sessionStorage.setItem('hasJoined', 'false');
+    router.push('/');
+  } else {
+    socket.emit('player-enters-game', {
+      nickname: nicknameStore.nickname + ' (Host)',
+      roomId: roomId.value
+    });
+    socket.emit('joinRoom', roomId.value);
+    socket.emit('send-update', roomId.value);
+  }
 });
 
 </script>
@@ -169,9 +180,10 @@ onMounted(async () => {
       <section id="settingsSection">
         <SettingsPanel id="settingsPanel" />
         <div id="nicknameField">Nickname: {{ nickNameStore.nickname }}</div>
-        <button ref="copyButtonRef" @click="copyLink" class="button" id="copyLinkBtn">
+        <button v-if="!newRoomId" ref="copyButtonRef" @click="copyLink" class="button" id="copyLinkBtn">
           Copy link <span class="tooltip">Link copied</span>
         </button>
+        <button v-else class="button" @click="leaveGame">Leave game</button>
         <button class="button" id="playBtn" @click="startMultiplayerGame">Start</button>
       </section>
     </section>

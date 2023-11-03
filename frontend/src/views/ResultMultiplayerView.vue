@@ -174,6 +174,8 @@ html {
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
   z-index: 1;
+  overflow: auto;
+  text-overflow: ellipsis;
 }
 
 .nickname-and-score {
@@ -191,7 +193,7 @@ html {
   font-size: 24px;
   font-family: var(--question-font);
   margin-bottom: 5px;
-  margin-left: 10%;
+  margin-left: 5%;
 }
 
 .score {
